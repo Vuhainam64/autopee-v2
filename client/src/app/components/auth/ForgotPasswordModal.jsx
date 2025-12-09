@@ -14,17 +14,26 @@ function ForgotPasswordModal({ open, onClose, onSwitchToLogin }) {
       setLoading(true)
       await resetPassword(values.email)
       message.success(
-        'Email đặt lại mật khẩu đã được gửi! Vui lòng kiểm tra hộp thư.',
+        'Email đặt lại mật khẩu đã được gửi! Vui lòng kiểm tra hộp thư (bao gồm cả thư mục spam).',
       )
       form.resetFields()
       onClose()
     } catch (error) {
+      console.error('Reset password error:', error)
       let errorMessage = 'Gửi email thất bại. Vui lòng thử lại.'
+      
       if (error.code === 'auth/user-not-found') {
         errorMessage = 'Không tìm thấy tài khoản với email này.'
       } else if (error.code === 'auth/invalid-email') {
         errorMessage = 'Email không hợp lệ.'
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = 'Quá nhiều yêu cầu. Vui lòng đợi một lúc và thử lại.'
+      } else if (error.code === 'auth/network-request-failed') {
+        errorMessage = 'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối và thử lại.'
+      } else if (error.message) {
+        errorMessage = error.message
       }
+      
       message.error(errorMessage)
     } finally {
       setLoading(false)
@@ -59,6 +68,14 @@ function ForgotPasswordModal({ open, onClose, onSwitchToLogin }) {
           rules={[
             { required: true, message: 'Vui lòng nhập email!' },
             { type: 'email', message: 'Email không hợp lệ!' },
+            {
+              validator: (_, value) => {
+                if (value && value.includes(' ')) {
+                  return Promise.reject(new Error('Email không được chứa khoảng trắng!'))
+                }
+                return Promise.resolve()
+              },
+            },
           ]}
         >
           <Input
@@ -66,6 +83,8 @@ function ForgotPasswordModal({ open, onClose, onSwitchToLogin }) {
             placeholder="Email"
             size="large"
             id="forgot-email"
+            autoComplete="email"
+            onPressEnter={() => form.submit()}
           />
         </Form.Item>
 

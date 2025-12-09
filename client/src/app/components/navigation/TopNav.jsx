@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Dropdown } from 'antd'
-import { UserOutlined, LogoutOutlined } from '@ant-design/icons'
+import { UserOutlined, LogoutOutlined, SettingOutlined } from '@ant-design/icons'
 import LogoMark from '../branding/LogoMark.jsx'
 import LoginModal from '../auth/LoginModal.jsx'
 import RegisterModal from '../auth/RegisterModal.jsx'
@@ -31,11 +31,26 @@ function TopNav() {
 
   const userMenuItems = [
     {
+      key: 'settings',
+      label: (
+        <Link
+          to="/settings/profile"
+          className="flex w-full items-center gap-2 text-slate-700 hover:text-orange-600"
+        >
+          <SettingOutlined />
+          Settings
+        </Link>
+      ),
+    },
+    {
+      type: 'divider',
+    },
+    {
       key: 'logout',
       label: (
         <button
           onClick={handleLogout}
-          className="flex w-full items-center gap-2 text-red-600"
+          className="flex w-full items-center gap-2 text-red-600 hover:text-red-700"
         >
           <LogoutOutlined />
           Đăng xuất

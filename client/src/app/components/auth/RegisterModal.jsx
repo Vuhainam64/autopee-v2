@@ -12,20 +12,36 @@ function RegisterModal({ open, onClose, onSwitchToLogin }) {
   const handleSubmit = async (values) => {
     try {
       setLoading(true)
+      
+      // Validate password strength
+      if (values.password.length < 6) {
+        message.error('Mật khẩu phải có ít nhất 6 ký tự.')
+        return
+      }
+      
       await register(values.email, values.password)
       message.success('Đăng ký thành công! Vui lòng đăng nhập.')
       form.resetFields()
       onClose()
       onSwitchToLogin()
     } catch (error) {
+      console.error('Register error:', error)
       let errorMessage = 'Đăng ký thất bại. Vui lòng thử lại.'
+      
       if (error.code === 'auth/email-already-in-use') {
-        errorMessage = 'Email này đã được sử dụng.'
+        errorMessage = 'Email này đã được sử dụng. Vui lòng đăng nhập hoặc sử dụng email khác.'
       } else if (error.code === 'auth/invalid-email') {
         errorMessage = 'Email không hợp lệ.'
       } else if (error.code === 'auth/weak-password') {
-        errorMessage = 'Mật khẩu quá yếu. Vui lòng sử dụng mật khẩu mạnh hơn.'
+        errorMessage = 'Mật khẩu quá yếu. Vui lòng sử dụng mật khẩu có ít nhất 6 ký tự.'
+      } else if (error.code === 'auth/operation-not-allowed') {
+        errorMessage = 'Phương thức đăng ký này không được phép.'
+      } else if (error.code === 'auth/network-request-failed') {
+        errorMessage = 'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối và thử lại.'
+      } else if (error.message) {
+        errorMessage = error.message
       }
+      
       message.error(errorMessage)
     } finally {
       setLoading(false)
@@ -60,6 +76,14 @@ function RegisterModal({ open, onClose, onSwitchToLogin }) {
           rules={[
             { required: true, message: 'Vui lòng nhập email!' },
             { type: 'email', message: 'Email không hợp lệ!' },
+            {
+              validator: (_, value) => {
+                if (value && value.includes(' ')) {
+                  return Promise.reject(new Error('Email không được chứa khoảng trắng!'))
+                }
+                return Promise.resolve()
+              },
+            },
           ]}
         >
           <Input
@@ -67,6 +91,7 @@ function RegisterModal({ open, onClose, onSwitchToLogin }) {
             placeholder="Email"
             size="large"
             id="register-email"
+            autoComplete="email"
           />
         </Form.Item>
 
@@ -75,13 +100,20 @@ function RegisterModal({ open, onClose, onSwitchToLogin }) {
           rules={[
             { required: true, message: 'Vui lòng nhập mật khẩu!' },
             { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' },
+            {
+              pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+              message: 'Mật khẩu nên có chữ hoa, chữ thường và số!',
+              warningOnly: true,
+            },
           ]}
+          help="Mật khẩu mạnh nên có ít nhất 6 ký tự, bao gồm chữ hoa, chữ thường và số"
         >
           <Input.Password
             prefix={<LockOutlined className="text-slate-400" />}
             placeholder="Mật khẩu"
             size="large"
             id="register-password"
+            autoComplete="new-password"
           />
         </Form.Item>
 

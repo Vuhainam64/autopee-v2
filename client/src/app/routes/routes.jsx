@@ -3,6 +3,9 @@ import Products from '../pages/Products.jsx'
 import CheckMVDCookie from '../pages/CheckMVDCookie.jsx'
 import CheckMVD from '../pages/CheckMVD.jsx'
 import NotFound from '../pages/NotFound.jsx'
+import SettingsLayout from '../layouts/SettingsLayout.jsx'
+import ProfileSettings from '../pages/settings/ProfileSettings.jsx'
+import WalletSettings from '../pages/settings/WalletSettings.jsx'
 
 // Route config để dễ mở rộng phân quyền / menu / breadcrumb sau này
 export const appRoutes = [
@@ -34,6 +37,20 @@ export const productRoutes = [
     path: '/products/checkMVD',
     element: <CheckMVD />,
     meta: { roles: ['admin', 'operator'] },
+  },
+]
+
+// Settings routes - có sidebar riêng
+export const settingsRoutes = [
+  {
+    path: '/settings/profile',
+    element: <ProfileSettings />,
+    meta: { roles: ['admin', 'operator', 'viewer'] },
+  },
+  {
+    path: '/settings/wallet',
+    element: <WalletSettings />,
+    meta: { roles: ['admin', 'operator', 'viewer'] },
   },
 ]
 

@@ -19,16 +19,27 @@ function LoginModal({ open, onClose, onSwitchToRegister, onSwitchToForgot }) {
       form.resetFields()
       onClose()
     } catch (error) {
+      console.error('Login error:', error)
       let errorMessage = 'Đăng nhập thất bại. Vui lòng thử lại.'
+      
       if (error.code === 'auth/invalid-email') {
         errorMessage = 'Email không hợp lệ.'
       } else if (error.code === 'auth/user-disabled') {
         errorMessage = 'Tài khoản đã bị vô hiệu hóa.'
       } else if (error.code === 'auth/user-not-found') {
-        errorMessage = 'Không tìm thấy tài khoản.'
+        errorMessage = 'Không tìm thấy tài khoản với email này.'
       } else if (error.code === 'auth/wrong-password') {
         errorMessage = 'Mật khẩu không đúng.'
+      } else if (error.code === 'auth/invalid-credential') {
+        errorMessage = 'Email hoặc mật khẩu không đúng.'
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = 'Quá nhiều lần thử. Vui lòng thử lại sau.'
+      } else if (error.code === 'auth/network-request-failed') {
+        errorMessage = 'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối và thử lại.'
+      } else if (error.message) {
+        errorMessage = error.message
       }
+      
       message.error(errorMessage)
     } finally {
       setLoading(false)
@@ -92,6 +103,14 @@ function LoginModal({ open, onClose, onSwitchToRegister, onSwitchToForgot }) {
           rules={[
             { required: true, message: 'Vui lòng nhập email!' },
             { type: 'email', message: 'Email không hợp lệ!' },
+            {
+              validator: (_, value) => {
+                if (value && value.includes(' ')) {
+                  return Promise.reject(new Error('Email không được chứa khoảng trắng!'))
+                }
+                return Promise.resolve()
+              },
+            },
           ]}
         >
           <Input
@@ -99,18 +118,25 @@ function LoginModal({ open, onClose, onSwitchToRegister, onSwitchToForgot }) {
             placeholder="Email"
             size="large"
             id="login-email"
+            autoComplete="email"
+            onPressEnter={() => form.submit()}
           />
         </Form.Item>
 
         <Form.Item
           name="password"
-          rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
+          rules={[
+            { required: true, message: 'Vui lòng nhập mật khẩu!' },
+            { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' },
+          ]}
         >
           <Input.Password
             prefix={<LockOutlined className="text-slate-400" />}
             placeholder="Mật khẩu"
             size="large"
             id="login-password"
+            autoComplete="current-password"
+            onPressEnter={() => form.submit()}
           />
         </Form.Item>
 

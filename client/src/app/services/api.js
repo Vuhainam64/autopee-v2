@@ -1,0 +1,106 @@
+/**
+ * API Client Configuration
+ * Base HTTP client for Firebase Cloud Functions
+ */
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5001/auto-pee/asia-southeast1'
+
+/**
+ * Get Firebase Auth token for authenticated requests
+ */
+const getAuthToken = async () => {
+  const { auth } = await import('../config/firebase.js')
+  if (auth.currentUser) {
+    return await auth.currentUser.getIdToken()
+  }
+  return null
+}
+
+/**
+ * Base fetch wrapper with error handling
+ * @param {string} endpoint - API endpoint
+ * @param {object} options - Fetch options
+ * @returns {Promise<object>} Response data
+ */
+const apiRequest = async (endpoint, options = {}) => {
+  const url = `${API_BASE_URL}${endpoint}`
+  const token = await getAuthToken()
+
+  const headers = {
+    'Content-Type': 'application/json',
+    ...options.headers,
+  }
+
+  // Add auth token if available
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    })
+
+    const data = await response.json()
+
+    if (!response.ok) {
+      throw new Error(data.error?.message || `HTTP error! status: ${response.status}`)
+    }
+
+    return data
+  } catch (error) {
+    console.error('API request failed:', error)
+    throw error
+  }
+}
+
+/**
+ * GET request
+ */
+export const get = (endpoint, options = {}) => {
+  return apiRequest(endpoint, {
+    ...options,
+    method: 'GET',
+  })
+}
+
+/**
+ * POST request
+ */
+export const post = (endpoint, data, options = {}) => {
+  return apiRequest(endpoint, {
+    ...options,
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+}
+
+/**
+ * PUT request
+ */
+export const put = (endpoint, data, options = {}) => {
+  return apiRequest(endpoint, {
+    ...options,
+    method: 'PUT',
+    body: JSON.stringify(data),
+  })
+}
+
+/**
+ * DELETE request
+ */
+export const del = (endpoint, options = {}) => {
+  return apiRequest(endpoint, {
+    ...options,
+    method: 'DELETE',
+  })
+}
+
+export default {
+  get,
+  post,
+  put,
+  delete: del,
+}
+
