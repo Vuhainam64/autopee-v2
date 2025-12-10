@@ -3,6 +3,7 @@
  * Business logic for Shopee API operations
  */
 
+/* eslint-disable camelcase, max-len, operator-linebreak */
 const axios = require("axios");
 const logger = require("../utils/logger");
 

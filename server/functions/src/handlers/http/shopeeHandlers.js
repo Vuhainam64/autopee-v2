@@ -2,6 +2,7 @@
  * HTTP Handlers for Shopee endpoints
  */
 
+/* eslint-disable camelcase */
 const {onRequest} = require("firebase-functions/v2/https");
 const {verifyToken, handleHTTPErrors} = require("../../middleware");
 const {
