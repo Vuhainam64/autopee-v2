@@ -8,11 +8,13 @@ import {
   MenuUnfoldOutlined,
   UserOutlined,
   WalletOutlined,
+  SecurityScanOutlined,
 } from '@ant-design/icons'
 
 const settingsMenuItems = [
   { label: 'Profile', to: '/settings/profile', icon: UserOutlined },
   { label: 'Ví của tôi', to: '/settings/wallet', icon: WalletOutlined },
+  { label: 'Bảo mật', to: '/settings/security', icon: SecurityScanOutlined },
 ]
 
 function SettingsLayout() {

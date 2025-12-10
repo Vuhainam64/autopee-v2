@@ -3,9 +3,9 @@
  * Validates Firebase Auth tokens for HTTP requests and callable functions
  */
 
-const { auth } = require('../config')
-const { AuthenticationError } = require('../utils/errors')
-const logger = require('../utils/logger')
+const {auth} = require("../config");
+const {AuthenticationError} = require("../utils/errors");
+const logger = require("../utils/logger");
 
 /**
  * Verify Firebase Auth token from request header
@@ -15,25 +15,25 @@ const logger = require('../utils/logger')
  */
 const verifyToken = async (req) => {
   try {
-    const authHeader = req.headers?.authorization
+    const authHeader = req.headers?.authorization;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      throw new AuthenticationError('Missing or invalid authorization header')
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new AuthenticationError("Missing or invalid authorization header");
     }
 
-    const token = authHeader.split('Bearer ')[1]
-    const decodedToken = await auth.verifyIdToken(token)
+    const token = authHeader.split("Bearer ")[1];
+    const decodedToken = await auth.verifyIdToken(token);
 
     return {
       uid: decodedToken.uid,
       email: decodedToken.email,
       emailVerified: decodedToken.email_verified,
-    }
+    };
   } catch (error) {
-    logger.error('Token verification failed', error)
-    throw new AuthenticationError('Invalid or expired token')
+    logger.error("Token verification failed", error);
+    throw new AuthenticationError("Invalid or expired token");
   }
-}
+};
 
 /**
  * Middleware for HTTP functions
@@ -41,19 +41,19 @@ const verifyToken = async (req) => {
  */
 const authenticateHTTP = async (req, res, next) => {
   try {
-    const user = await verifyToken(req)
-    req.user = user
-    next()
+    const user = await verifyToken(req);
+    req.user = user;
+    next();
   } catch (error) {
     res.status(401).json({
       success: false,
       error: {
-        code: error.code || 'AUTHENTICATION_ERROR',
+        code: error.code || "AUTHENTICATION_ERROR",
         message: error.message,
       },
-    })
+    });
   }
-}
+};
 
 /**
  * Middleware for Callable functions
@@ -65,19 +65,19 @@ const authenticateHTTP = async (req, res, next) => {
  */
 const authenticateCallable = async (data, context) => {
   if (!context.auth) {
-    throw new AuthenticationError('User must be authenticated')
+    throw new AuthenticationError("User must be authenticated");
   }
 
   return {
     uid: context.auth.uid,
     email: context.auth.token.email,
     emailVerified: context.auth.token.email_verified,
-  }
-}
+  };
+};
 
 module.exports = {
   verifyToken,
   authenticateHTTP,
   authenticateCallable,
-}
+};
 

@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+@plugin 'tailwind-scrollbar';
+
+html,
+body {
+  @apply scrollbar-thin scrollbar-thumb-orange-300 scrollbar-track-slate-100;
+}

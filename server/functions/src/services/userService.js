@@ -3,9 +3,8 @@
  * Business logic for user operations
  */
 
-const { db } = require('../config')
-const { NotFoundError, ValidationError } = require('../utils/errors')
-const logger = require('../utils/logger')
+const {db} = require("../config");
+const logger = require("../utils/logger");
 
 /**
  * Get user profile from Firestore
@@ -14,22 +13,22 @@ const logger = require('../utils/logger')
  */
 const getUserProfile = async (userId) => {
   try {
-    const userRef = db.collection('users').doc(userId)
-    const userDoc = await userRef.get()
+    const userRef = db.collection("users").doc(userId);
+    const userDoc = await userRef.get();
 
     if (!userDoc.exists) {
-      return null
+      return null;
     }
 
     return {
       id: userDoc.id,
       ...userDoc.data(),
-    }
+    };
   } catch (error) {
-    logger.error('Failed to get user profile', error, { userId })
-    throw error
+    logger.error("Failed to get user profile", error, {userId});
+    throw error;
   }
-}
+};
 
 /**
  * Update user profile in Firestore
@@ -39,52 +38,52 @@ const getUserProfile = async (userId) => {
  */
 const updateUserProfile = async (userId, profileData) => {
   try {
-    const userRef = db.collection('users').doc(userId)
-    const userDoc = await userRef.get()
+    const userRef = db.collection("users").doc(userId);
+    const userDoc = await userRef.get();
 
     // Get existing data or empty object
-    const existingData = userDoc.exists ? userDoc.data() : {}
-    
+    const existingData = userDoc.exists ? userDoc.data() : {};
+
     // Prepare update data - only include defined fields
     const updateData = {
       updatedAt: new Date().toISOString(),
-    }
+    };
 
     // Only update fields that are provided
     if (profileData.displayName !== undefined) {
-      updateData.displayName = profileData.displayName
+      updateData.displayName = profileData.displayName;
     }
     if (profileData.phone !== undefined) {
-      updateData.phone = profileData.phone
+      updateData.phone = profileData.phone;
     }
     if (profileData.dateOfBirth !== undefined) {
-      updateData.dateOfBirth = profileData.dateOfBirth
+      updateData.dateOfBirth = profileData.dateOfBirth;
     }
     if (profileData.gender !== undefined) {
-      updateData.gender = profileData.gender
+      updateData.gender = profileData.gender;
     }
     if (profileData.photoURL !== undefined) {
-      updateData.photoURL = profileData.photoURL
+      updateData.photoURL = profileData.photoURL;
     }
 
     // If user doesn't exist, create with createdAt
     if (!userDoc.exists) {
-      updateData.createdAt = new Date().toISOString()
+      updateData.createdAt = new Date().toISOString();
     }
 
-    await userRef.set(updateData, { merge: true })
+    await userRef.set(updateData, {merge: true});
 
     // Return merged data without reading again
     return {
       id: userRef.id,
       ...existingData,
       ...updateData,
-    }
+    };
   } catch (error) {
-    logger.error('Failed to update user profile', error, { userId })
-    throw error
+    logger.error("Failed to update user profile", error, {userId});
+    throw error;
   }
-}
+};
 
 /**
  * Create user document in Firestore
@@ -94,28 +93,28 @@ const updateUserProfile = async (userId, profileData) => {
  */
 const createUser = async (userId, userData) => {
   try {
-    const userRef = db.collection('users').doc(userId)
+    const userRef = db.collection("users").doc(userId);
     const newUserData = {
       ...userData,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    }
+    };
 
-    await userRef.set(newUserData)
+    await userRef.set(newUserData);
 
     return {
       id: userRef.id,
       ...newUserData,
-    }
+    };
   } catch (error) {
-    logger.error('Failed to create user', error, { userId })
-    throw error
+    logger.error("Failed to create user", error, {userId});
+    throw error;
   }
-}
+};
 
 module.exports = {
   getUserProfile,
   updateUserProfile,
   createUser,
-}
+};
 

@@ -3,7 +3,7 @@
  */
 
 module.exports = {
-  ...require('./auth'),
-  ...require('./errorHandler'),
-}
+  ...require("./auth"),
+  ...require("./errorHandler"),
+};
 

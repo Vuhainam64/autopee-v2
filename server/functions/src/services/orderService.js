@@ -3,9 +3,9 @@
  * Business logic for order operations (Shopee orders)
  */
 
-const { db } = require('../config')
-const { NotFoundError, ValidationError } = require('../utils/errors')
-const logger = require('../utils/logger')
+const {db} = require("../config");
+const {NotFoundError} = require("../utils/errors");
+const logger = require("../utils/logger");
 
 /**
  * Get order by ID
@@ -16,29 +16,29 @@ const logger = require('../utils/logger')
  */
 const getOrder = async (orderId, userId) => {
   try {
-    const orderRef = db.collection('orders').doc(orderId)
-    const orderDoc = await orderRef.get()
+    const orderRef = db.collection("orders").doc(orderId);
+    const orderDoc = await orderRef.get();
 
     if (!orderDoc.exists) {
-      throw new NotFoundError('Order')
+      throw new NotFoundError("Order");
     }
 
-    const orderData = orderDoc.data()
+    const orderData = orderDoc.data();
 
     // Verify ownership
     if (orderData.userId !== userId) {
-      throw new Error('Unauthorized access to order')
+      throw new Error("Unauthorized access to order");
     }
 
     return {
       id: orderDoc.id,
       ...orderData,
-    }
+    };
   } catch (error) {
-    logger.error('Failed to get order', error, { orderId, userId })
-    throw error
+    logger.error("Failed to get order", error, {orderId, userId});
+    throw error;
   }
-}
+};
 
 /**
  * Create new order
@@ -48,29 +48,29 @@ const getOrder = async (orderId, userId) => {
  */
 const createOrder = async (orderData, userId) => {
   try {
-    const ordersRef = db.collection('orders')
+    const ordersRef = db.collection("orders");
     const newOrder = {
       ...orderData,
       userId,
-      status: 'pending',
+      status: "pending",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-    }
+    };
 
-    const docRef = await ordersRef.add(newOrder)
+    const docRef = await ordersRef.add(newOrder);
 
     return {
       id: docRef.id,
       ...newOrder,
-    }
+    };
   } catch (error) {
-    logger.error('Failed to create order', error, { userId })
-    throw error
+    logger.error("Failed to create order", error, {userId});
+    throw error;
   }
-}
+};
 
 module.exports = {
   getOrder,
   createOrder,
-}
+};
 

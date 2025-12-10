@@ -33,12 +33,47 @@ export function AuthProvider({ children }) {
     return unsubscribe
   }, [])
 
+  const trackUserSession = async (user) => {
+    try {
+      if (user) {
+        const token = await user.getIdToken()
+        const tokenParts = token.split('.')
+        if (tokenParts.length === 3) {
+          const payload = JSON.parse(atob(tokenParts[1]))
+          const sessionId = payload.iat?.toString() || Date.now().toString()
+
+          // Track session via API - server will get IP and device info from request headers
+          const { post } = await import('../services/api.js')
+          const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5001/auto-pee/asia-southeast1'
+          await fetch(`${API_BASE_URL}/trackSession`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              sessionId,
+              // IP and device info will be extracted from request headers on server-side
+            }),
+          }).catch(() => {
+            // Silent fail - session tracking is not critical
+          })
+        }
+      }
+    } catch (error) {
+      // Silent fail - session tracking is not critical
+      console.warn('Failed to track session:', error)
+    }
+  }
+
   const login = async (email, password) => {
-    await signInWithEmailAndPassword(auth, email, password)
+    const userCredential = await signInWithEmailAndPassword(auth, email, password)
+    await trackUserSession(userCredential.user)
   }
 
   const register = async (email, password) => {
-    await createUserWithEmailAndPassword(auth, email, password)
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+    await trackUserSession(userCredential.user)
   }
 
   const loginWithGoogle = async () => {
@@ -50,7 +85,8 @@ export function AuthProvider({ children }) {
     provider.setCustomParameters({
       prompt: 'select_account',
     })
-    await signInWithPopup(auth, provider)
+    const userCredential = await signInWithPopup(auth, provider)
+    await trackUserSession(userCredential.user)
   }
 
   const logout = async () => {

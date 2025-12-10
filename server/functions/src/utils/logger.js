@@ -3,7 +3,7 @@
  * Provides structured logging with context
  */
 
-const logger = require('firebase-functions/logger')
+const logger = require("firebase-functions/logger");
 
 /**
  * Log info message with context
@@ -11,8 +11,8 @@ const logger = require('firebase-functions/logger')
  * @param {object} context - Additional context data
  */
 const info = (message, context = {}) => {
-  logger.info(message, { structuredData: true, ...context })
-}
+  logger.info(message, {structuredData: true, ...context});
+};
 
 /**
  * Log error message with context
@@ -26,8 +26,8 @@ const error = (message, error, context = {}) => {
     error: error?.message || error,
     stack: error?.stack,
     ...context,
-  })
-}
+  });
+};
 
 /**
  * Log warning message with context
@@ -35,8 +35,8 @@ const error = (message, error, context = {}) => {
  * @param {object} context - Additional context data
  */
 const warn = (message, context = {}) => {
-  logger.warn(message, { structuredData: true, ...context })
-}
+  logger.warn(message, {structuredData: true, ...context});
+};
 
 /**
  * Log debug message with context
@@ -44,13 +44,13 @@ const warn = (message, context = {}) => {
  * @param {object} context - Additional context data
  */
 const debug = (message, context = {}) => {
-  logger.debug(message, { structuredData: true, ...context })
-}
+  logger.debug(message, {structuredData: true, ...context});
+};
 
 module.exports = {
   info,
   error,
   warn,
   debug,
-}
+};
 
