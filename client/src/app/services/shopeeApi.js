@@ -1,37 +1,18 @@
-/**
- * Shopee API Service
- * Handles Shopee-related API calls
- */
+import { post, get } from './api.js'
 
-import { post } from './api.js'
-
-/**
- * Get order details for multiple cookies
- * @param {Array<string>} cookies - Array of Shopee cookies
- * @returns {Promise<object>} Order details for each cookie
- */
-export const getOrderDetailsForCookie = async (cookies) => {
-  return await post('/getOrderDetailsForCookie', { cookies })
+// Get orders + checkouts via backend proxy
+export const getAllOrdersAndCheckouts = async ({ cookie, limit = 10, list_type = 7, offset = 0 }) => {
+  return await post('/shopee/orders', { cookie, limit, list_type, offset })
 }
 
-/**
- * Get checkout detail by checkout_id
- */
-export const getCheckoutDetail = async ({ cookie, checkoutId }) => {
-  return await post('/getCheckoutDetail', { cookie, checkout_id: checkoutId })
+// Get order detail v2 (to enrich tracking, address, etc.)
+export const getOrderDetail = async ({ cookie, orderId }) => {
+  return await post('/shopee/order-detail', { cookie, order_id: orderId })
 }
 
-/**
- * Get cancel detail by order_id
- */
-export const getCancelDetail = async ({ cookie, orderId }) => {
-  return await post('/getCancelDetail', { cookie, order_id: orderId })
-}
-
-/**
- * Get cancelled order detail (order detail v2 for cancelled)
- */
-export const getCancelledOrderDetail = async ({ cookie, orderId }) => {
-  return await post('/getCancelledOrderDetail', { cookie, order_id: orderId })
-}
+// QR: generate, status, login
+export const genShopeeQR = async () => get('/shopee/qr')
+export const checkShopeeQR = async (qrcode_id) =>
+  get(`/shopee/qr/status?qrcode_id=${encodeURIComponent(qrcode_id)}&_t=${Date.now()}`)
+export const loginShopeeQR = async (qrcode_token) => post('/shopee/qr/login', { qrcode_token })
 

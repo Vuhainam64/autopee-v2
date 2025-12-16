@@ -7,44 +7,36 @@
  * - Triggers: Firestore, Auth, Storage triggers
  */
 
-const {setGlobalOptions} = require("firebase-functions/v2");
-
-// Global configuration for all functions
-// Optimized for student projects - minimal cost
-setGlobalOptions({
-  maxInstances: 2, // Reduced from 10 - enough for student projects
-  // minInstances removed to avoid minimum cost (pay-as-you-go only)
-  region: "asia-southeast1", // Singapore region for better latency in Vietnam
-  memory: "128MiB", // Reduced from 256MiB - sufficient for most use cases, cheaper
-});
+const functions = require("firebase-functions/v1");
+const REGION = "asia-southeast1";
 
 // HTTP Functions - User
 const httpHandlers = require("./src/handlers/http/userHandlers");
-exports.getCurrentUser = httpHandlers.getCurrentUser;
-exports.updateCurrentUser = httpHandlers.updateCurrentUser;
-exports.getUserSessions = httpHandlers.getUserSessions;
-exports.revokeSession = httpHandlers.revokeSession;
-exports.revokeAllOtherSessions = httpHandlers.revokeAllOtherSessions;
-exports.trackSession = httpHandlers.trackSession;
+exports.getCurrentUser = functions.region(REGION).https.onRequest(httpHandlers.getCurrentUser);
+exports.updateCurrentUser = functions.region(REGION).https.onRequest(httpHandlers.updateCurrentUser);
+exports.getUserSessions = functions.region(REGION).https.onRequest(httpHandlers.getUserSessions);
+exports.revokeSession = functions.region(REGION).https.onRequest(httpHandlers.revokeSession);
+exports.revokeAllOtherSessions = functions
+    .region(REGION)
+    .https.onRequest(httpHandlers.revokeAllOtherSessions);
+exports.trackSession = functions.region(REGION).https.onRequest(httpHandlers.trackSession);
 
-// HTTP Functions - Shopee
+// Shopee HTTP Functions
 const shopeeHandlers = require("./src/handlers/http/shopeeHandlers");
-exports.getAllOrderAndCheckout = shopeeHandlers.getAllOrderAndCheckout;
-exports.getOrderDetail = shopeeHandlers.getOrderDetail;
-exports.getOrderDetails = shopeeHandlers.getOrderDetails;
-exports.getOrderList = shopeeHandlers.getOrderList;
-exports.getCheckoutList = shopeeHandlers.getCheckoutList;
-exports.getOrderDetailsForCookie = shopeeHandlers.getOrderDetailsForCookie;
-exports.getOrdersByCookie = shopeeHandlers.getOrdersByCookie;
-exports.getCheckoutDetail = shopeeHandlers.getCheckoutDetail;
-exports.getCancelledOrderDetail = shopeeHandlers.getCancelledOrderDetail;
-exports.cancelOrder = shopeeHandlers.cancelOrder;
-exports.getCancelDetail = shopeeHandlers.getCancelDetail;
+exports.getAllOrdersAndCheckouts = functions
+    .region(REGION)
+    .https.onRequest(shopeeHandlers.getAllOrdersAndCheckouts);
+exports.getOrderDetail = functions.region(REGION).https.onRequest(shopeeHandlers.getOrderDetail);
+exports.genShopeeQR = functions.region(REGION).https.onRequest(shopeeHandlers.genShopeeQR);
+exports.checkShopeeQR = functions.region(REGION).https.onRequest(shopeeHandlers.checkShopeeQR);
+exports.loginShopeeQR = functions.region(REGION).https.onRequest(shopeeHandlers.loginShopeeQR);
 
 // Callable Functions
 const callableHandlers = require("./src/handlers/callable/userCallable");
-exports.getUserProfile = callableHandlers.getUserProfile;
-exports.updateUserProfile = callableHandlers.updateUserProfile;
+exports.getUserProfile = functions.region(REGION).https.onCall(callableHandlers.getUserProfile);
+exports.updateUserProfile = functions
+    .region(REGION)
+    .https.onCall(callableHandlers.updateUserProfile);
 
 // Firestore Triggers
 // Temporarily disabled - will enable after Eventarc permissions are set up

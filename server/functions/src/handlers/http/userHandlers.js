@@ -2,7 +2,6 @@
  * HTTP Handlers for User endpoints
  */
 
-const {onRequest} = require("firebase-functions/v2/https");
 const {verifyToken, handleHTTPErrors} = require("../../middleware");
 const {getUserProfile, updateUserProfile} = require("../../services/userService");
 const {
@@ -12,12 +11,21 @@ const {
 } = require("../../services/sessionService");
 const logger = require("../../utils/logger");
 
+const withCors = (handler) => async (req, res) => {
+  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Headers", "Authorization, Content-Type");
+  res.set("Access-Control-Allow-Methods", "GET,POST,PUT,OPTIONS");
+  if (req.method === "OPTIONS") {
+    return res.status(204).send("");
+  }
+  return handler(req, res);
+};
+
 /**
  * Get current user profile
  * GET /getCurrentUser
  */
-exports.getCurrentUser = onRequest(
-    {cors: true}, // Use global maxInstances (2)
+exports.getCurrentUser = withCors(
     handleHTTPErrors(async (req, res) => {
       if (req.method !== "GET") {
         return res.status(405).json({success: false, error: {message: "Method not allowed"}});
@@ -44,8 +52,7 @@ exports.getCurrentUser = onRequest(
  * Update user profile
  * PUT /updateCurrentUser
  */
-exports.updateCurrentUser = onRequest(
-    {cors: true}, // Use global maxInstances (2)
+exports.updateCurrentUser = withCors(
     handleHTTPErrors(async (req, res) => {
       if (req.method !== "PUT") {
         return res.status(405).json({success: false, error: {message: "Method not allowed"}});
@@ -144,8 +151,7 @@ exports.updateCurrentUser = onRequest(
  * Get user active sessions
  * GET /getUserSessions
  */
-exports.getUserSessions = onRequest(
-    {cors: true},
+exports.getUserSessions = withCors(
     handleHTTPErrors(async (req, res) => {
       if (req.method !== "GET") {
         return res.status(405).json({success: false, error: {message: "Method not allowed"}});
@@ -162,8 +168,7 @@ exports.getUserSessions = onRequest(
  * Revoke a specific session
  * POST /revokeSession
  */
-exports.revokeSession = onRequest(
-    {cors: true},
+exports.revokeSession = withCors(
     handleHTTPErrors(async (req, res) => {
       if (req.method !== "POST") {
         return res.status(405).json({success: false, error: {message: "Method not allowed"}});
@@ -189,8 +194,7 @@ exports.revokeSession = onRequest(
  * Revoke all other sessions (except current)
  * POST /revokeAllOtherSessions
  */
-exports.revokeAllOtherSessions = onRequest(
-    {cors: true},
+exports.revokeAllOtherSessions = withCors(
     handleHTTPErrors(async (req, res) => {
       if (req.method !== "POST") {
         return res.status(405).json({success: false, error: {message: "Method not allowed"}});
@@ -221,8 +225,7 @@ exports.revokeAllOtherSessions = onRequest(
  * Track user session (called after login)
  * POST /trackSession
  */
-exports.trackSession = onRequest(
-    {cors: true},
+exports.trackSession = withCors(
     handleHTTPErrors(async (req, res) => {
       if (req.method !== "POST") {
         return res.status(405).json({success: false, error: {message: "Method not allowed"}});
@@ -239,40 +242,33 @@ exports.trackSession = onRequest(
       }
 
       // Get IP address from request (server-side, cannot be spoofed)
-      // Firebase Cloud Functions v2 uses Express request object
+      // Firebase Cloud Functions v1 uses Express request object
       let clientIP = "Unknown";
 
       // Try multiple methods to get IP
       // Priority: x-forwarded-for > x-real-ip > req.ip > socket.remoteAddress > req.raw
       if (req.headers["x-forwarded-for"]) {
-        // x-forwarded-for can contain multiple IPs (client, proxy1, proxy2)
-        // Take the first one (original client IP)
         const forwarded = req.headers["x-forwarded-for"];
         clientIP = forwarded.split(",")[0].trim();
       } else if (req.headers["x-real-ip"]) {
         clientIP = req.headers["x-real-ip"];
       } else if (req.ip) {
-        // Express req.ip property (requires trust proxy)
         clientIP = req.ip;
       } else if (req.socket && req.socket.remoteAddress) {
         clientIP = req.socket.remoteAddress;
       } else if (req.connection && req.connection.remoteAddress) {
         clientIP = req.connection.remoteAddress;
       } else if (req.raw && req.raw.socket && req.raw.socket.remoteAddress) {
-        // Try raw socket (Firebase Functions v2)
         clientIP = req.raw.socket.remoteAddress;
       } else if (req.raw && req.raw.connection && req.raw.connection.remoteAddress) {
         clientIP = req.raw.connection.remoteAddress;
       }
 
-      // Remove IPv6 prefix if present (::ffff:192.168.1.1 -> 192.168.1.1)
       if (clientIP && clientIP.startsWith("::ffff:")) {
         clientIP = clientIP.replace("::ffff:", "");
       }
 
-      // For local development, if still Unknown, try to get from req object properties
       if (clientIP === "Unknown") {
-        // Log all available properties for debugging
         const debugInfo = {
           headers: Object.keys(req.headers),
           hasSocket: !!req.socket,
@@ -285,7 +281,6 @@ exports.trackSession = onRequest(
         logger.warn("Could not determine client IP", debugInfo);
       }
 
-      // Log for debugging
       logger.info("Session tracking", {
         userId: user.uid,
         sessionId,
@@ -298,10 +293,8 @@ exports.trackSession = onRequest(
         rawSocketRemoteAddress: req.raw?.socket?.remoteAddress,
       });
 
-      // Get user agent from request headers
       const userAgent = req.headers["user-agent"] || "Unknown";
 
-      // Detect device info from user agent
       let deviceInfo = "Unknown";
       if (userAgent) {
         if (/Mobile|Android|iPhone|iPad/.test(userAgent)) {

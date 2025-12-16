@@ -1,7 +1,3 @@
-/**
- * Shopee service - minimal fetch for order + checkout list
- */
-
 const axios = require("axios");
 const logger = require("../utils/logger");
 
@@ -22,16 +18,7 @@ const HEADERS_POST_JSON = {
   "Content-Type": "application/json",
 };
 
-/**
- * Fetch all orders and checkouts for a given cookie using Shopee API.
- * @param {string} cookie - Shopee cookie string
- * @param {object} options - {limit, listType, offset}
- * @returns {Promise<object>} Raw data from Shopee
- */
-const fetchAllOrdersAndCheckouts = async (
-    cookie,
-    {limit = 10, listType = 7, offset = 0} = {},
-) => {
+const fetchAllOrdersAndCheckouts = async (cookie, {limit = 10, listType = 7, offset = 0} = {}) => {
   const url =
     `https://mall.shopee.vn/api/v4/order/get_all_order_and_checkout_list` +
     `?_oft=3&limit=${limit}&list_type=${listType}&offset=${offset}`;
@@ -48,11 +35,6 @@ const fetchAllOrdersAndCheckouts = async (
   return resp.data.data;
 };
 
-/**
- * Fetch order detail v2 by order_id.
- * @param {string} cookie
- * @param {string|number} orderId
- */
 const fetchOrderDetailV2 = async (cookie, orderId) => {
   const url = `https://mall.shopee.vn/api/v4/order/get_order_detail_v2?_oft=3&order_id=${orderId}`;
   const headers = {
@@ -68,7 +50,6 @@ const fetchOrderDetailV2 = async (cookie, orderId) => {
   return resp.data.data;
 };
 
-// QR helpers (best-effort)
 const genQrCode = async () => {
   const resp = await axios.get("https://shopee.vn/api/v2/authentication/gen_qrcode", {
     headers: HEADERS_GET,
@@ -88,8 +69,7 @@ const checkQrStatus = async (qrcodeId) => {
 
 const loginQr = async (qrcodeToken) => {
   const fingerprint =
-    "OazXiPqlUgm158nr1h09yA==|0/eMoV7m/rlUHbgxsRgRC/n0vyOe6XzhDMa2PcnZPv3e" +
-    "cioRaJQg2W7ur5GfhoDDEeuMz2az7GGj/8Y=|Pu2hbrwoH+45rDNC|08|3";
+    "OazXiPqlUgm158nr1h09yA==|0/eMoV7m/rlUHbgxsRgRC/n0vyOe6XzhDMa2PcnZPv3ecioRaJQg2W7ur5GfhoDDEeuMz2az7GGj/8Y=|Pu2hbrwoH+45rDNC|08|3";
   const payload = {
     qrcode_token: qrcodeToken,
     device_sz_fingerprint: fingerprint,
@@ -139,3 +119,4 @@ module.exports = {
   HEADERS_GET,
   HEADERS_POST_JSON,
 };
+

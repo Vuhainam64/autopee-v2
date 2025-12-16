@@ -3,45 +3,40 @@
  * Automatically triggered when documents change
  */
 
-const {onDocumentCreated, onDocumentUpdated} = require("firebase-functions/v2/firestore");
+const functions = require("firebase-functions/v1");
 const {logger} = require("../../utils/logger");
+const REGION = "asia-southeast1";
 
 /**
  * Trigger when a new user is created in Firebase Auth
  * Creates corresponding user document in Firestore
  */
-exports.onUserCreate = onDocumentCreated(
-    {
-      document: "users/{userId}",
-      maxInstances: 10,
-    },
-    async (event) => {
+exports.onUserCreate = functions
+    .region(REGION)
+    .firestore.document("users/{userId}")
+    .onCreate(async (snapshot, context) => {
       try {
-        const userId = event.params.userId;
-        const userData = event.data.data();
+        const userId = context.params.userId;
+        const userData = snapshot.data();
 
         logger.info("New user document created", {userId, userData});
-      // Additional processing can be added here
       } catch (error) {
         logger.error("Error in onUserCreate trigger", error);
         throw error;
       }
-    },
-);
+    });
 
 /**
  * Trigger when user document is updated
  */
-exports.onUserUpdate = onDocumentUpdated(
-    {
-      document: "users/{userId}",
-      maxInstances: 10,
-    },
-    async (event) => {
+exports.onUserUpdate = functions
+    .region(REGION)
+    .firestore.document("users/{userId}")
+    .onUpdate(async (change, context) => {
       try {
-        const userId = event.params.userId;
-        const beforeData = event.data.before.data();
-        const afterData = event.data.after.data();
+        const userId = context.params.userId;
+        const beforeData = change.before.data();
+        const afterData = change.after.data();
 
         logger.info("User document updated", {
           userId,
@@ -50,11 +45,9 @@ exports.onUserUpdate = onDocumentUpdated(
             after: afterData,
           },
         });
-      // Additional processing can be added here
       } catch (error) {
         logger.error("Error in onUserUpdate trigger", error);
         throw error;
       }
-    },
-);
+    });
 
