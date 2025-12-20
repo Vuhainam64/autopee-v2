@@ -1,0 +1,129 @@
+[
+  {
+    "path": "/",
+    "method": "GET",
+    "allowedRoles": ["guest", "user", "admin", "super_admin"],
+    "description": "Trang chủ - tất cả đều truy cập được"
+  },
+  {
+    "path": "/login",
+    "method": "GET",
+    "allowedRoles": ["guest"],
+    "description": "Trang đăng nhập - chỉ guest"
+  },
+  {
+    "path": "/register",
+    "method": "GET",
+    "allowedRoles": ["guest"],
+    "description": "Trang đăng ký - chỉ guest"
+  },
+  {
+    "path": "/dashboard",
+    "method": "GET",
+    "allowedRoles": ["admin", "super_admin"],
+    "description": "Dashboard tổng quan - chỉ admin"
+  },
+  {
+    "path": "/dashboard/permissions",
+    "method": "GET",
+    "allowedRoles": ["super_admin"],
+    "description": "Quản lý phân quyền - chỉ super_admin"
+  },
+  {
+    "path": "/dashboard/users",
+    "method": "GET",
+    "allowedRoles": ["admin", "super_admin"],
+    "description": "Quản lý người dùng - chỉ admin"
+  },
+  {
+    "path": "/dashboard/analytics",
+    "method": "GET",
+    "allowedRoles": ["admin", "super_admin"],
+    "description": "Thống kê - chỉ admin"
+  },
+  {
+    "path": "/dashboard/settings",
+    "method": "GET",
+    "allowedRoles": ["admin", "super_admin"],
+    "description": "Cài đặt dashboard - chỉ admin"
+  },
+  {
+    "path": "/products",
+    "method": "GET",
+    "allowedRoles": ["guest", "user", "admin", "super_admin"],
+    "description": "Trang sản phẩm - tất cả đều xem được"
+  },
+  {
+    "path": "/products/:id",
+    "method": "GET",
+    "allowedRoles": ["guest", "user", "admin", "super_admin"],
+    "description": "Chi tiết sản phẩm - tất cả đều xem được"
+  },
+  {
+    "path": "/products/create",
+    "method": "GET",
+    "allowedRoles": ["admin", "super_admin"],
+    "description": "Tạo sản phẩm mới - chỉ admin"
+  },
+  {
+    "path": "/products/:id/edit",
+    "method": "GET",
+    "allowedRoles": ["admin", "super_admin"],
+    "description": "Chỉnh sửa sản phẩm - chỉ admin"
+  },
+  {
+    "path": "/products/checkMVD",
+    "method": "GET",
+    "allowedRoles": ["guest", "user", "admin", "super_admin"],
+    "description": "Check MVD - tất cả đều dùng được"
+  },
+  {
+    "path": "/products/checkMVDCookie",
+    "method": "GET",
+    "allowedRoles": ["guest", "user", "admin", "super_admin"],
+    "description": "Check MVD Cookie - tất cả đều dùng được"
+  },
+  {
+    "path": "/settings",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Trang cài đặt - chỉ user đã đăng nhập"
+  },
+  {
+    "path": "/settings/profile",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Cài đặt profile"
+  },
+  {
+    "path": "/settings/security",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Cài đặt bảo mật"
+  },
+  {
+    "path": "/settings/wallet",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Cài đặt wallet"
+  },
+  {
+    "path": "/orders",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Danh sách đơn hàng"
+  },
+  {
+    "path": "/orders/:id",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Chi tiết đơn hàng"
+  },
+  {
+    "path": "/orders/create",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Tạo đơn hàng mới"
+  }
+]
+

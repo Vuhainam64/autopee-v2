@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Dropdown } from 'antd'
-import { UserOutlined, LogoutOutlined, SettingOutlined } from '@ant-design/icons'
+import { UserOutlined, LogoutOutlined, SettingOutlined, DashboardOutlined } from '@ant-design/icons'
 import LogoMark from '../branding/LogoMark.jsx'
 import LoginModal from '../auth/LoginModal.jsx'
 import RegisterModal from '../auth/RegisterModal.jsx'
 import ForgotPasswordModal from '../auth/ForgotPasswordModal.jsx'
 import { useAuth } from '../../contexts/AuthContext.jsx'
+import { useAppSelector } from '../../store/hooks.js'
 
 const navItems = [
   { label: 'Trang chủ', to: '/' },
@@ -20,6 +21,9 @@ function TopNav() {
   const [registerOpen, setRegisterOpen] = useState(false)
   const [forgotOpen, setForgotOpen] = useState(false)
   const { currentUser, logout } = useAuth()
+  const userProfile = useAppSelector((state) => state.user.currentUser)
+  const userRole = userProfile?.role || 'user'
+  const isAdmin = userRole === 'admin' || userRole === 'super_admin'
 
   const handleLogout = async () => {
     try {
@@ -30,6 +34,25 @@ function TopNav() {
   }
 
   const userMenuItems = [
+    ...(isAdmin
+      ? [
+          {
+            key: 'dashboard',
+            label: (
+              <Link
+                to="/dashboard"
+                className="flex w-full items-center gap-2 text-slate-700 hover:text-orange-600"
+              >
+                <DashboardOutlined />
+                Dashboard
+              </Link>
+            ),
+          },
+          {
+            type: 'divider',
+          },
+        ]
+      : []),
     {
       key: 'settings',
       label: (

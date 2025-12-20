@@ -1,61 +1,96 @@
+// Main routes
 import OrdersLanding from '../features/orders/pages/OrdersLanding.jsx'
+import NotFound from '../pages/NotFound.jsx'
+
+// Dashboard routes
+import Dashboard from '../pages/Dashboard.jsx'
+import Permissions from '../pages/dashboard/Permissions.jsx'
+import Users from '../pages/dashboard/Users.jsx'
+
+// Product routes
 import Products from '../pages/Products.jsx'
 import CheckMVDCookie from '../pages/CheckMVDCookie.jsx'
 import CheckMVD from '../pages/CheckMVD.jsx'
-import NotFound from '../pages/NotFound.jsx'
+
+// Settings routes
 import ProfileSettings from '../pages/settings/ProfileSettings.jsx'
 import WalletSettings from '../pages/settings/WalletSettings.jsx'
 import SecuritySettings from '../pages/settings/SecuritySettings.jsx'
 
-// Route config để dễ mở rộng phân quyền / menu / breadcrumb sau này
+/**
+ * Route configuration
+ * 
+ * Structure:
+ * - appRoutes: Main routes với MainLayout
+ * - dashboardRoutes: Admin dashboard routes với DashboardLayout
+ * - productRoutes: Product routes với ProductLayout
+ * - settingsRoutes: Settings routes với SettingsLayout
+ * 
+ * Note: Route permissions are managed dynamically in MongoDB via /dashboard/permissions
+ * Super admin can configure which roles can access each route through the admin panel.
+ * This file only defines the route structure, not the permissions.
+ */
+
+// Main app routes - MainLayout
 export const appRoutes = [
   {
     path: '/',
     element: <OrdersLanding />,
-    meta: { roles: ['admin', 'operator', 'viewer'] },
   },
   {
     path: '*',
     element: <NotFound />,
-    meta: { public: true },
   },
 ]
 
-// Product routes - có sidebar
+// Dashboard routes - DashboardLayout
+// Permissions: Configured in /dashboard/permissions (default: admin, super_admin)
+export const dashboardRoutes = [
+  {
+    path: '/dashboard',
+    element: <Dashboard />,
+  },
+  {
+    path: '/dashboard/permissions',
+    element: <Permissions />,
+  },
+  {
+    path: '/dashboard/users',
+    element: <Users />,
+  },
+]
+
+// Product routes - ProductLayout
+// Permissions: Configured in /dashboard/permissions
 export const productRoutes = [
   {
     path: '/products',
     element: <Products />,
-    meta: { roles: ['admin', 'operator', 'viewer'] },
   },
   {
     path: '/products/checkMVDCookie',
     element: <CheckMVDCookie />,
-    meta: { roles: ['admin', 'operator'] },
   },
   {
     path: '/products/checkMVD',
     element: <CheckMVD />,
-    meta: { roles: ['admin', 'operator'] },
   },
 ]
 
-// Settings routes - có sidebar riêng
+// Settings routes - SettingsLayout
+// Permissions: Configured in /dashboard/permissions
 export const settingsRoutes = [
   {
     path: '/settings/profile',
     element: <ProfileSettings />,
-    meta: { roles: ['admin', 'operator', 'viewer'] },
   },
   {
     path: '/settings/wallet',
     element: <WalletSettings />,
-    meta: { roles: ['admin', 'operator', 'viewer'] },
   },
   {
     path: '/settings/security',
     element: <SecuritySettings />,
-    meta: { roles: ['admin', 'operator', 'viewer'] },
   },
 ]
 

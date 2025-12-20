@@ -1,0 +1,255 @@
+[
+  {
+    "endpoint": "/api/auth/login",
+    "method": "POST",
+    "allowedRoles": ["guest", "user", "admin", "super_admin"],
+    "description": "Đăng nhập - tất cả người dùng đều có thể đăng nhập"
+  },
+  {
+    "endpoint": "/api/auth/logout",
+    "method": "POST",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Đăng xuất - chỉ người dùng đã đăng nhập"
+  },
+  {
+    "endpoint": "/api/auth/register",
+    "method": "POST",
+    "allowedRoles": ["guest"],
+    "description": "Đăng ký tài khoản mới - chỉ guest"
+  },
+  {
+    "endpoint": "/api/user/me",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Lấy thông tin user hiện tại"
+  },
+  {
+    "endpoint": "/api/user/me",
+    "method": "PUT",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Cập nhật thông tin user hiện tại"
+  },
+  {
+    "endpoint": "/api/user/profile",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Lấy profile user"
+  },
+  {
+    "endpoint": "/api/user/profile",
+    "method": "PUT",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Cập nhật profile user"
+  },
+  {
+    "endpoint": "/api/user/sessions",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Lấy danh sách sessions của user"
+  },
+  {
+    "endpoint": "/api/user/sessions/:sessionId",
+    "method": "DELETE",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Xóa một session cụ thể"
+  },
+  {
+    "endpoint": "/api/trackSession",
+    "method": "POST",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Track session activity"
+  },
+  {
+    "endpoint": "/api/products",
+    "method": "GET",
+    "allowedRoles": ["guest", "user", "admin", "super_admin"],
+    "description": "Lấy danh sách sản phẩm - tất cả đều xem được"
+  },
+  {
+    "endpoint": "/api/products/:id",
+    "method": "GET",
+    "allowedRoles": ["guest", "user", "admin", "super_admin"],
+    "description": "Lấy chi tiết sản phẩm"
+  },
+  {
+    "endpoint": "/api/products",
+    "method": "POST",
+    "allowedRoles": ["admin", "super_admin"],
+    "description": "Tạo sản phẩm mới - chỉ admin"
+  },
+  {
+    "endpoint": "/api/products/:id",
+    "method": "PUT",
+    "allowedRoles": ["admin", "super_admin"],
+    "description": "Cập nhật sản phẩm - chỉ admin"
+  },
+  {
+    "endpoint": "/api/products/:id",
+    "method": "DELETE",
+    "allowedRoles": ["admin", "super_admin"],
+    "description": "Xóa sản phẩm - chỉ admin"
+  },
+  {
+    "endpoint": "/api/shopee/products",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Lấy sản phẩm từ Shopee API"
+  },
+  {
+    "endpoint": "/api/shopee/orders",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Lấy danh sách đơn hàng Shopee"
+  },
+  {
+    "endpoint": "/api/shopee/orders/:id",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Lấy chi tiết đơn hàng Shopee"
+  },
+  {
+    "endpoint": "/api/admin/users",
+    "method": "GET",
+    "allowedRoles": ["admin", "super_admin"],
+    "description": "Lấy danh sách users - chỉ admin"
+  },
+  {
+    "endpoint": "/api/admin/users/:uid",
+    "method": "GET",
+    "allowedRoles": ["admin", "super_admin"],
+    "description": "Lấy thông tin user cụ thể"
+  },
+  {
+    "endpoint": "/api/admin/users/:uid/role",
+    "method": "PUT",
+    "allowedRoles": ["super_admin"],
+    "description": "Thay đổi role của user - chỉ super_admin"
+  },
+  {
+    "endpoint": "/api/admin/routes",
+    "method": "GET",
+    "allowedRoles": ["super_admin"],
+    "description": "Lấy danh sách route permissions"
+  },
+  {
+    "endpoint": "/api/admin/routes",
+    "method": "POST",
+    "allowedRoles": ["super_admin"],
+    "description": "Tạo route permission mới"
+  },
+  {
+    "endpoint": "/api/admin/routes/:id",
+    "method": "PUT",
+    "allowedRoles": ["super_admin"],
+    "description": "Cập nhật route permission"
+  },
+  {
+    "endpoint": "/api/admin/routes/:id",
+    "method": "DELETE",
+    "allowedRoles": ["super_admin"],
+    "description": "Xóa route permission"
+  },
+  {
+    "endpoint": "/api/admin/routes/bulk",
+    "method": "PUT",
+    "allowedRoles": ["super_admin"],
+    "description": "Bulk update route permissions"
+  },
+  {
+    "endpoint": "/api/admin/apis",
+    "method": "GET",
+    "allowedRoles": ["super_admin"],
+    "description": "Lấy danh sách API permissions"
+  },
+  {
+    "endpoint": "/api/admin/apis",
+    "method": "POST",
+    "allowedRoles": ["super_admin"],
+    "description": "Tạo API permission mới"
+  },
+  {
+    "endpoint": "/api/admin/apis/:id",
+    "method": "PUT",
+    "allowedRoles": ["super_admin"],
+    "description": "Cập nhật API permission"
+  },
+  {
+    "endpoint": "/api/admin/apis/:id",
+    "method": "DELETE",
+    "allowedRoles": ["super_admin"],
+    "description": "Xóa API permission"
+  },
+  {
+    "endpoint": "/api/admin/apis/bulk",
+    "method": "PUT",
+    "allowedRoles": ["super_admin"],
+    "description": "Bulk update API permissions"
+  },
+  {
+    "endpoint": "/api/admin/roles",
+    "method": "GET",
+    "allowedRoles": ["admin", "super_admin"],
+    "description": "Lấy danh sách roles"
+  },
+  {
+    "endpoint": "/api/admin/roles",
+    "method": "POST",
+    "allowedRoles": ["super_admin"],
+    "description": "Tạo role mới"
+  },
+  {
+    "endpoint": "/api/admin/roles/:id",
+    "method": "PUT",
+    "allowedRoles": ["super_admin"],
+    "description": "Cập nhật role"
+  },
+  {
+    "endpoint": "/api/admin/roles/:id",
+    "method": "DELETE",
+    "allowedRoles": ["super_admin"],
+    "description": "Xóa role"
+  },
+  {
+    "endpoint": "/api/admin/history",
+    "method": "GET",
+    "allowedRoles": ["super_admin"],
+    "description": "Lấy lịch sử chỉnh sửa permissions"
+  },
+  {
+    "endpoint": "/api/settings/profile",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Lấy cài đặt profile"
+  },
+  {
+    "endpoint": "/api/settings/profile",
+    "method": "PUT",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Cập nhật cài đặt profile"
+  },
+  {
+    "endpoint": "/api/settings/security",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Lấy cài đặt bảo mật"
+  },
+  {
+    "endpoint": "/api/settings/security",
+    "method": "PUT",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Cập nhật cài đặt bảo mật"
+  },
+  {
+    "endpoint": "/api/settings/wallet",
+    "method": "GET",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Lấy thông tin wallet"
+  },
+  {
+    "endpoint": "/api/settings/wallet",
+    "method": "PUT",
+    "allowedRoles": ["user", "admin", "super_admin"],
+    "description": "Cập nhật thông tin wallet"
+  }
+]
+

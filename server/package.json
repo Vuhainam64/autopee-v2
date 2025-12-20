@@ -1,0 +1,29 @@
+{
+  "name": "autopee-server",
+  "version": "1.0.0",
+  "description": "Autopee API server using MongoDB (database: autopee)",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed:permissions": "node src/scripts/seedPermissions.js",
+    "seed:roles": "node src/scripts/seedRoles.js",
+    "seed": "npm run seed:roles && npm run seed:permissions"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
+    "express": "^4.19.0",
+    "firebase-admin": "^12.0.0",
+    "mongoose": "^8.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
+
+
