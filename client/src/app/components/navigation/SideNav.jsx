@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { Button } from 'antd'
 import {
@@ -7,12 +7,16 @@ import {
   DownOutlined,
   UpOutlined,
 } from '@ant-design/icons'
+import { WalletOutlined } from '@ant-design/icons'
 import { 
   MdDashboard, 
   MdInventory2, 
   MdCookie,
   MdLocalShipping 
 } from 'react-icons/md'
+import { useAuth } from '../../contexts/AuthContext.jsx'
+import { useAppSelector } from '../../store/hooks.js'
+import Avatar from '../common/Avatar.jsx'
 
 const menuItems = [
   { 
@@ -41,6 +45,32 @@ const menuItems = [
 function SideNav({ collapsed = false, onToggle }) {
   const { pathname } = useLocation()
   const [expandedItems, setExpandedItems] = useState(['Check Mã vận đơn'])
+  const { currentUser } = useAuth()
+  const userProfile = useAppSelector((state) => state.user.userProfile)
+
+  const { displayName, uid, balanceText, photoURL } = useMemo(() => {
+    const name =
+      userProfile?.displayName ||
+      currentUser?.displayName ||
+      currentUser?.email?.split('@')[0] ||
+      'Người dùng'
+    const id = userProfile?.id || currentUser?.uid || '—'
+    const photo =
+      userProfile?.photoURL ||
+      currentUser?.photoURL ||
+      null
+    const balance =
+      userProfile?.walletBalance ??
+      userProfile?.balance ??
+      userProfile?.wallet?.balance ??
+      0
+    const formatted = new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      maximumFractionDigits: 0,
+    }).format(balance)
+    return { displayName: name, uid: id, balanceText: formatted, photoURL: photo }
+  }, [userProfile, currentUser])
 
   const toggleExpand = (label) => {
     setExpandedItems((prev) =>
@@ -56,11 +86,12 @@ function SideNav({ collapsed = false, onToggle }) {
 
   return (
     <aside
-      className={`shrink-0 rounded-2xl border border-orange-100 bg-white/80 p-4 shadow-sm backdrop-blur transition-all duration-300 ${
+      className={`flex h-full flex-col shrink-0 rounded-2xl border border-orange-100 bg-white/80 p-4 shadow-sm backdrop-blur transition-all duration-300 ${
         collapsed ? 'w-[64px]' : 'w-full max-w-[240px]'
       }`}
     >
-      <div className="flex items-center justify-between">
+      {/* Header - Fixed */}
+      <div className="flex items-center justify-between shrink-0">
         {!collapsed && (
           <div className="text-xs font-semibold uppercase tracking-[0.18em] text-orange-500">
             Điều hướng
@@ -74,7 +105,9 @@ function SideNav({ collapsed = false, onToggle }) {
           size="small"
         />
       </div>
-      <nav className={`mt-3 flex flex-col gap-1 ${collapsed ? 'items-center' : ''}`}>
+
+      {/* Navigation - Scrollable */}
+      <nav className={`mt-3 flex-1 overflow-y-auto flex flex-col gap-1 scrollbar-thin scrollbar-thumb-orange-300 scrollbar-track-slate-100 ${collapsed ? 'items-center' : ''}`}>
         {menuItems.map((item) => {
           if (item.children) {
             const isExpanded = expandedItems.includes(item.label)
@@ -162,6 +195,38 @@ function SideNav({ collapsed = false, onToggle }) {
           )
         })}
       </nav>
+
+      {/* Footer - Fixed at bottom */}
+      <div className="mt-4 space-y-3 shrink-0">
+        <Link
+          to="/settings/wallet"
+          className={`flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 ${
+            collapsed ? 'w-10 px-0 py-2' : 'w-full'
+          }`}
+          title="Nạp tiền"
+        >
+          <WalletOutlined />
+          {!collapsed && <span>Nạp tiền</span>}
+        </Link>
+        <div
+          className={`flex items-center gap-3 rounded-xl border border-orange-50 shadow-sm ${
+            collapsed ? 'p-2 justify-center' : 'p-3'
+          }`}
+        >
+          <Avatar
+            photoURL={photoURL}
+            displayName={displayName}
+            email={currentUser?.email}
+            size={28}
+          />
+          {!collapsed && (
+            <div className="flex flex-col">
+              <div className="text-sm font-semibold text-slate-800">{displayName}</div>
+              <div className="text-sm font-medium text-orange-600">{balanceText}</div>
+            </div>
+          )}
+        </div>
+      </div>
     </aside>
   )
 }

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Dropdown } from 'antd'
-import { UserOutlined, LogoutOutlined, SettingOutlined, DashboardOutlined } from '@ant-design/icons'
+import { LogoutOutlined, SettingOutlined, DashboardOutlined, WalletOutlined } from '@ant-design/icons'
 import LogoMark from '../branding/LogoMark.jsx'
 import LoginModal from '../auth/LoginModal.jsx'
 import RegisterModal from '../auth/RegisterModal.jsx'
@@ -9,6 +9,7 @@ import ForgotPasswordModal from '../auth/ForgotPasswordModal.jsx'
 import { useAuth } from '../../contexts/AuthContext.jsx'
 import { useAppSelector } from '../../store/hooks.js'
 import { usePermissions } from '../../contexts/PermissionContext.jsx'
+import Avatar from '../common/Avatar.jsx'
 
 const navItems = [
   { label: 'Trang chủ', to: '/' },
@@ -22,12 +23,27 @@ function TopNav() {
   const [registerOpen, setRegisterOpen] = useState(false)
   const [forgotOpen, setForgotOpen] = useState(false)
   const { currentUser, logout } = useAuth()
-  const userProfile = useAppSelector((state) => state.user.currentUser)
+  const userProfileFromStore = useAppSelector((state) => state.user.userProfile)
+  const currentUserFromStore = useAppSelector((state) => state.user.currentUser)
+  const userProfile = userProfileFromStore || currentUserFromStore
   const { hasPermission, loading: permissionsLoading } = usePermissions()
   
   // Check permission để vào dashboard thay vì hardcode role
   // Nếu đang load permissions, không hiển thị menu để tránh flicker
   const canAccessDashboard = !permissionsLoading && hasPermission('/dashboard')
+
+  const balanceText = (() => {
+    const balance =
+      userProfile?.walletBalance ??
+      userProfile?.balance ??
+      userProfile?.wallet?.balance ??
+      0
+    return new Intl.NumberFormat('vi-VN', {
+      style: 'currency',
+      currency: 'VND',
+      maximumFractionDigits: 0,
+    }).format(balance)
+  })()
 
   const handleLogout = async () => {
     try {
@@ -115,14 +131,31 @@ function TopNav() {
             )}
           </nav>
           <div className="flex items-center gap-3">
+            {currentUser && (
+              <div className="hidden items-center gap-2 rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-sm font-semibold text-orange-600 shadow-sm md:flex">
+                <WalletOutlined />
+                <span>{balanceText}</span>
+                <Link
+                  to="/settings/wallet"
+                  className="rounded-full bg-orange-500 px-2 py-[2px] text-white hover:bg-orange-600"
+                >
+                  Nạp tiền
+                </Link>
+              </div>
+            )}
             {currentUser ? (
               <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
                 <Button
                   type="text"
-                  icon={<UserOutlined />}
                   className="flex items-center gap-2"
                 >
-                  {currentUser.email}
+                  <Avatar
+                    photoURL={userProfile?.photoURL || currentUser?.photoURL}
+                    displayName={userProfile?.displayName || currentUser?.displayName}
+                    email={currentUser.email}
+                    size={28}
+                  />
+                  <span className="hidden md:inline">{currentUser.email}</span>
                 </Button>
               </Dropdown>
             ) : (

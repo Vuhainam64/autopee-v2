@@ -1,9 +1,9 @@
 /**
  * API Client Configuration
- * Base HTTP client for Firebase Cloud Functions
+ * Base HTTP client for MongoDB API server
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:5001/auto-pee/asia-southeast1'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
 
 /**
  * Get Firebase Auth token for authenticated requests

@@ -17,8 +17,9 @@ function ProtectedRoute({ children, requiredPath }) {
   // Show loading khi đang fetch permissions
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Spin size="large" tip="Đang kiểm tra quyền truy cập..." />
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+        <Spin size="large" />
+        <div className="text-slate-600">Đang kiểm tra quyền truy cập...</div>
       </div>
     )
   }
