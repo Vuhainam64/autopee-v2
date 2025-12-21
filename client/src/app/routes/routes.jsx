@@ -1,11 +1,13 @@
 // Main routes
 import OrdersLanding from '../features/orders/pages/OrdersLanding.jsx'
 import NotFound from '../pages/NotFound.jsx'
+import Unauthorized from '../pages/Unauthorized.jsx'
 
 // Dashboard routes
 import Dashboard from '../pages/Dashboard.jsx'
 import Permissions from '../pages/dashboard/Permissions.jsx'
 import Users from '../pages/dashboard/Users.jsx'
+import Logs from '../pages/dashboard/Logs.jsx'
 
 // Product routes
 import Products from '../pages/Products.jsx'
@@ -38,8 +40,8 @@ export const appRoutes = [
     element: <OrdersLanding />,
   },
   {
-    path: '*',
-    element: <NotFound />,
+    path: '/unauthorized',
+    element: <Unauthorized />,
   },
 ]
 
@@ -57,6 +59,10 @@ export const dashboardRoutes = [
   {
     path: '/dashboard/users',
     element: <Users />,
+  },
+  {
+    path: '/dashboard/logs',
+    element: <Logs />,
   },
 ]
 

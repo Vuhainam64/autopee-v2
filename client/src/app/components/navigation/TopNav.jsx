@@ -8,6 +8,7 @@ import RegisterModal from '../auth/RegisterModal.jsx'
 import ForgotPasswordModal from '../auth/ForgotPasswordModal.jsx'
 import { useAuth } from '../../contexts/AuthContext.jsx'
 import { useAppSelector } from '../../store/hooks.js'
+import { usePermissions } from '../../contexts/PermissionContext.jsx'
 
 const navItems = [
   { label: 'Trang chủ', to: '/' },
@@ -22,8 +23,11 @@ function TopNav() {
   const [forgotOpen, setForgotOpen] = useState(false)
   const { currentUser, logout } = useAuth()
   const userProfile = useAppSelector((state) => state.user.currentUser)
-  const userRole = userProfile?.role || 'user'
-  const isAdmin = userRole === 'admin' || userRole === 'super_admin'
+  const { hasPermission, loading: permissionsLoading } = usePermissions()
+  
+  // Check permission để vào dashboard thay vì hardcode role
+  // Nếu đang load permissions, không hiển thị menu để tránh flicker
+  const canAccessDashboard = !permissionsLoading && hasPermission('/dashboard')
 
   const handleLogout = async () => {
     try {
@@ -34,7 +38,7 @@ function TopNav() {
   }
 
   const userMenuItems = [
-    ...(isAdmin
+    ...(canAccessDashboard
       ? [
           {
             key: 'dashboard',

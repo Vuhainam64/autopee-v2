@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { Outlet } from 'react-router-dom'
 import { Link, useLocation } from 'react-router-dom'
 import { Button } from 'antd'
@@ -8,10 +8,10 @@ import {
   DashboardOutlined,
   SafetyOutlined,
   UserOutlined,
-  SettingOutlined,
-  BarChartOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons'
 import logo from '../../assets/autopee-logo.png'
+import { usePermissions } from '../contexts/PermissionContext.jsx'
 
 const dashboardMenuItems = [
   {
@@ -30,20 +30,37 @@ const dashboardMenuItems = [
     icon: UserOutlined,
   },
   {
-    label: 'Thống kê',
-    to: '/dashboard/analytics',
-    icon: BarChartOutlined,
-  },
-  {
-    label: 'Cài đặt',
-    to: '/dashboard/settings',
-    icon: SettingOutlined,
+    label: 'Theo dõi Log',
+    to: '/dashboard/logs',
+    icon: FileTextOutlined,
   },
 ]
 
 function DashboardLayout() {
   const [collapsed, setCollapsed] = useState(false)
   const { pathname } = useLocation()
+  const { loading, routes } = usePermissions()
+
+  // Filter menu items dựa trên permissions
+  const visibleMenuItems = useMemo(() => {
+    if (loading) {
+      // Khi đang load, hiển thị tất cả để tránh flicker
+      return dashboardMenuItems
+    }
+    
+    if (!routes.length) {
+      return []
+    }
+    
+    // Check permissions trực tiếp từ routes array
+    // Endpoint /user/routes đã filter sẵn routes mà user có quyền
+    // CHỈ match exact, KHÔNG match prefix để tránh hiển thị menu items mà user không có quyền
+    return dashboardMenuItems.filter((item) => {
+      // CHỈ tìm exact match - route phải có trong danh sách routes mà user có quyền
+      const routePermission = routes.find((route) => route.path === item.to)
+      return !!routePermission
+    })
+  }, [loading, routes])
 
   const isActive = (to) => {
     if (to === '/dashboard') {
@@ -53,10 +70,10 @@ function DashboardLayout() {
   }
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
-      {/* Sidebar */}
+    <div className="flex h-screen bg-slate-50">
+      {/* Sidebar - Fixed */}
       <aside
-        className={`shrink-0 border-r border-slate-200 bg-white shadow-sm transition-all duration-300 ${
+        className={`fixed left-0 top-0 z-10 h-screen border-r border-slate-200 bg-white shadow-sm transition-all duration-300 ${
           collapsed ? 'w-[64px]' : 'w-[260px]'
         }`}
       >
@@ -97,10 +114,10 @@ function DashboardLayout() {
           />
         </div>
 
-        {/* Navigation */}
-        <nav className="p-4">
+        {/* Navigation - Scrollable với scrollbar */}
+        <nav className="h-[calc(100vh-4rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-orange-300 scrollbar-track-slate-100 p-4">
           <div className="flex flex-col gap-1">
-            {dashboardMenuItems.map((item) => {
+            {visibleMenuItems.map((item) => {
               const active = isActive(item.to)
               const Icon = item.icon
               return (
@@ -145,8 +162,12 @@ function DashboardLayout() {
         </nav>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 overflow-auto bg-slate-50">
+      {/* Main Content - Scrollable với scrollbar */}
+      <main
+        className={`flex-1 h-screen overflow-y-auto bg-slate-50 scrollbar-thin scrollbar-thumb-orange-300 scrollbar-track-slate-100 transition-all duration-300 ${
+          collapsed ? 'ml-[64px]' : 'ml-[260px]'
+        }`}
+      >
         <div className="p-6">
           <Outlet />
         </div>

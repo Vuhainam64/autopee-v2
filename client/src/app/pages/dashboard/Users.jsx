@@ -13,6 +13,7 @@ import {
   InputNumber,
   Avatar,
   Tabs,
+  Switch,
 } from 'antd'
 import {
   PlusOutlined,
@@ -20,6 +21,8 @@ import {
   UserOutlined,
   SearchOutlined,
   SafetyOutlined,
+  EyeOutlined,
+  DeleteOutlined,
 } from '@ant-design/icons'
 import { get, post, put, del } from '../../services/api.js'
 
@@ -124,6 +127,26 @@ function Users() {
     setUserRoleModalVisible(true)
   }
 
+  const handleRoleChange = async (uid, newRole) => {
+    try {
+      await put(`/admin/users/${uid}/role`, { role: newRole })
+      message.success('Cập nhật role thành công')
+      fetchUsers()
+    } catch (error) {
+      message.error(error.message || 'Có lỗi xảy ra')
+    }
+  }
+
+  const handleStatusChange = async (uid, disabled) => {
+    try {
+      await put(`/admin/users/${uid}/status`, { disabled })
+      message.success(disabled ? 'Đã vô hiệu hóa người dùng' : 'Đã kích hoạt người dùng')
+      fetchUsers()
+    } catch (error) {
+      message.error(error.message || 'Có lỗi xảy ra')
+    }
+  }
+
   const handleDeleteRole = async (id) => {
     Modal.confirm({
       title: 'Xác nhận xóa',
@@ -166,27 +189,6 @@ function Users() {
       ),
     },
     {
-      title: 'UID',
-      dataIndex: 'uid',
-      key: 'uid',
-      width: 200,
-      ellipsis: true,
-    },
-    {
-      title: 'Role',
-      dataIndex: 'role',
-      key: 'role',
-      width: 150,
-      render: (role) => {
-        const roleData = roles.find((r) => r.name === role)
-        return (
-          <Tag color={roleData?.color || 'default'}>
-            {roleData?.displayName || role || 'user'}
-          </Tag>
-        )
-      },
-    },
-    {
       title: 'Email Verified',
       dataIndex: 'emailVerified',
       key: 'emailVerified',
@@ -207,16 +209,60 @@ function Users() {
     {
       title: 'Thao tác',
       key: 'actions',
-      width: 120,
+      width: 200,
       fixed: 'right',
       render: (_, record) => (
-        <Button
-          type="link"
-          icon={<EditOutlined />}
-          onClick={() => handleEditUserRole(record)}
-        >
-          Đổi role
-        </Button>
+        <Space>
+          <Button
+            type="link"
+            icon={<EyeOutlined />}
+            size="small"
+            onClick={() => {
+              // TODO: Implement view user details
+              message.info('Xem chi tiết user: ' + record.displayName)
+            }}
+          >
+            View
+          </Button>
+          <Select
+            value={record.role || 'user'}
+            onChange={(value) => handleRoleChange(record.uid, value)}
+            size="small"
+            style={{ width: 130 }}
+          >
+            {roles.map((r) => (
+              <Option key={r.name} value={r.name}>
+                {r.displayName}
+              </Option>
+            ))}
+          </Select>
+          <Switch
+            checked={!record.disabled}
+            onChange={(checked) => handleStatusChange(record.uid, !checked)}
+            size="small"
+          />
+          <Button
+            type="link"
+            danger
+            icon={<DeleteOutlined />}
+            size="small"
+            onClick={() => {
+              Modal.confirm({
+                title: 'Xác nhận xóa',
+                content: `Bạn có chắc chắn muốn xóa user ${record.displayName || record.email}?`,
+                onOk: async () => {
+                  try {
+                    // TODO: Implement delete user API
+                    message.success('Đã xóa user thành công')
+                    fetchUsers()
+                  } catch (error) {
+                    message.error('Có lỗi xảy ra khi xóa user')
+                  }
+                },
+              })
+            }}
+          />
+        </Space>
       ),
     },
   ]

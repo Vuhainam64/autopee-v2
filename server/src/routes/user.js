@@ -12,6 +12,7 @@ const {
   revokeAllOtherSessions,
   createOrUpdateSession,
 } = require("../services/sessionService.mongo");
+const RoutePermission = require("../models/RoutePermission");
 
 const router = express.Router();
 
@@ -227,6 +228,85 @@ router.post(
       deviceInfo,
     });
     res.json({ success: true, message: "Session tracked successfully" });
+  }),
+);
+
+// GET /user/routes - Lấy danh sách routes mà user hiện tại có quyền truy cập
+router.get(
+  "/routes",
+  handleAsync(async (req, res) => {
+    // Lấy user profile để lấy role
+    const userProfile = await getUserProfile(req.user.uid);
+    if (!userProfile) {
+      return res.status(404).json({
+        success: false,
+        error: { message: "Không tìm thấy thông tin người dùng" },
+      });
+    }
+
+    const userRole = userProfile.role || "user";
+
+    // Tìm tất cả routes mà user có quyền truy cập
+    const accessibleRoutes = await RoutePermission.find({
+      allowedRoles: { $in: [userRole] },
+    })
+      .select("path method description allowedRoles")
+      .sort({ path: 1 })
+      .lean();
+
+    res.json({
+      success: true,
+      data: {
+        routes: accessibleRoutes,
+        userRole,
+      },
+    });
+  }),
+);
+
+// GET /user/audit-logs - Lấy lịch sử đăng nhập và hoạt động của user
+router.get(
+  "/audit-logs",
+  handleAsync(async (req, res) => {
+    const { page = 1, limit = 20 } = req.query;
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const skip = (pageNum - 1) * limitNum;
+
+    // Lấy sessions (lịch sử đăng nhập)
+    const [sessions, sessionTotal] = await Promise.all([
+      getUserSessions(req.user.uid)
+        .then((sessions) =>
+          sessions
+            .sort((a, b) => new Date(b.lastActive) - new Date(a.lastActive))
+            .slice(skip, skip + limitNum)
+        ),
+      getUserSessions(req.user.uid).then((sessions) => sessions.length),
+    ]);
+
+    // Format sessions thành audit logs
+    const auditLogs = sessions.map((session) => ({
+      type: "LOGIN",
+      timestamp: session.lastActive || session.createdAt,
+      device: session.deviceInfo || "Unknown",
+      ip: session.ipAddress || "Unknown",
+      userAgent: session.userAgent || "Unknown",
+      isActive: session.isActive,
+      sessionId: session.sessionId,
+    }));
+
+    res.json({
+      success: true,
+      data: {
+        logs: auditLogs,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total: sessionTotal,
+          pages: Math.ceil(sessionTotal / limitNum),
+        },
+      },
+    });
   }),
 );
 

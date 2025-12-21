@@ -6,31 +6,108 @@ const ApiPermission = require("../models/ApiPermission");
 const PermissionHistory = require("../models/PermissionHistory");
 const Role = require("../models/Role");
 const User = require("../models/User");
+const ServerLog = require("../models/ServerLog");
 const { getUserProfile } = require("../services/userService.mongo");
 
 const router = express.Router();
 
-// Middleware: chỉ super_admin mới được truy cập
-const requireSuperAdmin = async (req, res, next) => {
+router.use(authenticate);
+
+// Middleware tự động kiểm tra quyền truy cập API dựa trên permissions trong database
+// Áp dụng cho tất cả routes trong admin router
+router.use(async (req, res, next) => {
   try {
-    const profile = await getUserProfile(req.user.uid);
-    if (!profile || profile.role !== "super_admin") {
+    const userProfile = await getUserProfile(req.user.uid);
+    if (!userProfile) {
       return res.status(403).json({
         success: false,
-        error: { message: "Chỉ super_admin mới có quyền truy cập" },
+        error: { message: "Không tìm thấy thông tin người dùng" },
       });
     }
+
+    const userRole = userProfile.role || "user";
+    const actualMethod = req.method;
+    
+    // Lấy path thực tế từ request
+    // req.path trong router đã bỏ prefix /admin (vì đã mount ở /admin)
+    // Ví dụ: req.path = "/routes" hoặc "/routes/123" hoặc "/users/abc/role"
+    const routePath = req.path;
+    
+    // Build các patterns để tìm trong DB
+    // Endpoints trong DB có format: /api/admin/routes hoặc /admin/routes
+    const searchPatterns = [
+      `/api/admin${routePath}`,  // /api/admin/routes
+      `/admin${routePath}`,       // /admin/routes
+    ];
+    
+    // Tìm permission trong database
+    let permission = null;
+    
+    // Bước 1: Thử exact match với các patterns
+    for (const pattern of searchPatterns) {
+      permission = await ApiPermission.findOne({
+        endpoint: pattern,
+        method: actualMethod,
+      }).lean();
+      if (permission) break;
+    }
+
+    // Bước 2: Nếu không tìm thấy exact match, thử match với dynamic patterns (có :id, :uid, etc.)
+    if (!permission) {
+      // Lấy tất cả permissions có cùng method
+      const allPermissions = await ApiPermission.find({
+        method: actualMethod,
+      }).lean();
+      
+      for (const perm of allPermissions) {
+        // Convert DB endpoint pattern thành regex
+        // Ví dụ: /api/admin/routes/:id -> ^/api/admin/routes/[^/]+$
+        const dbPatternRegex = new RegExp(
+          "^" + perm.endpoint.replace(/:[^/]+/g, "[^/]+") + "$"
+        );
+        
+        // Test với các search patterns
+        for (const pattern of searchPatterns) {
+          if (dbPatternRegex.test(pattern)) {
+            permission = perm;
+            break;
+          }
+        }
+        if (permission) break;
+      }
+    }
+
+    // Nếu không có permission trong DB, deny by default
+    if (!permission) {
+      console.warn(`No permission found for: ${actualMethod} ${routePath} (searched: ${searchPatterns.join(", ")})`);
+      return res.status(403).json({
+        success: false,
+        error: { message: "Không có quyền truy cập API này" },
+      });
+    }
+
+    // Kiểm tra role có trong allowedRoles không
+    if (!permission.allowedRoles || !permission.allowedRoles.includes(userRole)) {
+      const allowedRolesDisplay = permission.allowedRoles.join(", ");
+      
+      return res.status(403).json({
+        success: false,
+        error: {
+          message: `Chỉ ${allowedRolesDisplay} mới có quyền truy cập`,
+        },
+      });
+    }
+
+    // Có quyền, cho phép tiếp tục
     next();
   } catch (error) {
+    console.error("Permission check failed:", error);
     return res.status(500).json({
       success: false,
       error: { message: "Lỗi kiểm tra quyền" },
     });
   }
-};
-
-router.use(authenticate);
-router.use(requireSuperAdmin);
+});
 
 // ========== Route Permissions ==========
 
@@ -526,9 +603,9 @@ router.put(
   "/users/:uid/role",
   handleAsync(async (req, res) => {
     const { uid } = req.params;
-    const { role } = req.body;
+    const { role: newRole } = req.body;
 
-    if (!role) {
+    if (!newRole) {
       return res.status(400).json({
         success: false,
         error: { message: "role là bắt buộc" },
@@ -536,17 +613,47 @@ router.put(
     }
 
     // Verify role exists
-    const roleExists = await Role.findOne({ name: role.toLowerCase() });
-    if (!roleExists) {
+    const newRoleDoc = await Role.findOne({ name: newRole.toLowerCase() });
+    if (!newRoleDoc) {
       return res.status(400).json({
         success: false,
         error: { message: "Role không tồn tại" },
       });
     }
 
+    // Kiểm tra user không thể tự update role của mình thành role cao hơn
+    if (uid === req.user.uid) {
+      // Lấy role hiện tại của user đang thực hiện action
+      const currentUserProfile = await getUserProfile(req.user.uid);
+      if (!currentUserProfile) {
+        return res.status(404).json({
+          success: false,
+          error: { message: "Không tìm thấy thông tin người dùng" },
+        });
+      }
+
+      const currentUserRole = await Role.findOne({ name: currentUserProfile.role?.toLowerCase() });
+      if (!currentUserRole) {
+        return res.status(500).json({
+          success: false,
+          error: { message: "Không tìm thấy thông tin role hiện tại" },
+        });
+      }
+
+      // So sánh score: nếu role mới có score cao hơn role hiện tại, từ chối
+      if (newRoleDoc.score > currentUserRole.score) {
+        return res.status(403).json({
+          success: false,
+          error: {
+            message: "Bạn không thể tự nâng cấp quyền của mình lên cao hơn quyền hiện tại",
+          },
+        });
+      }
+    }
+
     const user = await User.findOneAndUpdate(
       { uid },
-      { $set: { role: role.toLowerCase() } },
+      { $set: { role: newRole.toLowerCase() } },
       { new: true, upsert: false }
     ).lean();
 
@@ -558,6 +665,178 @@ router.put(
     }
 
     res.json({ success: true, data: user });
+  }),
+);
+
+// PUT /admin/users/:uid/status - Cập nhật trạng thái disabled cho user
+router.put(
+  "/users/:uid/status",
+  handleAsync(async (req, res) => {
+    const { uid } = req.params;
+    const { disabled } = req.body;
+
+    if (typeof disabled !== "boolean") {
+      return res.status(400).json({
+        success: false,
+        error: { message: "disabled phải là boolean" },
+      });
+    }
+
+    const user = await User.findOneAndUpdate(
+      { uid },
+      { $set: { disabled } },
+      { new: true, upsert: false }
+    ).lean();
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: { message: "User không tồn tại" },
+      });
+    }
+
+    res.json({ success: true, data: user });
+  }),
+);
+
+// GET /admin/logs - Lấy danh sách server logs
+router.get(
+  "/logs",
+  handleAsync(async (req, res) => {
+    const {
+      page = 1,
+      limit = 50,
+      level,
+      userId,
+      endpoint,
+      traceId,
+      errorCode,
+      startDate,
+      endDate,
+      search,
+    } = req.query;
+
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const skip = (pageNum - 1) * limitNum;
+
+    // Build query
+    const query = {};
+
+    if (level) {
+      query.level = level;
+    }
+
+    if (userId) {
+      query.userId = userId;
+    }
+
+    if (endpoint) {
+      query.endpoint = { $regex: endpoint, $options: "i" };
+    }
+
+    if (traceId) {
+      query.traceId = traceId;
+    }
+
+    if (errorCode) {
+      query.errorCode = errorCode;
+    }
+
+    if (startDate || endDate) {
+      query.timestamp = {};
+      if (startDate) {
+        query.timestamp.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        query.timestamp.$lte = new Date(endDate);
+      }
+    }
+
+    if (search) {
+      query.$or = [
+        { message: { $regex: search, $options: "i" } },
+        { endpoint: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Fetch logs
+    const [logs, total] = await Promise.all([
+      ServerLog.find(query)
+        .sort({ timestamp: -1 })
+        .skip(skip)
+        .limit(limitNum)
+        .lean(),
+      ServerLog.countDocuments(query),
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        logs,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          pages: Math.ceil(total / limitNum),
+        },
+      },
+    });
+  }),
+);
+
+// POST /admin/logs/client - Client gửi error logs từ frontend
+router.post(
+  "/logs/client",
+  handleAsync(async (req, res) => {
+    const {
+      message,
+      url,
+      line,
+      column,
+      stack,
+      userAgent,
+      timestamp,
+      metadata = {},
+    } = req.body;
+
+    if (!message) {
+      return res.status(400).json({
+        success: false,
+        errorCode: "VALIDATION_ERROR",
+        error: { message: "message là bắt buộc" },
+      });
+    }
+
+    // Tạo traceId cho client error
+    const traceId = req.traceId || `client-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+
+    await ServerLog.create({
+      level: "client_error",
+      message: `[CLIENT] ${message}`,
+      service: "autopee-api",
+      traceId,
+      errorCode: "CLIENT_ERROR",
+      userId: req.user?.uid || null,
+      endpoint: url || null,
+      method: "CLIENT",
+      ip: req.ip || req.headers["x-forwarded-for"] || req.connection.remoteAddress,
+      userAgent: userAgent || req.headers["user-agent"] || null,
+      metadata: {
+        url,
+        line,
+        column,
+        stack,
+        timestamp: timestamp || new Date(),
+        ...metadata,
+      },
+    });
+
+    res.json({
+      success: true,
+      traceId,
+      message: "Client error đã được ghi log",
+    });
   }),
 );
 

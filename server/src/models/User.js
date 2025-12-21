@@ -26,6 +26,11 @@ const UserSchema = new mongoose.Schema(
       index: true,
       // Role được quản lý trong Role collection, không hardcode enum
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
   },
   {
     timestamps: {

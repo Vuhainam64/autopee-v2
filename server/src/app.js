@@ -8,7 +8,8 @@ const userRoutes = require("./routes/user");
 const shopeeRoutes = require("./routes/shopee");
 const adminRoutes = require("./routes/admin");
 const { authenticate } = require("./middleware/auth");
-const { handleAsync } = require("./middleware/error");
+const { handleAsync, errorHandler } = require("./middleware/error");
+const { requestLogger } = require("./middleware/logger");
 
 // New Mongo-based services
 const {
@@ -17,9 +18,16 @@ const {
 
 const app = express();
 
+// Trust proxy để lấy IP thực tế từ x-forwarded-for header
+// Cần thiết khi chạy sau proxy/load balancer (production)
+app.set('trust proxy', true);
+
 // Global middlewares
 app.use(cors());
 app.use(express.json());
+
+// Request logging middleware (sau khi parse JSON để có req.body)
+app.use(requestLogger);
 
 // Health check
 app.get("/", (_req, res) => {
@@ -80,6 +88,9 @@ app.post(
     res.json({ success: true, message: "Session tracked successfully" });
   }),
 );
+
+// Global error handler (phải đặt cuối cùng)
+app.use(errorHandler);
 
 // Initialize DB connection on app bootstrap
 connectDB().catch(() => {

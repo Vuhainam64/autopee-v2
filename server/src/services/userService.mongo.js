@@ -19,6 +19,7 @@ const getUserProfile = async (userId) => {
     gender: doc.gender,
     photoURL: doc.photoURL,
     role: doc.role || "user",
+    disabled: doc.disabled || false,
     createdAt: doc.createdAt?.toISOString?.() || null,
     updatedAt: doc.updatedAt?.toISOString?.() || null,
   };
@@ -40,6 +41,7 @@ const createUserProfile = async (userId, authData) => {
     gender: null,
     photoURL: authData.photoURL || null,
     role: "user", // Default role for new users
+    disabled: false, // Default: user is active
     createdAt: now,
     updatedAt: now,
   };
@@ -56,6 +58,7 @@ const createUserProfile = async (userId, authData) => {
     gender: doc.gender,
     photoURL: doc.photoURL,
     role: doc.role || "user",
+    disabled: doc.disabled || false,
     createdAt: doc.createdAt?.toISOString?.() || null,
     updatedAt: doc.updatedAt?.toISOString?.() || null,
   };
@@ -97,6 +100,7 @@ const updateUserProfile = async (userId, profileData) => {
     gender: doc.gender,
     photoURL: doc.photoURL,
     role: doc.role || "user",
+    disabled: doc.disabled || false,
     createdAt: doc.createdAt?.toISOString?.() || null,
     updatedAt: doc.updatedAt?.toISOString?.() || null,
   };
