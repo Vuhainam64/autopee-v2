@@ -30,6 +30,11 @@ const userCookieSchema = new mongoose.Schema(
     lastUsedAt: {
       type: Date,
     },
+    // Số lần sử dụng
+    usageCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: {
@@ -41,6 +46,7 @@ const userCookieSchema = new mongoose.Schema(
 
 // Index để query nhanh
 userCookieSchema.index({ userId: 1, isActive: 1 })
+userCookieSchema.index({ userId: 1, isActive: 1, usageCount: 1 }) // Để query cookie ít sử dụng nhất
 userCookieSchema.index({ createdAt: 1 }) // Để tự động xóa sau 7 ngày
 
 const UserCookie = mongoose.model('UserCookie', userCookieSchema)
