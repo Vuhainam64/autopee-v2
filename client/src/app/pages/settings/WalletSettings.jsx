@@ -1,58 +1,110 @@
-import { useState } from 'react'
-import { Card, Button, Table, Modal, Form, Input, Select, Checkbox, App, message } from 'antd'
-import { PlusOutlined, BankOutlined, HistoryOutlined } from '@ant-design/icons'
+import { useState, useEffect, useCallback } from 'react'
+import { Card, Button, Table, Modal, Form, Input, Select, Checkbox, App, Tag, Spin } from 'antd'
+import { PlusOutlined, BankOutlined, HistoryOutlined, WalletOutlined } from '@ant-design/icons'
 import { useAuth } from '../../contexts/AuthContext.jsx'
+import { bankList } from '../../utils/banks.js'
+import DepositModal from '../../components/payment/DepositModal.jsx'
+import PendingPaymentsCard from '../../components/payment/PendingPaymentsCard.jsx'
+import { post, get } from '../../services/api.js'
+import { useAppSelector } from '../../store/hooks.js'
 
 const { Option } = Select
 
-// Mock data - sẽ thay bằng API thật sau
-const mockBankAccounts = [
-  {
-    id: '1',
-    bankName: 'Vietcombank',
-    accountNumber: '1234567890',
-    accountHolder: 'Nguyễn Văn A',
-    isDefault: true,
-  },
-  {
-    id: '2',
-    bankName: 'Techcombank',
-    accountNumber: '0987654321',
-    accountHolder: 'Nguyễn Văn A',
-    isDefault: false,
-  },
-]
-
-const mockTransactions = [
-  {
-    id: '1',
-    date: '2024-01-15',
-    type: 'Nạp tiền',
-    amount: 1000000,
-    status: 'Thành công',
-    description: 'Nạp tiền vào ví',
-  },
-  {
-    id: '2',
-    date: '2024-01-10',
-    type: 'Rút tiền',
-    amount: -500000,
-    status: 'Thành công',
-    description: 'Rút tiền về tài khoản ngân hàng',
-  },
-]
+// Function to remove accents and convert to uppercase
+const removeAccentsAndUpperCase = (str) => {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '') // Removes accents
+    .replace(/[0-9]/g, '') // Removes numbers
+    .replace(/[^a-zA-Z\s]/g, '')
+    .toUpperCase() // Converts to uppercase
+}
 
 function WalletSettings() {
   const [bankModalOpen, setBankModalOpen] = useState(false)
+  const [depositModalOpen, setDepositModalOpen] = useState(false)
+  const [bankAccounts, setBankAccounts] = useState([])
+  const [transactions, setTransactions] = useState([])
+  const [pendingPayments, setPendingPayments] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [transactionsLoading, setTransactionsLoading] = useState(false)
+  const [selectedBank, setSelectedBank] = useState(null)
+  const [selectedPaymentRequest, setSelectedPaymentRequest] = useState(null)
   const [form] = Form.useForm()
   const { currentUser } = useAuth()
   const { message: messageApi } = App.useApp()
+  const userProfile = useAppSelector((state) => state.user.userProfile)
+
+  // Reset form khi modal đóng
+  useEffect(() => {
+    if (!bankModalOpen) {
+      form.resetFields()
+      setSelectedBank(null)
+    }
+  }, [bankModalOpen, form])
+
+  // Lấy số dư hiện tại
+  const currentBalance = userProfile?.walletBalance || 0
+
+  // Load bank accounts và transactions
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  const loadData = async () => {
+    setLoading(true)
+    try {
+      // TODO: Load bank accounts từ API khi có
+      // const bankAccountsRes = await get('/user/bank-accounts')
+      // setBankAccounts(bankAccountsRes.data || [])
+
+      // Load transactions và pending payments
+      await Promise.all([loadTransactions(), loadPendingPayments()])
+    } catch (error) {
+      console.error('Error loading data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadPendingPayments = useCallback(async () => {
+    try {
+      const response = await get('/payment/deposit/history?status=pending&limit=10')
+      if (response.success && response.data?.paymentRequests) {
+        setPendingPayments(response.data.paymentRequests)
+      }
+    } catch (error) {
+      console.error('Error loading pending payments:', error)
+    }
+  }, [])
+
+  const loadTransactions = async () => {
+    setTransactionsLoading(true)
+    try {
+      const response = await get('/user/transactions?limit=50')
+      if (response.success && response.data?.transactions) {
+        setTransactions(response.data.transactions)
+      }
+    } catch (error) {
+      console.error('Error loading transactions:', error)
+    } finally {
+      setTransactionsLoading(false)
+    }
+  }
 
   const bankColumns = [
     {
       title: 'Ngân hàng',
       dataIndex: 'bankName',
       key: 'bankName',
+      render: (text, record) => (
+        <div className="flex items-center gap-2">
+          {record.bankLogo && (
+            <img src={record.bankLogo} alt={text} className="w-6 h-6" />
+          )}
+          <span>{text}</span>
+        </div>
+      ),
     },
     {
       title: 'Số tài khoản',
@@ -68,7 +120,11 @@ function WalletSettings() {
       title: 'Mặc định',
       dataIndex: 'isDefault',
       key: 'isDefault',
-      render: (isDefault) => (isDefault ? 'Có' : 'Không'),
+      render: (isDefault) => (
+        <Tag color={isDefault ? 'green' : 'default'}>
+          {isDefault ? 'Có' : 'Không'}
+        </Tag>
+      ),
     },
     {
       title: 'Thao tác',
@@ -89,21 +145,30 @@ function WalletSettings() {
   const transactionColumns = [
     {
       title: 'Ngày',
-      dataIndex: 'date',
+      dataIndex: 'transactionDate',
       key: 'date',
+      render: (date) => {
+        if (!date) return '-'
+        return new Date(date).toLocaleString('vi-VN')
+      },
     },
     {
       title: 'Loại',
-      dataIndex: 'type',
+      dataIndex: 'transferType',
       key: 'type',
+      render: (type) => (
+        <Tag color={type === 'in' ? 'green' : 'red'}>
+          {type === 'in' ? 'Nạp tiền' : 'Rút tiền'}
+        </Tag>
+      ),
     },
     {
       title: 'Số tiền',
-      dataIndex: 'amount',
+      dataIndex: 'transferAmount',
       key: 'amount',
-      render: (amount) => (
-        <span className={amount > 0 ? 'text-green-600' : 'text-red-600'}>
-          {amount > 0 ? '+' : ''}
+      render: (amount, record) => (
+        <span className={record.transferType === 'in' ? 'text-green-600' : 'text-red-600'}>
+          {record.transferType === 'in' ? '+' : '-'}
           {amount.toLocaleString('vi-VN')} đ
         </span>
       ),
@@ -112,31 +177,113 @@ function WalletSettings() {
       title: 'Trạng thái',
       dataIndex: 'status',
       key: 'status',
-      render: (status) => (
-        <span className="text-green-600">{status}</span>
-      ),
+      render: (status) => {
+        const statusMap = {
+          pending: { color: 'orange', text: 'Đang xử lý' },
+          processed: { color: 'green', text: 'Thành công' },
+          failed: { color: 'red', text: 'Thất bại' },
+        }
+        const statusInfo = statusMap[status] || { color: 'default', text: status }
+        return <Tag color={statusInfo.color}>{statusInfo.text}</Tag>
+      },
     },
     {
       title: 'Mô tả',
-      dataIndex: 'description',
+      dataIndex: 'content',
       key: 'description',
+      render: (content) => content || '-',
     },
   ]
+
+  const handleBankChange = (value) => {
+    const bank = bankList.find((bank) => bank.id === value)
+    setSelectedBank(bank)
+  }
+
+  const handleBankAccountChange = (e) => {
+    const normalizedAccountName = removeAccentsAndUpperCase(e.target.value)
+    form.setFieldsValue({ accountHolder: normalizedAccountName })
+  }
+
+  const handleBankNumberChange = (e) => {
+    const sanitizedNumber = e.target.value.replace(/[^0-9]/g, '')
+    form.setFieldsValue({ accountNumber: sanitizedNumber })
+  }
 
   const handleAddBank = async (values) => {
     try {
       // TODO: Call API to add bank account
-      console.log('Add bank account:', values)
+      // const response = await post('/user/bank-accounts', {
+      //   bankName: selectedBank.name,
+      //   bankCode: selectedBank.code,
+      //   accountNumber: values.accountNumber,
+      //   accountHolder: values.accountHolder,
+      //   isDefault: values.isDefault || false,
+      // })
+      console.log('Add bank account:', { ...values, bank: selectedBank })
       messageApi.success('Thêm tài khoản ngân hàng thành công!')
       form.resetFields()
       setBankModalOpen(false)
+      setSelectedBank(null)
     } catch (error) {
       messageApi.error('Thêm tài khoản ngân hàng thất bại. Vui lòng thử lại.')
     }
   }
 
+  const handleDepositSuccess = () => {
+    loadTransactions()
+    loadPendingPayments()
+    // Reload user profile để cập nhật balance
+    window.location.reload() // Tạm thời, có thể dùng state management tốt hơn
+  }
+
+  const handleContinuePayment = (paymentRequest) => {
+    setSelectedPaymentRequest(paymentRequest)
+    setDepositModalOpen(true)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Spin size="large" />
+      </div>
+    )
+  }
+
   return (
-    <div className="mx-auto max-w-5xl space-y-6">
+    <div className="mx-auto max-w-6xl !space-y-6">
+      {/* Số dư hiện tại */}
+      <Card>
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="text-sm text-gray-500 mb-1">Số dư hiện tại</div>
+            <div className="text-3xl font-bold text-orange-600">
+              {currentBalance.toLocaleString('vi-VN')} đ
+            </div>
+          </div>
+          <Button
+            type="primary"
+            icon={<WalletOutlined />}
+            onClick={() => {
+              setSelectedPaymentRequest(null)
+              setDepositModalOpen(true)
+            }}
+            className="bg-orange-500 hover:bg-orange-600"
+            size="large"
+          >
+            Nạp tiền
+          </Button>
+        </div>
+      </Card>
+
+      {/* Đơn chờ thanh toán */}
+      {pendingPayments.length > 0 && (
+        <PendingPaymentsCard
+          payments={pendingPayments}
+          onContinuePayment={handleContinuePayment}
+        />
+      )}
+
       {/* Tài khoản ngân hàng */}
       <Card
         title={
@@ -156,12 +303,18 @@ function WalletSettings() {
           </Button>
         }
       >
-        <Table
-          dataSource={mockBankAccounts}
-          columns={bankColumns}
-          rowKey="id"
-          pagination={false}
-        />
+        {bankAccounts.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            Chưa có tài khoản ngân hàng. Vui lòng thêm tài khoản để rút tiền.
+          </div>
+        ) : (
+          <Table
+            dataSource={bankAccounts}
+            columns={bankColumns}
+            rowKey="id"
+            pagination={false}
+          />
+        )}
       </Card>
 
       {/* Lịch sử giao dịch */}
@@ -174,9 +327,10 @@ function WalletSettings() {
         }
       >
         <Table
-          dataSource={mockTransactions}
+          dataSource={transactions}
           columns={transactionColumns}
-          rowKey="id"
+          rowKey="_id"
+          loading={transactionsLoading}
           pagination={{ pageSize: 10 }}
         />
       </Card>
@@ -187,31 +341,38 @@ function WalletSettings() {
         onCancel={() => {
           setBankModalOpen(false)
           form.resetFields()
+          setSelectedBank(null)
         }}
         footer={null}
         title="Thêm tài khoản ngân hàng"
-        width={520}
+        width={600}
         centered
+        destroyOnHidden
       >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleAddBank}
-          className="mt-4"
-        >
-          <Form.Item
-            label="Ngân hàng"
-            name="bankName"
-            rules={[{ required: true, message: 'Vui lòng chọn ngân hàng!' }]}
+        {bankModalOpen && (
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleAddBank}
+            className="mt-4"
           >
-            <Select size="large" placeholder="Chọn ngân hàng">
-              <Option value="Vietcombank">Vietcombank</Option>
-              <Option value="Techcombank">Techcombank</Option>
-              <Option value="BIDV">BIDV</Option>
-              <Option value="Vietinbank">Vietinbank</Option>
-              <Option value="ACB">ACB</Option>
-              <Option value="TPBank">TPBank</Option>
-            </Select>
+          <Form.Item
+            label="Chủ tài khoản (Tiếng Việt KHÔNG DẤU)"
+            name="accountHolder"
+            rules={[{ required: true, message: 'Vui lòng nhập tên chủ tài khoản!' }]}
+          >
+            <Input
+              size="large"
+              placeholder="Nhập tên chủ tài khoản"
+              onChange={handleBankAccountChange}
+            />
+          </Form.Item>
+          <Form.Item shouldUpdate noStyle>
+            {() => (
+              <div className="text-xs text-gray-500 mb-4 -mt-2">
+                Giá trị: {form.getFieldValue('accountHolder') || '(chưa nhập)'}
+              </div>
+            )}
           </Form.Item>
 
           <Form.Item
@@ -221,7 +382,7 @@ function WalletSettings() {
               { required: true, message: 'Vui lòng nhập số tài khoản!' },
               {
                 pattern: /^[0-9]{8,15}$/,
-                message: 'Số tài khoản không hợp lệ!',
+                message: 'Số tài khoản phải từ 8-15 chữ số!',
               },
             ]}
           >
@@ -229,16 +390,60 @@ function WalletSettings() {
               size="large"
               placeholder="Nhập số tài khoản"
               maxLength={15}
+              onChange={handleBankNumberChange}
             />
+          </Form.Item>
+          <Form.Item shouldUpdate noStyle>
+            {() => (
+              <div className="text-xs text-gray-500 mb-4 -mt-2">
+                Giá trị: {form.getFieldValue('accountNumber') || '(chưa nhập)'}
+              </div>
+            )}
           </Form.Item>
 
           <Form.Item
-            label="Chủ tài khoản"
-            name="accountHolder"
-            rules={[{ required: true, message: 'Vui lòng nhập tên chủ tài khoản!' }]}
+            label="Ngân hàng"
+            name="bankId"
+            rules={[{ required: true, message: 'Vui lòng chọn ngân hàng!' }]}
           >
-            <Input size="large" placeholder="Nhập tên chủ tài khoản" />
+            <Select
+              size="large"
+              placeholder="Chọn ngân hàng"
+              onChange={handleBankChange}
+              showSearch
+              filterOption={(input, option) =>
+                option?.children?.toLowerCase().includes(input.toLowerCase())
+              }
+            >
+              {bankList
+                .filter((bank) => bank.transferSupported === 1)
+                .map((bank) => (
+                  <Option key={bank.id} value={bank.id}>
+                    <div className="flex items-center gap-2">
+                      {bank.logo && (
+                        <img src={bank.logo} alt={bank.name} className="w-5 h-5" />
+                      )}
+                      <span>
+                        {bank.shortName} - {bank.name}
+                      </span>
+                    </div>
+                  </Option>
+                ))}
+            </Select>
           </Form.Item>
+
+          {selectedBank && (
+            <div className="mb-4 p-3 bg-gray-50 rounded-lg space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Mã ngân hàng:</span>
+                <span className="font-semibold">{selectedBank.bin || 'N/A'}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-gray-600">Swift code:</span>
+                <span className="font-semibold">{selectedBank.swift_code || 'N/A'}</span>
+              </div>
+            </div>
+          )}
 
           <Form.Item
             name="isDefault"
@@ -260,10 +465,21 @@ function WalletSettings() {
             </Button>
           </Form.Item>
         </Form>
+        )}
       </Modal>
+
+      {/* Modal nạp tiền */}
+      <DepositModal
+        isOpen={depositModalOpen}
+        onClose={() => {
+          setDepositModalOpen(false)
+          setSelectedPaymentRequest(null)
+        }}
+        onSuccess={handleDepositSuccess}
+        initialPaymentRequest={selectedPaymentRequest}
+      />
     </div>
   )
 }
 
 export default WalletSettings
-

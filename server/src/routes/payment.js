@@ -32,9 +32,9 @@ router.post(
     // Tạo payment code duy nhất (có thể dùng UUID hoặc format khác)
     const paymentCode = generatePaymentCode(userId)
 
-    // Thời gian hết hạn: 30 phút từ bây giờ
+    // Thời gian hết hạn: 1 phút từ bây giờ
     const expiresAt = new Date()
-    expiresAt.setMinutes(expiresAt.getMinutes() + 30)
+    expiresAt.setMinutes(expiresAt.getMinutes() + 1)
 
     // Tạo payment request
     const paymentRequest = await PaymentRequest.create({
@@ -62,7 +62,7 @@ router.post(
           step1: 'Chuyển khoản số tiền chính xác: ' + amount.toLocaleString('vi-VN') + ' VND',
           step2: 'Nội dung chuyển khoản: ' + paymentCode,
           step3: 'Hệ thống sẽ tự động cập nhật số dư sau 1-2 phút',
-          note: 'Payment code sẽ hết hạn sau 30 phút',
+          note: 'Payment code sẽ hết hạn sau 1 phút',
         },
       },
     })
