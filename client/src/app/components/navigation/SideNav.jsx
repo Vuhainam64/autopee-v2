@@ -196,37 +196,39 @@ function SideNav({ collapsed = false, onToggle }) {
         })}
       </nav>
 
-      {/* Footer - Fixed at bottom */}
-      <div className="mt-4 space-y-3 shrink-0">
-        <Link
-          to="/settings/wallet"
-          className={`flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 ${
-            collapsed ? 'w-10 px-0 py-2' : 'w-full'
-          }`}
-          title="Nạp tiền"
-        >
-          <WalletOutlined />
-          {!collapsed && <span>Nạp tiền</span>}
-        </Link>
-        <div
-          className={`flex items-center gap-3 rounded-xl border border-orange-50 shadow-sm ${
-            collapsed ? 'p-2 justify-center' : 'p-3'
-          }`}
-        >
-          <Avatar
-            photoURL={photoURL}
-            displayName={displayName}
-            email={currentUser?.email}
-            size={28}
-          />
-          {!collapsed && (
-            <div className="flex flex-col">
-              <div className="text-sm font-semibold text-slate-800">{displayName}</div>
-              <div className="text-sm font-medium text-orange-600">{balanceText}</div>
-            </div>
-          )}
+      {/* Footer - Fixed at bottom - Chỉ hiển thị khi đã đăng nhập */}
+      {currentUser && (
+        <div className="mt-4 space-y-3 shrink-0">
+          <Link
+            to="/settings/wallet"
+            className={`flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-3 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-orange-600 ${
+              collapsed ? 'w-10 px-0 py-2' : 'w-full'
+            }`}
+            title="Nạp tiền"
+          >
+            <WalletOutlined />
+            {!collapsed && <span>Nạp tiền</span>}
+          </Link>
+          <div
+            className={`flex items-center gap-3 rounded-xl border border-orange-50 shadow-sm ${
+              collapsed ? 'p-2 justify-center' : 'p-3'
+            }`}
+          >
+            <Avatar
+              photoURL={photoURL}
+              displayName={displayName}
+              email={currentUser?.email}
+              size={28}
+            />
+            {!collapsed && (
+              <div className="flex flex-col">
+                <div className="text-sm font-semibold text-slate-800">{displayName}</div>
+                <div className="text-sm font-medium text-orange-600">{balanceText}</div>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </aside>
   )
 }
