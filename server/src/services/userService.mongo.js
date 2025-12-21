@@ -20,6 +20,7 @@ const getUserProfile = async (userId) => {
     photoURL: doc.photoURL,
     role: doc.role || "user",
     disabled: doc.disabled || false,
+    walletBalance: doc.walletBalance || 0,
     createdAt: doc.createdAt?.toISOString?.() || null,
     updatedAt: doc.updatedAt?.toISOString?.() || null,
   };
@@ -42,6 +43,7 @@ const createUserProfile = async (userId, authData) => {
     photoURL: authData.photoURL || null,
     role: "user", // Default role for new users
     disabled: false, // Default: user is active
+    walletBalance: 0, // Default wallet balance
     createdAt: now,
     updatedAt: now,
   };
@@ -59,6 +61,7 @@ const createUserProfile = async (userId, authData) => {
     photoURL: doc.photoURL,
     role: doc.role || "user",
     disabled: doc.disabled || false,
+    walletBalance: doc.walletBalance || 0,
     createdAt: doc.createdAt?.toISOString?.() || null,
     updatedAt: doc.updatedAt?.toISOString?.() || null,
   };
@@ -101,6 +104,7 @@ const updateUserProfile = async (userId, profileData) => {
     photoURL: doc.photoURL,
     role: doc.role || "user",
     disabled: doc.disabled || false,
+    walletBalance: doc.walletBalance || 0,
     createdAt: doc.createdAt?.toISOString?.() || null,
     updatedAt: doc.updatedAt?.toISOString?.() || null,
   };

@@ -31,6 +31,11 @@ const UserSchema = new mongoose.Schema(
       default: false,
       index: true,
     },
+    walletBalance: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
   {
     timestamps: {

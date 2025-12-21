@@ -310,6 +310,64 @@ router.get(
   }),
 );
 
+// GET /user/transactions - Lấy lịch sử giao dịch của user
+const { getUserTransactions, getUserTotalDeposit } = require("../services/transactionService");
+const Transaction = require("../models/Transaction");
+
+router.get(
+  "/transactions",
+  handleAsync(async (req, res) => {
+    const { page = 1, limit = 20, transferType, status } = req.query;
+
+    const result = await getUserTransactions(req.user.uid, {
+      page,
+      limit,
+      transferType,
+      status,
+    });
+
+    res.json({
+      success: true,
+      data: result,
+    });
+  }),
+);
+
+// GET /user/wallet/summary - Lấy thông tin tổng quan về ví
+router.get(
+  "/wallet/summary",
+  handleAsync(async (req, res) => {
+    const userProfile = await getUserProfile(req.user.uid);
+    if (!userProfile) {
+      return res.status(404).json({
+        success: false,
+        error: { message: "Không tìm thấy thông tin người dùng" },
+      });
+    }
+
+    const totalDeposit = await getUserTotalDeposit(req.user.uid);
+
+    // Lấy giao dịch gần nhất
+    const recentTransactions = await Transaction.find({
+      userId: req.user.uid,
+      transferType: "in",
+      status: "processed",
+    })
+      .sort({ transactionDate: -1 })
+      .limit(5)
+      .lean();
+
+    res.json({
+      success: true,
+      data: {
+        currentBalance: userProfile.walletBalance || 0,
+        totalDeposit,
+        recentTransactions,
+      },
+    });
+  }),
+);
+
 module.exports = router;
 
 
