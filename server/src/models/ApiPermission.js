@@ -5,13 +5,13 @@ const ApiPermissionSchema = new mongoose.Schema(
     endpoint: {
       type: String,
       required: true,
-      unique: true,
       index: true,
     },
     method: {
       type: String,
       enum: ["GET", "POST", "PUT", "DELETE", "PATCH"],
       default: "GET",
+      index: true,
     },
     allowedRoles: {
       type: [String],
@@ -30,6 +30,10 @@ const ApiPermissionSchema = new mongoose.Schema(
     },
   },
 );
+
+// Composite unique index trên endpoint + method
+// Cho phép cùng endpoint với method khác nhau
+ApiPermissionSchema.index({ endpoint: 1, method: 1 }, { unique: true });
 
 module.exports = mongoose.model("ApiPermission", ApiPermissionSchema);
 

@@ -353,6 +353,7 @@ router.get(
       transferType: "in",
       status: "processed",
     })
+      .select('-content') // Loại bỏ field content khỏi response
       .sort({ transactionDate: -1 })
       .limit(5)
       .lean();

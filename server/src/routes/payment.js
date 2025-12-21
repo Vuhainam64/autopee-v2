@@ -290,14 +290,16 @@ router.post(
 
 /**
  * Generate unique payment code
- * Format: USERID_TIMESTAMP_RANDOM
+ * Format: TIMESTAMP_BASE36 + RANDOM (ngắn gọn, khoảng 14-16 ký tự)
  */
 function generatePaymentCode(userId) {
   const timestamp = Date.now()
-  const random = Math.random().toString(36).substring(2, 8).toUpperCase()
-  // Lấy 8 ký tự đầu của userId để code ngắn gọn hơn
-  const userIdShort = userId.substring(0, 8).toUpperCase()
-  return `${userIdShort}${timestamp}${random}`
+  // Chuyển timestamp sang base36 để ngắn hơn (từ 13 chữ số xuống ~8 ký tự)
+  const timestampBase36 = timestamp.toString(36).toUpperCase()
+  // Random string dài hơn để đảm bảo unique (8 ký tự)
+  const random = Math.random().toString(36).substring(2, 10).toUpperCase()
+  // Format: TIMESTAMP_RANDOM (không cần userId vì đã có trong database)
+  return `${timestampBase36}${random}`
 }
 
 module.exports = router

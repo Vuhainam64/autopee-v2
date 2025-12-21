@@ -7,7 +7,7 @@ const User = require('../models/User')
  * - code: Mã thanh toán (nếu SePay tự động nhận diện được)
  * - content: Nội dung chuyển khoản (user nhập vào)
  * 
- * Payment code format: USERID_TIMESTAMP_RANDOM (ví dụ: 2NUZKCA1734567890ABC123)
+ * Payment code format: TIMESTAMP_BASE36_RANDOM (ví dụ: LKJ8H9F2ABC123XY, khoảng 14-16 ký tự)
  * 
  * Logic tìm kiếm:
  * 1. Ưu tiên tìm trong field `code` (nếu SePay đã nhận diện được)
@@ -47,10 +47,10 @@ async function findUserIdFromTransaction(transactionData) {
   if (transactionData.content) {
     const content = transactionData.content.trim()
 
-    // 2.1: Tìm payment code đầy đủ (thường dài 20-30 ký tự)
-    // Tách content thành các từ và tìm từ dài >= 15 ký tự
+    // 2.1: Tìm payment code đầy đủ (thường dài 12-16 ký tự)
+    // Tách content thành các từ và tìm từ dài >= 12 ký tự
     const words = content.split(/\s+/)
-    const longWords = words.filter((word) => word.length >= 15)
+    const longWords = words.filter((word) => word.length >= 12)
 
     for (const word of longWords) {
       paymentRequest = await PaymentRequest.findOne({
@@ -87,9 +87,9 @@ async function findUserIdFromTransaction(transactionData) {
     // (Trường hợp user nhập không đầy đủ)
     for (const payment of pendingPayments) {
       const paymentCode = payment.paymentCode
-      // Kiểm tra nếu content chứa ít nhất 10 ký tự đầu của payment code
-      if (paymentCode.length >= 10) {
-        const codePrefix = paymentCode.substring(0, 10)
+      // Kiểm tra nếu content chứa ít nhất 8 ký tự đầu của payment code
+      if (paymentCode.length >= 8) {
+        const codePrefix = paymentCode.substring(0, 8)
         if (content.includes(codePrefix)) {
           return { userId: payment.userId, paymentRequest: payment }
         }

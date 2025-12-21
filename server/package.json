@@ -8,7 +8,8 @@
     "dev": "nodemon src/server.js",
     "seed:permissions": "node src/scripts/seedPermissions.js",
     "seed:roles": "node src/scripts/seedRoles.js",
-    "seed": "npm run seed:roles && npm run seed:permissions"
+    "seed": "npm run seed:roles && npm run seed:permissions",
+    "fix:api-index": "node src/scripts/fixApiPermissionIndex.js"
   },
   "keywords": [],
   "author": "",

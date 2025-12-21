@@ -7,6 +7,7 @@ const PermissionHistory = require("../models/PermissionHistory");
 const Role = require("../models/Role");
 const User = require("../models/User");
 const ServerLog = require("../models/ServerLog");
+const LogConfig = require("../models/LogConfig");
 const { getUserProfile } = require("../services/userService.mongo");
 
 const router = express.Router();
@@ -837,6 +838,87 @@ router.post(
       traceId,
       message: "Client error đã được ghi log",
     });
+  }),
+);
+
+// ========== Log Config Management ==========
+
+// GET /admin/log-configs - Lấy danh sách log configs
+router.get(
+  "/log-configs",
+  handleAsync(async (req, res) => {
+    const configs = await LogConfig.find().sort({ createdAt: -1 }).lean();
+    res.json({ success: true, data: configs });
+  }),
+);
+
+// POST /admin/log-configs - Tạo log config mới
+router.post(
+  "/log-configs",
+  handleAsync(async (req, res) => {
+    const { pattern, method, enabled, description } = req.body;
+
+    if (!pattern) {
+      return res.status(400).json({
+        success: false,
+        error: { message: "pattern là bắt buộc" },
+      });
+    }
+
+    const config = await LogConfig.create({
+      pattern,
+      method: method || "ALL",
+      enabled: enabled !== undefined ? enabled : true,
+      description,
+    });
+
+    res.json({ success: true, data: config });
+  }),
+);
+
+// PUT /admin/log-configs/:id - Cập nhật log config
+router.put(
+  "/log-configs/:id",
+  handleAsync(async (req, res) => {
+    const { id } = req.params;
+    const { pattern, method, enabled, description } = req.body;
+
+    const update = {};
+    if (pattern) update.pattern = pattern;
+    if (method) update.method = method;
+    if (enabled !== undefined) update.enabled = enabled;
+    if (description !== undefined) update.description = description;
+
+    const config = await LogConfig.findByIdAndUpdate(id, update, {
+      new: true,
+    }).lean();
+
+    if (!config) {
+      return res.status(404).json({
+        success: false,
+        error: { message: "Log config không tồn tại" },
+      });
+    }
+
+    res.json({ success: true, data: config });
+  }),
+);
+
+// DELETE /admin/log-configs/:id - Xóa log config
+router.delete(
+  "/log-configs/:id",
+  handleAsync(async (req, res) => {
+    const { id } = req.params;
+    const config = await LogConfig.findByIdAndDelete(id).lean();
+
+    if (!config) {
+      return res.status(404).json({
+        success: false,
+        error: { message: "Log config không tồn tại" },
+      });
+    }
+
+    res.json({ success: true, message: "Log config đã được xóa" });
   }),
 );
 

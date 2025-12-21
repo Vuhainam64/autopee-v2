@@ -112,6 +112,7 @@ async function getUserTransactions(userId, options = {}) {
 
   const [transactions, total] = await Promise.all([
     Transaction.find(query)
+      .select('-content') // Loại bỏ field content khỏi response
       .sort({ transactionDate: -1 })
       .skip(skip)
       .limit(limitNum)

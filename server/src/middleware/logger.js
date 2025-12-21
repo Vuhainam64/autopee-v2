@@ -1,5 +1,6 @@
 const crypto = require('crypto')
 const ServerLog = require('../models/ServerLog')
+const LogConfig = require('../models/LogConfig')
 
 /**
  * Tạo hoặc lấy Trace ID từ request
@@ -64,8 +65,9 @@ function getClientIP(req) {
  * Middleware để log các request vào MongoDB
  */
 const requestLogger = async (req, res, next) => {
-  // Bỏ qua health check endpoint
-  if (req.path === '/' && req.method === 'GET') {
+  // Kiểm tra xem có nên bỏ qua log không
+  const shouldSkip = await shouldSkipLogging(req)
+  if (shouldSkip) {
     return next()
   }
 
@@ -180,5 +182,85 @@ function sanitizeBody(body) {
   return sanitized
 }
 
-module.exports = { requestLogger, logError }
+/**
+ * Cache cho log configs
+ * Refresh mỗi 5 phút
+ */
+let logConfigsCache = []
+let logConfigsCacheTime = 0
+const LOG_CONFIG_CACHE_TTL = 5 * 60 * 1000 // 5 phút
+
+/**
+ * Lấy danh sách log configs từ cache hoặc database
+ */
+async function getLogConfigs() {
+  const now = Date.now()
+  
+  // Nếu cache còn valid, trả về cache
+  if (logConfigsCache.length > 0 && (now - logConfigsCacheTime) < LOG_CONFIG_CACHE_TTL) {
+    return logConfigsCache
+  }
+  
+  // Lấy từ database và update cache
+  try {
+    logConfigsCache = await LogConfig.find({ enabled: true }).lean()
+    logConfigsCacheTime = now
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.error('Failed to load log configs:', error)
+    // Nếu lỗi, vẫn dùng cache cũ nếu có
+    if (logConfigsCache.length === 0) {
+      logConfigsCache = []
+    }
+  }
+  
+  return logConfigsCache
+}
+
+/**
+ * Kiểm tra xem endpoint có nên bỏ qua log không
+ */
+async function shouldSkipLogging(req) {
+  // Bỏ qua health check endpoint
+  if (req.path === '/' && req.method === 'GET') {
+    return true
+  }
+  
+  // Lấy configs
+  const configs = await getLogConfigs()
+  
+  // Kiểm tra từng config
+  for (const config of configs) {
+    // Kiểm tra method
+    if (config.method !== 'ALL' && config.method !== req.method) {
+      continue
+    }
+    
+    // Kiểm tra pattern
+    try {
+      // Nếu pattern bắt đầu với ^ hoặc chứa regex, dùng như regex
+      // Nếu không, convert thành regex bằng cách replace :param thành [^/]+
+      let regexPattern
+      if (config.pattern.startsWith('^') || config.pattern.includes('(')) {
+        // Đã là regex
+        regexPattern = new RegExp(config.pattern)
+      } else {
+        // Convert path pattern thành regex
+        // Ví dụ: /payment/deposit/:paymentCode/status -> ^/payment/deposit/[^/]+/status$
+        regexPattern = new RegExp('^' + config.pattern.replace(/:[^/]+/g, '[^/]+') + '$')
+      }
+      
+      if (regexPattern.test(req.path)) {
+        return true // Match, bỏ qua log
+      }
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(`Invalid regex pattern in log config: ${config.pattern}`, error)
+    }
+  }
+  
+  return false
+}
+
+module.exports = { requestLogger, logError, getLogConfigs }
 

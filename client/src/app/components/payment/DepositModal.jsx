@@ -271,7 +271,7 @@ const DepositModal = ({
                   </div>
                   <div>hỗ trợ QR Code để quét mã</div>
                 </div>
-                <div className="flex items-center justify-center space-x-2">
+                <div className="flex items-center justify-center !space-x-2">
                   <Spin />
                   <div>Đang chờ bạn chuyển khoản</div>
                 </div>

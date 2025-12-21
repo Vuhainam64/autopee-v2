@@ -187,12 +187,6 @@ function WalletSettings() {
         return <Tag color={statusInfo.color}>{statusInfo.text}</Tag>
       },
     },
-    {
-      title: 'Mô tả',
-      dataIndex: 'content',
-      key: 'description',
-      render: (content) => content || '-',
-    },
   ]
 
   const handleBankChange = (value) => {

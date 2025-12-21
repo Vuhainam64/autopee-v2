@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Card, Table, Tag, Input, Select, DatePicker, Space, Button, Typography, Tooltip } from 'antd'
-import { SearchOutlined, ReloadOutlined, FilterOutlined } from '@ant-design/icons'
-import { get } from '../../services/api.js'
+import { Card, Table, Tag, Input, Select, DatePicker, Space, Button, Typography, Tooltip, Tabs, Modal, Form, App, Popconfirm } from 'antd'
+import { SearchOutlined, ReloadOutlined, FilterOutlined, PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import { get, post, put, del } from '../../services/api.js'
 import dayjs from 'dayjs'
 
 const { RangePicker } = DatePicker
@@ -242,6 +242,244 @@ function Logs() {
     },
   ]
 
+  // Component Log Config Tab
+  const LogConfigTab = () => {
+    const [configs, setConfigs] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [modalOpen, setModalOpen] = useState(false)
+    const [editingConfig, setEditingConfig] = useState(null)
+    const [form] = Form.useForm()
+    const { message: messageApi } = App.useApp()
+
+    const fetchConfigs = async () => {
+      setLoading(true)
+      try {
+        const response = await get('/admin/log-configs')
+        if (response?.success) {
+          setConfigs(response.data || [])
+        }
+      } catch (error) {
+        messageApi.error('Lỗi khi tải danh sách config')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    useEffect(() => {
+      fetchConfigs()
+    }, [])
+
+    const handleCreate = () => {
+      setEditingConfig(null)
+      form.resetFields()
+      setModalOpen(true)
+    }
+
+    const handleEdit = (record) => {
+      setEditingConfig(record)
+      form.setFieldsValue(record)
+      setModalOpen(true)
+    }
+
+    const handleDelete = async (id) => {
+      try {
+        await del(`/admin/log-configs/${id}`)
+        messageApi.success('Đã xóa config')
+        fetchConfigs()
+      } catch (error) {
+        messageApi.error('Lỗi khi xóa config')
+      }
+    }
+
+    const handleSubmit = async (values) => {
+      try {
+        if (editingConfig) {
+          await put(`/admin/log-configs/${editingConfig._id}`, values)
+          messageApi.success('Đã cập nhật config')
+        } else {
+          await post('/admin/log-configs', values)
+          messageApi.success('Đã tạo config')
+        }
+        setModalOpen(false)
+        form.resetFields()
+        fetchConfigs()
+      } catch (error) {
+        messageApi.error('Lỗi khi lưu config')
+      }
+    }
+
+    const configColumns = [
+      {
+        title: 'Pattern',
+        dataIndex: 'pattern',
+        key: 'pattern',
+        render: (text) => <Text code>{text}</Text>,
+      },
+      {
+        title: 'Method',
+        dataIndex: 'method',
+        key: 'method',
+        width: 100,
+        render: (method) => (
+          <Tag color={method === 'ALL' ? 'purple' : methodColors[method] || 'default'}>
+            {method}
+          </Tag>
+        ),
+      },
+      {
+        title: 'Trạng thái',
+        dataIndex: 'enabled',
+        key: 'enabled',
+        width: 120,
+        render: (enabled) => (
+          <Tag color={enabled ? 'green' : 'default'}>
+            {enabled ? 'Bỏ qua log' : 'Ghi log'}
+          </Tag>
+        ),
+      },
+      {
+        title: 'Mô tả',
+        dataIndex: 'description',
+        key: 'description',
+        ellipsis: true,
+      },
+      {
+        title: 'Thao tác',
+        key: 'action',
+        width: 150,
+        render: (_, record) => (
+          <Space>
+            <Button
+              type="link"
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => handleEdit(record)}
+            >
+              Sửa
+            </Button>
+            <Popconfirm
+              title="Xác nhận xóa"
+              onConfirm={() => handleDelete(record._id)}
+            >
+              <Button
+                type="link"
+                danger
+                size="small"
+                icon={<DeleteOutlined />}
+              >
+                Xóa
+              </Button>
+            </Popconfirm>
+          </Space>
+        ),
+      },
+    ]
+
+    return (
+      <div>
+        <div className="mb-4 flex justify-between items-center">
+          <div>
+            <h3 className="text-lg font-semibold">Cấu hình bỏ qua log</h3>
+            <p className="text-sm text-gray-500">
+              Quản lý danh sách endpoints không cần ghi log (được gọi thường xuyên)
+            </p>
+          </div>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleCreate}
+          >
+            Thêm config
+          </Button>
+        </div>
+
+        <Table
+          columns={configColumns}
+          dataSource={configs}
+          rowKey="_id"
+          loading={loading}
+          pagination={false}
+        />
+
+        <Modal
+          title={editingConfig ? 'Sửa config' : 'Thêm config mới'}
+          open={modalOpen}
+          onCancel={() => {
+            setModalOpen(false)
+            form.resetFields()
+          }}
+          footer={null}
+          width={600}
+        >
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleSubmit}
+            initialValues={{
+              method: 'ALL',
+              enabled: true,
+            }}
+          >
+            <Form.Item
+              label="Pattern"
+              name="pattern"
+              rules={[{ required: true, message: 'Vui lòng nhập pattern' }]}
+              tooltip="Pattern có thể là exact path (ví dụ: /payment/deposit/:id/status) hoặc regex (ví dụ: ^/payment/.*/status$)"
+            >
+              <Input placeholder="/payment/deposit/:paymentCode/status" />
+            </Form.Item>
+
+            <Form.Item
+              label="Method"
+              name="method"
+              rules={[{ required: true, message: 'Vui lòng chọn method' }]}
+            >
+              <Select>
+                <Select.Option value="ALL">ALL (Tất cả)</Select.Option>
+                <Select.Option value="GET">GET</Select.Option>
+                <Select.Option value="POST">POST</Select.Option>
+                <Select.Option value="PUT">PUT</Select.Option>
+                <Select.Option value="DELETE">DELETE</Select.Option>
+                <Select.Option value="PATCH">PATCH</Select.Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              label="Trạng thái"
+              name="enabled"
+            >
+              <Select>
+                <Select.Option value={true}>Bỏ qua log</Select.Option>
+                <Select.Option value={false}>Ghi log</Select.Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              label="Mô tả"
+              name="description"
+            >
+              <Input.TextArea rows={3} placeholder="Mô tả về config này..." />
+            </Form.Item>
+
+            <Form.Item>
+              <Space>
+                <Button type="primary" htmlType="submit">
+                  {editingConfig ? 'Cập nhật' : 'Tạo mới'}
+                </Button>
+                <Button onClick={() => {
+                  setModalOpen(false)
+                  form.resetFields()
+                }}>
+                  Hủy
+                </Button>
+              </Space>
+            </Form.Item>
+          </Form>
+        </Modal>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-4">
       <Card>
@@ -249,6 +487,15 @@ function Logs() {
           <h1 className="text-2xl font-bold text-slate-900">Theo dõi Log Server</h1>
           <p className="text-slate-600 mt-1">Xem và theo dõi các hoạt động của server</p>
         </div>
+
+        <Tabs
+          defaultActiveKey="logs"
+          items={[
+            {
+              key: 'logs',
+              label: 'Logs',
+              children: (
+                <div>
 
         {/* Filters */}
         <div className="mb-4 space-y-3">
@@ -350,6 +597,16 @@ function Logs() {
             },
           }}
           scroll={{ x: 'max-content' }}
+        />
+                </div>
+              ),
+            },
+            {
+              key: 'config',
+              label: 'Cấu hình',
+              children: <LogConfigTab />,
+            },
+          ]}
         />
       </Card>
     </div>
