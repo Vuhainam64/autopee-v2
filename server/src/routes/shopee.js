@@ -133,8 +133,8 @@ router.post(
     }
 
     try {
-      const data = await fetchOrderDetailV2(cookie, order_id);
-      res.json({ success: true, data });
+    const data = await fetchOrderDetailV2(cookie, order_id);
+    res.json({ success: true, data });
     } catch (error) {
       console.error("Error fetching order detail:", error.message);
       res.status(500).json({

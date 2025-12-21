@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Modal, Tabs, Input, Space, Table, Tag, Typography, Upload, App, Progress, Alert, Spin } from 'antd'
+import { Button, Modal, Tabs, Input, Space, Table, Tag, Typography, Upload, App, Progress, Alert, Spin, Card, Collapse } from 'antd'
+import { CodeOutlined } from '@ant-design/icons'
+import { Link } from 'react-router-dom'
 import { MdCookie } from 'react-icons/md'
 import {
   getAllOrdersAndCheckouts,
@@ -12,7 +14,7 @@ import QrSection from './checkMVD/QrSection.jsx'
 import OrderDetailModal from './checkMVD/OrderDetailModal.jsx'
 
 const { TextArea } = Input
-const { Text } = Typography
+const { Text, Paragraph } = Typography
 
 const extractFirstItem = (entry) => {
   const parcelItem =
@@ -189,7 +191,7 @@ function CheckMVDCookie() {
 
     // Xử lý tất cả cookies song song
     const promises = cookiesArr.map(async (cookie, index) => {
-      try {
+    try {
         setLoadingProgress((prev) => ({
           current: prev.current + 1,
           total: cookiesArr.length,
@@ -652,6 +654,178 @@ function CheckMVDCookie() {
           />
         </div>
       </Space>
+
+      <Card title="Hướng dẫn sử dụng API" className="mt-4">
+        <Collapse
+          items={[
+            {
+              key: '1',
+              label: '1. Lấy danh sách đơn hàng và checkout',
+              children: (
+                <div className="space-y-4">
+                  <div>
+                    <Text strong>API Endpoint:</Text>
+                    <Paragraph code className="ml-2">POST /shopee/orders</Paragraph>
+                  </div>
+                  <div>
+                    <Text strong>Authentication:</Text>
+                    <Text className="ml-2">Không bắt buộc (Bearer Token API)</Text>
+                  </div>
+                  <div>
+                    <Text strong>Request Body:</Text>
+                    <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
+{`{
+  "cookie": "SPC_ST=...",  // Cookie Shopee
+  "limit": 10,             // Số lượng đơn hàng mỗi trang
+  "list_type": 7,          // Loại danh sách (7 = tất cả)
+  "offset": 0              // Vị trí bắt đầu
+}`}
+                    </pre>
+                  </div>
+                  <div>
+                    <Text strong>Success Response:</Text>
+                    <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
+{`{
+  "success": true,
+  "data": {
+    "order_data": {
+      "details_list": [...]
+    },
+    "checkout_data": {
+      "details_list": [...]
+    }
+  }
+}`}
+                    </pre>
+                  </div>
+                </div>
+              ),
+            },
+            {
+              key: '2',
+              label: '2. Lấy chi tiết đơn hàng',
+              children: (
+                <div className="space-y-4">
+                  <div>
+                    <Text strong>API Endpoint:</Text>
+                    <Paragraph code className="ml-2">POST /shopee/order-detail</Paragraph>
+                  </div>
+                  <div>
+                    <Text strong>Authentication:</Text>
+                    <Text className="ml-2">Không bắt buộc (Bearer Token API)</Text>
+                  </div>
+                  <div>
+                    <Text strong>Request Body:</Text>
+                    <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
+{`{
+  "cookie": "SPC_ST=...",  // Optional: Nếu không có sẽ tự động lấy từ database
+  "order_id": "123456789" // ID đơn hàng (bắt buộc)
+}`}
+                    </pre>
+                  </div>
+                  <div>
+                    <Text strong>Success Response:</Text>
+                    <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
+{`{
+  "success": true,
+  "data": {
+    "shipping_info": {...},
+    "order_info": {...},
+    ...
+  }
+}`}
+                    </pre>
+                  </div>
+                </div>
+              ),
+            },
+            {
+              key: '3',
+              label: '3. Ví dụ code',
+              children: (
+                <div className="space-y-4">
+                  <div>
+                    <Text strong className="flex items-center gap-2">
+                      <CodeOutlined />
+                      cURL
+                    </Text>
+                    <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
+{`curl -X POST 'https://api.autopee.com/shopee/orders' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "cookie": "SPC_ST=...",
+    "limit": 10,
+    "list_type": 7,
+    "offset": 0
+  }'`}
+                    </pre>
+                  </div>
+                  <div>
+                    <Text strong className="flex items-center gap-2">
+                      <CodeOutlined />
+                      JavaScript (fetch)
+                    </Text>
+                    <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
+{`const response = await fetch('https://api.autopee.com/shopee/orders', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    cookie: 'SPC_ST=...',
+    limit: 10,
+    list_type: 7,
+    offset: 0
+  })
+});
+
+const data = await response.json();
+console.log(data);`}
+                    </pre>
+                  </div>
+                  <div>
+                    <Text strong className="flex items-center gap-2">
+                      <CodeOutlined />
+                      Python (requests)
+                    </Text>
+                    <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
+{`import requests
+
+url = 'https://api.autopee.com/shopee/orders'
+headers = {
+    'Content-Type': 'application/json'
+}
+data = {
+    'cookie': 'SPC_ST=...',
+    'limit': 10,
+    'list_type': 7,
+    'offset': 0
+}
+
+response = requests.post(url, json=data, headers=headers)
+result = response.json()
+print(result)`}
+                    </pre>
+                  </div>
+                </div>
+              ),
+            },
+            {
+              key: '4',
+              label: '4. Lưu ý',
+              children: (
+                <div className="space-y-2">
+                  <Text>• API không yêu cầu authentication</Text>
+                  <Text>• Cookie phải có định dạng <Paragraph code className="inline">SPC_ST=...</Paragraph></Text>
+                  <Text>• Nếu cookie không hợp lệ hoặc hết hạn, API sẽ trả về lỗi</Text>
+                  <Text>• Để lấy token API, truy cập <Link to="/settings/api" className="text-orange-600 hover:underline">Settings → Tài liệu API</Link></Text>
+                </div>
+              ),
+            },
+          ]}
+          defaultActiveKey={['1']}
+        />
+      </Card>
 
       <Modal
         open={modalOpen}
