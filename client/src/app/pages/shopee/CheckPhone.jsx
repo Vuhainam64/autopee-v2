@@ -243,7 +243,7 @@ function CheckPhone() {
   ]
 
   return (
-    <div className="space-y-4">
+    <div className="!space-y-4">
       <div>
         <Title level={2}>Check Số Điện Thoại Shopee</Title>
         <Text type="secondary">

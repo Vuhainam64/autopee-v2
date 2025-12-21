@@ -9,6 +9,7 @@ const shopeeRoutes = require("./routes/shopee");
 const adminRoutes = require("./routes/admin");
 const webhookRoutes = require("./routes/webhooks");
 const paymentRoutes = require("./routes/payment");
+const trackingRoutes = require("./routes/tracking");
 const { authenticate } = require("./middleware/auth");
 const { handleAsync, errorHandler } = require("./middleware/error");
 const { requestLogger } = require("./middleware/logger");
@@ -43,6 +44,7 @@ app.use("/shopee", shopeeRoutes);
 app.use("/admin", adminRoutes);
 app.use("/webhooks", webhookRoutes);
 app.use("/payment", paymentRoutes);
+app.use("/", trackingRoutes);
 
 // Backward-compatible endpoint for frontend: POST /trackSession
 // Equivalent behaviour to POST /user/sessions/track
