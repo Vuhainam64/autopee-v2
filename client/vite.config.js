@@ -20,8 +20,30 @@ export default defineConfig({
           'firebase-storage': ['firebase/storage'],
           // Tách React và React DOM
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          // Tách Ant Design (UI library lớn)
-          'antd-vendor': ['antd'],
+          // Tách Ant Design thành các chunks nhỏ hơn
+          // Ant Design rất lớn, tách thành các phần chính
+          'antd-core': ['antd/es/locale', 'antd/es/config-provider'],
+          'antd-components': [
+            'antd/es/button',
+            'antd/es/input',
+            'antd/es/form',
+            'antd/es/table',
+            'antd/es/modal',
+            'antd/es/select',
+            'antd/es/date-picker',
+            'antd/es/tabs',
+            'antd/es/card',
+            'antd/es/spin',
+            'antd/es/tag',
+            'antd/es/dropdown',
+            'antd/es/switch',
+            'antd/es/pagination',
+            'antd/es/auto-complete',
+            'antd/es/upload',
+            'antd/es/message',
+            'antd/es/notification',
+          ],
+          'antd-other': ['antd'],
           // Tách Redux
           'redux-vendor': ['@reduxjs/toolkit', 'react-redux'],
           // Tách các icon libraries
@@ -33,7 +55,8 @@ export default defineConfig({
         assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
       },
     },
-    // Tăng chunk size warning limit (vì đã tách chunks)
-    chunkSizeWarningLimit: 600,
+    // Tăng chunk size warning limit
+    // Ant Design là library rất lớn, khó tách nhỏ hơn nữa
+    chunkSizeWarningLimit: 800,
   },
 })
