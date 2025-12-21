@@ -12,7 +12,10 @@ import {
   MdDashboard, 
   MdInventory2, 
   MdCookie,
-  MdLocalShipping 
+  MdLocalShipping,
+  MdStore,
+  MdPhone,
+  MdLocationOn
 } from 'react-icons/md'
 import { useAuth } from '../../contexts/AuthContext.jsx'
 import { useAppSelector } from '../../store/hooks.js'
@@ -40,11 +43,27 @@ const menuItems = [
       },
     ],
   },
+  {
+    label: 'Dịch vụ Shopee',
+    icon: MdStore,
+    children: [
+      { 
+        label: 'Check Số', 
+        to: '/products/shopee/check-phone',
+        icon: MdPhone,
+      },
+      { 
+        label: 'Quản lý địa chỉ', 
+        to: '/products/shopee/address',
+        icon: MdLocationOn,
+      },
+    ],
+  },
 ]
 
 function SideNav({ collapsed = false, onToggle }) {
   const { pathname } = useLocation()
-  const [expandedItems, setExpandedItems] = useState(['Check Mã vận đơn'])
+  const [expandedItems, setExpandedItems] = useState(['Check Mã vận đơn', 'Dịch vụ Shopee'])
   const { currentUser } = useAuth()
   const userProfile = useAppSelector((state) => state.user.userProfile)
 
@@ -89,6 +108,7 @@ function SideNav({ collapsed = false, onToggle }) {
       className={`flex h-full flex-col shrink-0 rounded-2xl border border-orange-100 bg-white/80 p-4 shadow-sm backdrop-blur transition-all duration-300 ${
         collapsed ? 'w-[64px]' : 'w-full max-w-[240px]'
       }`}
+      style={{ maxHeight: 'calc(100vh - 8rem)' }}
     >
       {/* Header - Fixed */}
       <div className="flex items-center justify-between shrink-0">

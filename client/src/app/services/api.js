@@ -45,11 +45,19 @@ const apiRequest = async (endpoint, options = {}) => {
     const data = await response.json()
 
     if (!response.ok) {
-      throw new Error(data.error?.message || `HTTP error! status: ${response.status}`)
+      // Tạo error object với thông tin đầy đủ để xử lý ở component
+      const error = new Error(data.error?.message || data.error || `HTTP error! status: ${response.status}`)
+      error.response = { data, status: response.status }
+      throw error
     }
 
     return data
   } catch (error) {
+    // Nếu error đã có response, giữ nguyên
+    if (error.response) {
+      throw error
+    }
+    // Nếu chưa có response, thêm vào
     console.error('API request failed:', error)
     throw error
   }

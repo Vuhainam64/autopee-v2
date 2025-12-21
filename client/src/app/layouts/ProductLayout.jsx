@@ -11,10 +11,12 @@ function ProductLayout() {
     <div className="flex min-h-screen flex-col bg-white text-slate-900">
       <TopNav />
       <div className="mx-auto flex w-full max-w-screen-2xl flex-1 gap-8 px-4 lg:px-6 pb-16 pt-10">
-        <div className="h-[calc(100vh-8rem)]">
+        {/* Sidebar - Fixed */}
+        <aside className="sticky top-[calc(4rem+2.5rem)] h-[calc(100vh-8rem)] shrink-0">
           <SideNav collapsed={collapsed} onToggle={() => setCollapsed(!collapsed)} />
-        </div>
-        <main className="flex-1">
+        </aside>
+        {/* Main Content - Scrollable */}
+        <main className="flex-1 min-w-0 overflow-y-auto">
           <Outlet />
         </main>
       </div>

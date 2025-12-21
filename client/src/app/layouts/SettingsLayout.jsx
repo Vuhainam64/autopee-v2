@@ -29,10 +29,12 @@ function SettingsLayout() {
     <div className="flex min-h-screen flex-col bg-white text-slate-900">
       <TopNav />
       <div className="mx-auto flex w-full max-w-7xl flex-1 gap-8 px-6 pb-16 pt-10">
+        {/* Sidebar - Fixed */}
         <aside
-          className={`shrink-0 rounded-2xl border border-orange-100 bg-white/80 p-4 shadow-sm backdrop-blur transition-all duration-300 ${
+          className={`sticky top-[calc(4rem+2.5rem)] h-[calc(100vh-8rem)] shrink-0 rounded-2xl border border-orange-100 bg-white/80 p-4 shadow-sm backdrop-blur transition-all duration-300 ${
             collapsed ? 'w-[64px]' : 'w-full max-w-[240px]'
           }`}
+          style={{ maxHeight: 'calc(100vh - 8rem)' }}
         >
           <div className="flex items-center justify-between">
             {!collapsed && (
@@ -48,7 +50,7 @@ function SettingsLayout() {
               size="small"
             />
           </div>
-          <nav className={`mt-3 flex flex-col gap-1 ${collapsed ? 'items-center' : ''}`}>
+          <nav className={`mt-3 flex flex-col gap-1 overflow-y-auto flex-1 ${collapsed ? 'items-center' : ''}`}>
             {settingsMenuItems.map((item) => {
               const Icon = item.icon
               const active = pathname === item.to
@@ -87,7 +89,8 @@ function SettingsLayout() {
             })}
           </nav>
         </aside>
-        <main className="flex-1">
+        {/* Main Content - Scrollable */}
+        <main className="flex-1 min-w-0 overflow-y-auto">
           <Outlet />
         </main>
       </div>

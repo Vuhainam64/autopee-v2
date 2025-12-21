@@ -13,6 +13,8 @@ import Logs from '../pages/dashboard/Logs.jsx'
 import Products from '../pages/Products.jsx'
 import CheckMVDCookie from '../pages/CheckMVDCookie.jsx'
 import CheckMVD from '../pages/CheckMVD.jsx'
+import CheckPhone from '../pages/shopee/CheckPhone.jsx'
+import AddressManagement from '../pages/shopee/AddressManagement.jsx'
 
 // Settings routes
 import ProfileSettings from '../pages/settings/ProfileSettings.jsx'
@@ -82,6 +84,14 @@ export const productRoutes = [
   {
     path: '/products/checkMVD',
     element: <CheckMVD />,
+  },
+  {
+    path: '/products/shopee/check-phone',
+    element: <CheckPhone />,
+  },
+  {
+    path: '/products/shopee/address',
+    element: <AddressManagement />,
   },
 ]
 
