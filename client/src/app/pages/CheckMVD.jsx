@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { Button, Input, Card, Table, Tag, App, Space, Typography, Select, Form } from 'antd'
-import { SearchOutlined, ReloadOutlined } from '@ant-design/icons'
+import { Button, Input, Card, Table, Tag, App, Space, Typography, Select, Form, Collapse } from 'antd'
+import { SearchOutlined, ReloadOutlined, CodeOutlined } from '@ant-design/icons'
+import { Link } from 'react-router-dom'
 import { post } from '../services/api.js'
 
 const { TextArea } = Input
-const { Text, Title } = Typography
+const { Text, Title, Paragraph } = Typography
 const { Option } = Select
 
 const CARRIERS = [
@@ -284,6 +285,214 @@ function CheckMVD() {
           />
         </Card>
       )}
+
+      <Card title="Hướng dẫn sử dụng API" className="mt-4">
+        <Collapse
+          items={[
+            {
+              key: '1',
+              label: '1. Tra cứu đơn lẻ',
+              children: (
+                <div className="space-y-4">
+                  <div>
+                    <Text strong>API Endpoint:</Text>
+                    <Paragraph code className="ml-2">POST /tracking</Paragraph>
+                  </div>
+                  <div>
+                    <Text strong>Authentication:</Text>
+                    <Text className="ml-2">Không bắt buộc</Text>
+                  </div>
+                  <div>
+                    <Text strong>Request Body:</Text>
+                    <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
+{`{
+  "trackingID": "SPX123456789",  // Mã vận đơn (bắt buộc)
+  "webtracking": "SPX",          // Nhà vận chuyển (tùy chọn): SPX, JNT, GHN, NJV
+  "cellphone": "0912345678"      // Số điện thoại (bắt buộc cho J&T)
+}`}
+                    </pre>
+                  </div>
+                  <div>
+                    <Text strong>Success Response:</Text>
+                    <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
+{`{
+  "success": true,
+  "data": {
+    "trackingID": "SPX123456789",
+    "carrier": "SPX",
+    "success": true,
+    "status": "Đã giao hàng",
+    "time": "14:30",
+    "date": "2024-01-15",
+    "message": "..."
+  }
+}`}
+                    </pre>
+                  </div>
+                </div>
+              ),
+            },
+            {
+              key: '2',
+              label: '2. Tra cứu hàng loạt',
+              children: (
+                <div className="space-y-4">
+                  <div>
+                    <Text strong>API Endpoint:</Text>
+                    <Paragraph code className="ml-2">POST /tracking/list</Paragraph>
+                  </div>
+                  <div>
+                    <Text strong>Authentication:</Text>
+                    <Text className="ml-2">Không bắt buộc</Text>
+                  </div>
+                  <div>
+                    <Text strong>Request Body:</Text>
+                    <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
+{`{
+  "trackingList": [
+    {
+      "trackingID": "SPX123456789",
+      "webtracking": "SPX",
+      "cellphone": null
+    },
+    {
+      "trackingID": "JNT987654321",
+      "webtracking": "JNT",
+      "cellphone": "0912345678"
+    }
+  ]
+}`}
+                    </pre>
+                  </div>
+                  <div>
+                    <Text strong>Success Response:</Text>
+                    <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
+{`{
+  "success": true,
+  "data": {
+    "results": [
+      {
+        "trackingID": "SPX123456789",
+        "carrier": "SPX",
+        "success": true,
+        "status": "Đã giao hàng",
+        ...
+      }
+    ],
+    "total": 2,
+    "successCount": 2
+  }
+}`}
+                    </pre>
+                  </div>
+                </div>
+              ),
+            },
+            {
+              key: '3',
+              label: '3. Ví dụ code',
+              children: (
+                <div className="space-y-4">
+                  <div>
+                    <Text strong className="flex items-center gap-2">
+                      <CodeOutlined />
+                      cURL
+                    </Text>
+                    <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
+{`curl -X POST 'https://api.autopee.com/tracking' \\
+  -H 'Content-Type: application/json' \\
+  -d '{
+    "trackingID": "SPX123456789",
+    "webtracking": "SPX"
+  }'`}
+                    </pre>
+                  </div>
+                  <div>
+                    <Text strong className="flex items-center gap-2">
+                      <CodeOutlined />
+                      JavaScript (fetch)
+                    </Text>
+                    <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
+{`const response = await fetch('https://api.autopee.com/tracking', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    trackingID: 'SPX123456789',
+    webtracking: 'SPX'
+  })
+});
+
+const data = await response.json();
+console.log(data);`}
+                    </pre>
+                  </div>
+                  <div>
+                    <Text strong className="flex items-center gap-2">
+                      <CodeOutlined />
+                      Python (requests)
+                    </Text>
+                    <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
+{`import requests
+
+url = 'https://api.autopee.com/tracking'
+headers = {
+    'Content-Type': 'application/json'
+}
+data = {
+    'trackingID': 'SPX123456789',
+    'webtracking': 'SPX'
+}
+
+response = requests.post(url, json=data, headers=headers)
+result = response.json()
+print(result)`}
+                    </pre>
+                  </div>
+                </div>
+              ),
+            },
+            {
+              key: '4',
+              label: '4. Nhà vận chuyển hỗ trợ',
+              children: (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                    <Text strong>SPX Express</Text>
+                    <Tag color="blue">SPX</Tag>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                    <Text strong>J&T Express</Text>
+                    <Tag color="orange">JNT (cần số điện thoại)</Tag>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                    <Text strong>Giao Hàng Nhanh</Text>
+                    <Tag color="green">GHN</Tag>
+                  </div>
+                  <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
+                    <Text strong>Ninja Van</Text>
+                    <Tag color="purple">NJV</Tag>
+                  </div>
+                </div>
+              ),
+            },
+            {
+              key: '5',
+              label: '5. Lưu ý',
+              children: (
+                <div className="space-y-2">
+                  <Text>• Nếu không chỉ định <Paragraph code className="inline">webtracking</Paragraph>, hệ thống sẽ tự động phát hiện nhà vận chuyển dựa trên mã vận đơn</Text>
+                  <Text>• J&T Express yêu cầu số điện thoại để tra cứu</Text>
+                  <Text>• Format mã vận đơn hàng loạt: <Paragraph code className="inline">MãVậnĐơn|SốĐiệnThoại</Paragraph> (cho J&T)</Text>
+                  <Text>• API không yêu cầu authentication</Text>
+                </div>
+              ),
+            },
+          ]}
+          defaultActiveKey={['1']}
+        />
+      </Card>
     </div>
   )
 }
