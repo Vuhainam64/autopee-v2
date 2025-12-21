@@ -342,12 +342,12 @@ function WalletSettings() {
         centered
         destroyOnHidden
       >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={handleAddBank}
-          className="mt-4"
-        >
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={handleAddBank}
+            className="mt-4"
+          >
           <Form.Item
             label="Chủ tài khoản (Tiếng Việt KHÔNG DẤU)"
             name="accountHolder"

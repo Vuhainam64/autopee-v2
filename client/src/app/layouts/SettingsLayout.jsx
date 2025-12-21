@@ -9,12 +9,16 @@ import {
   UserOutlined,
   WalletOutlined,
   SecurityScanOutlined,
+  ApiOutlined,
+  HistoryOutlined,
 } from '@ant-design/icons'
 
 const settingsMenuItems = [
   { label: 'Profile', to: '/settings/profile', icon: UserOutlined },
   { label: 'Ví của tôi', to: '/settings/wallet', icon: WalletOutlined },
   { label: 'Bảo mật', to: '/settings/security', icon: SecurityScanOutlined },
+  { label: 'Tài liệu API', to: '/settings/api', icon: ApiOutlined },
+  { label: 'Lịch sử', to: '/settings/history', icon: HistoryOutlined },
 ]
 
 function SettingsLayout() {

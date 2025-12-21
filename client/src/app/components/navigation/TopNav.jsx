@@ -14,7 +14,7 @@ import Avatar from '../common/Avatar.jsx'
 const navItems = [
   { label: 'Trang chủ', to: '/' },
   { label: 'Sản phẩm', to: '/products' },
-  { label: 'Tài liệu', to: '/docs' },
+  { label: 'Tài liệu', to: '/settings/api' },
   { label: 'Liên hệ', to: '#contact' },
 ]
 

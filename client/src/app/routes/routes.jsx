@@ -18,6 +18,8 @@ import CheckMVD from '../pages/CheckMVD.jsx'
 import ProfileSettings from '../pages/settings/ProfileSettings.jsx'
 import WalletSettings from '../pages/settings/WalletSettings.jsx'
 import SecuritySettings from '../pages/settings/SecuritySettings.jsx'
+import ApiSettings from '../pages/settings/ApiSettings.jsx'
+import TransactionHistory from '../pages/settings/TransactionHistory.jsx'
 
 /**
  * Route configuration
@@ -97,6 +99,14 @@ export const settingsRoutes = [
   {
     path: '/settings/security',
     element: <SecuritySettings />,
+  },
+  {
+    path: '/settings/api',
+    element: <ApiSettings />,
+  },
+  {
+    path: '/settings/history',
+    element: <TransactionHistory />,
   },
 ]
 

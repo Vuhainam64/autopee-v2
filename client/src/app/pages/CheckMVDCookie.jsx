@@ -282,6 +282,11 @@ function CheckMVDCookie() {
 
   const handleSubmitCookies = async () => {
     const cookiesArr = parseCookies()
+    if (cookiesArr.length === 0) {
+      message.warning('Vui lòng nhập ít nhất một cookie')
+      return
+    }
+
     await fetchData(cookiesArr)
     setModalOpen(false)
   }
