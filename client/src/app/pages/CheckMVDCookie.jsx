@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Button, Modal, Tabs, Input, Space, Table, Tag, Typography, Upload, App } from 'antd'
+import { Button, Modal, Tabs, Input, Space, Table, Tag, Typography, Upload, App, Progress, Alert, Spin } from 'antd'
 import { MdCookie } from 'react-icons/md'
 import {
   getAllOrdersAndCheckouts,
@@ -77,6 +77,8 @@ function CheckMVDCookie() {
   const [orders, setOrders] = useState([])
   const [checkouts, setCheckouts] = useState([])
   const [activeCookie, setActiveCookie] = useState('')
+  const [loadingProgress, setLoadingProgress] = useState({ current: 0, total: 0, message: '' })
+  const [failedCookies, setFailedCookies] = useState([])
   const [detailOpen, setDetailOpen] = useState(false)
   const [detailData, setDetailData] = useState(null)
   const [detailLoading, setDetailLoading] = useState(false)
@@ -169,16 +171,32 @@ function CheckMVDCookie() {
   }
 
   const fetchData = async (cookiesArr) => {
-    // Use first cookie for now; extend to multi later.
-    const cookie = cookiesArr[0]
-    if (!cookie) {
+    if (!cookiesArr || cookiesArr.length === 0) {
       message.warning('Vui lòng nhập ít nhất một cookie')
       return
     }
-    setActiveCookie(cookie)
 
-    try {
-      setLoading(true)
+    setLoading(true)
+    setFailedCookies([])
+    setLoadingProgress({ current: 0, total: cookiesArr.length, message: 'Đang khởi tạo...' })
+    let allOrders = []
+    let allCheckouts = []
+    let successCount = 0
+    let failCount = 0
+    const cookieResults = []
+    const failedCookiesList = []
+    let completedCount = 0
+
+    // Xử lý tất cả cookies song song
+    const promises = cookiesArr.map(async (cookie, index) => {
+      try {
+        setLoadingProgress((prev) => ({
+          current: prev.current + 1,
+          total: cookiesArr.length,
+          message: `Đang xử lý cookie ${index + 1}/${cookiesArr.length}...`
+        }))
+        setActiveCookie(`Đang xử lý cookie ${index + 1}/${cookiesArr.length}...`)
+        
       const resp = await getAllOrdersAndCheckouts({ cookie, limit: 10, list_type: 7, offset: 0 })
 
       if (!resp?.success) {
@@ -188,8 +206,74 @@ function CheckMVDCookie() {
       const orderList = resp.data?.order_data?.details_list || []
       const checkoutList = resp.data?.checkout_data?.details_list || []
 
-      let mappedOrders = mapOrders(orderList)
-      let mappedCheckouts = mapCheckouts(checkoutList)
+        cookieResults.push({
+          cookieIndex: index + 1,
+          cookie: cookie.substring(0, 30) + '...',
+          success: true,
+          orders: orderList.length,
+          checkouts: checkoutList.length,
+        })
+
+        return {
+          cookie,
+          orders: orderList,
+          checkouts: checkoutList,
+        }
+      } catch (error) {
+        console.error(`Cookie ${index + 1} failed:`, error.message)
+        const failedCookie = {
+          index: index + 1,
+          cookie: cookie.substring(0, 50) + '...',
+          error: error.message,
+        }
+        failedCookiesList.push(failedCookie)
+        cookieResults.push({
+          cookieIndex: index + 1,
+          cookie: cookie.substring(0, 30) + '...',
+          success: false,
+          error: error.message,
+        })
+        return null
+      }
+    })
+
+    setLoadingProgress({ 
+      current: cookiesArr.length, 
+      total: cookiesArr.length, 
+      message: 'Đang gộp kết quả...' 
+    })
+    const results = await Promise.all(promises)
+
+    // Gộp tất cả kết quả lại
+    results.forEach((result) => {
+      if (result) {
+        allOrders.push(...result.orders)
+        allCheckouts.push(...result.checkouts)
+        successCount++
+      } else {
+        failCount++
+      }
+    })
+
+    if (successCount === 0) {
+      setLoading(false)
+      setFailedCookies(failedCookiesList)
+      message.error(`Tất cả ${cookiesArr.length} cookie đều không hợp lệ`)
+      return
+    }
+
+    // Lưu danh sách cookie bị lỗi
+    setFailedCookies(failedCookiesList)
+
+    // Lưu danh sách cookie bị lỗi
+    setFailedCookies(failedCookiesList)
+
+    // Map orders và checkouts
+    let mappedOrders = mapOrders(allOrders)
+    let mappedCheckouts = mapCheckouts(allCheckouts)
+
+    // Lấy danh sách cookie thành công để dùng cho order detail
+    const successCookies = results.filter((r) => r !== null).map((r) => r.cookie)
 
       // Enrich tracking numbers via order detail v2 (best-effort)
       const uniqueOrderIds = Array.from(
@@ -199,15 +283,25 @@ function CheckMVDCookie() {
         ]),
       )
 
+    setLoadingProgress({ 
+      current: cookiesArr.length, 
+      total: cookiesArr.length, 
+      message: `Đang lấy chi tiết đơn hàng (${uniqueOrderIds.length} đơn)...` 
+    })
+
+    // Thử lấy detail với cookie đầu tiên thành công
       const detailResults = await Promise.all(
         uniqueOrderIds.map(async (oid) => {
+        for (const cookie of successCookies) {
           try {
             const detail = await getOrderDetail({ cookie, orderId: oid })
             if (detail?.success && detail.data) {
               return { orderId: oid, detail: detail.data }
             }
           } catch (e) {
-            // ignore individual errors
+            // Thử cookie tiếp theo
+            continue
+          }
           }
           return null
         }),
@@ -246,13 +340,19 @@ function CheckMVDCookie() {
 
       setOrders(mappedOrders)
       setCheckouts(mappedCheckouts)
-      message.success(`Tải thành công ${orderList.length} orders, ${checkoutList.length} checkouts`)
-    } catch (err) {
-      console.error(err)
-      message.error(`Lỗi tải dữ liệu: ${err.message || 'Unknown error'}`)
-    } finally {
-      setLoading(false)
+    setActiveCookie(`Đã xử lý ${successCount}/${cookiesArr.length} cookie thành công`)
+    setLoadingProgress({ current: cookiesArr.length, total: cookiesArr.length, message: 'Hoàn thành!' })
+
+    if (failCount > 0) {
+      message.warning(`Thành công: ${successCount} cookie, Thất bại: ${failCount} cookie. Tổng: ${mappedOrders.length} orders, ${mappedCheckouts.length} checkouts`)
+    } else {
+      message.success(`Tải thành công từ ${successCount} cookie. Tổng: ${mappedOrders.length} orders, ${mappedCheckouts.length} checkouts`)
     }
+      setLoading(false)
+      // Reset progress sau 1 giây
+      setTimeout(() => {
+        setLoadingProgress({ current: 0, total: 0, message: '' })
+      }, 1000)
   }
 
   const handleRowDetail = async (orderId) => {
@@ -260,18 +360,36 @@ function CheckMVDCookie() {
       message.warning('Không có order_id để lấy chi tiết')
       return
     }
-    if (!activeCookie) {
+    
+    // Thử tất cả cookies đã nhập
+    const cookiesArr = parseCookies()
+    if (cookiesArr.length === 0) {
       message.warning('Vui lòng nhập cookie trước')
       return
     }
+
     try {
       setDetailLoading(true)
-      const resp = await getOrderDetail({ cookie: activeCookie, orderId: orderId })
+      
+      // Thử từng cookie cho đến khi thành công
+      let success = false
+      for (const cookie of cookiesArr) {
+        try {
+          const resp = await getOrderDetail({ cookie, orderId: orderId })
       if (resp?.success && resp.data) {
         setDetailData(resp.data)
         setDetailOpen(true)
-      } else {
-        message.error('Không lấy được chi tiết đơn hàng')
+            success = true
+            break
+          }
+        } catch (e) {
+          // Thử cookie tiếp theo
+          continue
+        }
+      }
+      
+      if (!success) {
+        message.error('Không lấy được chi tiết đơn hàng từ bất kỳ cookie nào')
       }
     } catch (err) {
       message.error(`Lỗi lấy chi tiết: ${err.message || 'Unknown'}`)
@@ -287,8 +405,26 @@ function CheckMVDCookie() {
       return
     }
 
-    await fetchData(cookiesArr)
+    // Lưu tất cả cookies vào database (nếu có authentication)
+    try {
+      const { post } = await import('../services/api.js')
+      for (const cookie of cookiesArr) {
+        try {
+          // Gọi API để lưu cookie (API sẽ tự động lưu nếu có token)
+          await post('/shopee/orders', { cookie, limit: 1, list_type: 7, offset: 0 })
+        } catch (error) {
+          // Bỏ qua lỗi nếu không có authentication, chỉ log
+          console.log('Could not save cookie (may need authentication):', error.message)
+        }
+      }
+    } catch (error) {
+      console.log('Error saving cookies:', error)
+    }
+
+    // Đóng modal ngay lập tức
     setModalOpen(false)
+
+    await fetchData(cookiesArr)
   }
 
   const handleGenQR = async () => {
@@ -441,9 +577,50 @@ function CheckMVDCookie() {
         </div>
       </div>
 
+      {loading && loadingProgress.total > 0 && (
+        <Alert
+          message={
+            <div className="space-y-2">
+              <div className="font-semibold">{loadingProgress.message}</div>
+              <Progress 
+                percent={Math.round((loadingProgress.current / loadingProgress.total) * 100)} 
+                status="active"
+                format={() => `${loadingProgress.current}/${loadingProgress.total}`}
+              />
+            </div>
+          }
+          type="info"
+          showIcon
+          className="mb-4"
+        />
+      )}
+
+      {failedCookies.length > 0 && (
+        <Alert
+          message={
+            <div className="space-y-2">
+              <div className="font-semibold text-red-600">Cookie bị lỗi ({failedCookies.length}):</div>
+              <div className="space-y-1">
+                {failedCookies.map((fc, idx) => (
+                  <div key={idx} className="text-red-500 text-sm">
+                    Cookie {fc.index}: <span className="font-mono">{fc.cookie}</span> - <span className="text-red-600 font-bold">Cookie die</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          }
+          type="error"
+          showIcon
+          className="mb-4"
+        />
+      )}
+
       <Space direction="vertical" className="w-full">
         <div className="rounded-lg border border-slate-200 p-3 bg-white">
-          <div className="font-semibold mb-2">Orders</div>
+          <div className="flex items-center justify-between mb-2">
+            <div className="font-semibold">Orders</div>
+            <Text type="secondary" className="text-xs">💡 Nhấp vào dòng để xem chi tiết đơn hàng</Text>
+          </div>
           <Table
             loading={loading}
             dataSource={orders}
@@ -452,12 +629,16 @@ function CheckMVDCookie() {
             scroll={{ x: 800 }}
             onRow={(record) => ({
               onClick: () => handleRowDetail(record.orderId),
+              style: { cursor: 'pointer' },
             })}
           />
         </div>
 
         <div className="rounded-lg border border-slate-200 p-3 bg-white">
-          <div className="font-semibold mb-2">Checkouts</div>
+          <div className="flex items-center justify-between mb-2">
+            <div className="font-semibold">Checkouts</div>
+            <Text type="secondary" className="text-xs">💡 Nhấp vào dòng để xem chi tiết đơn hàng</Text>
+          </div>
           <Table
             loading={loading}
             dataSource={checkouts}
@@ -465,7 +646,8 @@ function CheckMVDCookie() {
             pagination={{ pageSize: 5 }}
             scroll={{ x: 800 }}
             onRow={(record) => ({
-              onClick: () => handleRowDetail(record.orderId),
+              onClick: () => handleRowDetail(record.orderId || record.checkoutId),
+              style: { cursor: 'pointer' },
             })}
           />
         </div>
@@ -513,9 +695,12 @@ function CheckMVDCookie() {
               children: (
                 <div className="space-y-2">
                   <Text>Nhập cookie, mỗi dòng một cookie:</Text>
+                  <Text className="text-xs text-slate-500 block mb-2">
+                    Hệ thống sẽ thử từng cookie cho đến khi tìm thấy cookie hợp lệ
+                  </Text>
                   <TextArea
-                    rows={6}
-                    placeholder="Dán cookie vào đây, mỗi dòng một cookie"
+                    rows={8}
+                    placeholder="SPC_ST=..."
                     value={cookieText}
                     onChange={(e) => setCookieText(e.target.value)}
                   />
