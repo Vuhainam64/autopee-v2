@@ -13,8 +13,60 @@ const {
   createOrUpdateSession,
 } = require("../services/sessionService.mongo");
 const RoutePermission = require("../models/RoutePermission");
+const ApiToken = require("../models/ApiToken");
+const UsageHistory = require("../models/UsageHistory");
+const PaymentRequest = require("../models/PaymentRequest");
+const UserCookie = require("../models/UserCookie");
+const crypto = require("crypto");
 
 const router = express.Router();
+
+// GET /user/routes - Lấy danh sách routes mà user hiện tại có quyền truy cập
+// Không yêu cầu authenticate, nếu không có token thì trả về routes cho role "guest"
+router.get(
+  "/routes",
+  handleAsync(async (req, res) => {
+    let userRole = "guest"; // Mặc định là guest nếu không có token
+
+    // Thử lấy user từ token nếu có
+    try {
+      const authHeader = req.headers.authorization || "";
+      if (authHeader.startsWith("Bearer ")) {
+        const idToken = authHeader.replace("Bearer ", "");
+        const { admin } = require("../firebase");
+        const decoded = await admin.auth().verifyIdToken(idToken);
+        
+        // Check if user is disabled
+        const userProfile = await getUserProfile(decoded.uid);
+        if (userProfile && userProfile.disabled === true) {
+          // Nếu user bị disabled, vẫn trả về routes cho guest
+          userRole = "guest";
+        } else if (userProfile) {
+          userRole = userProfile.role || "user";
+        }
+      }
+    } catch (error) {
+      // Nếu token không hợp lệ hoặc không có token, dùng role guest
+      userRole = "guest";
+    }
+
+    // Tìm tất cả routes mà user có quyền truy cập
+    const accessibleRoutes = await RoutePermission.find({
+      allowedRoles: { $in: [userRole] },
+    })
+      .select("path method description") // Không trả về allowedRoles để bảo mật
+      .sort({ path: 1 })
+      .lean();
+
+    res.json({
+      success: true,
+      data: {
+        routes: accessibleRoutes,
+        userRole, // Chỉ trả về role của user hiện tại, không phải roles của routes
+      },
+    });
+  }),
+);
 
 router.use(authenticate);
 
@@ -231,39 +283,6 @@ router.post(
   }),
 );
 
-// GET /user/routes - Lấy danh sách routes mà user hiện tại có quyền truy cập
-router.get(
-  "/routes",
-  handleAsync(async (req, res) => {
-    // Lấy user profile để lấy role
-    const userProfile = await getUserProfile(req.user.uid);
-    if (!userProfile) {
-      return res.status(404).json({
-        success: false,
-        error: { message: "Không tìm thấy thông tin người dùng" },
-      });
-    }
-
-    const userRole = userProfile.role || "user";
-
-    // Tìm tất cả routes mà user có quyền truy cập
-    const accessibleRoutes = await RoutePermission.find({
-      allowedRoles: { $in: [userRole] },
-    })
-      .select("path method description allowedRoles")
-      .sort({ path: 1 })
-      .lean();
-
-    res.json({
-      success: true,
-      data: {
-        routes: accessibleRoutes,
-        userRole,
-      },
-    });
-  }),
-);
-
 // GET /user/audit-logs - Lấy lịch sử đăng nhập và hoạt động của user
 router.get(
   "/audit-logs",
@@ -364,6 +383,197 @@ router.get(
         currentBalance: userProfile.walletBalance || 0,
         totalDeposit,
         recentTransactions,
+      },
+    });
+  }),
+);
+
+// ========== API Token Management ==========
+
+/**
+ * Generate unique API token
+ */
+function generateApiToken() {
+  // Format: autopee_ + random 32 bytes base64url encoded
+  const randomBytes = crypto.randomBytes(32);
+  const token = `autopee_${randomBytes.toString("base64url")}`;
+  return token;
+}
+
+// GET /user/api-tokens - Lấy danh sách API tokens của user
+router.get(
+  "/api-tokens",
+  handleAsync(async (req, res) => {
+    const tokens = await ApiToken.find({ userId: req.user.uid })
+      .sort({ createdAt: -1 })
+      .lean();
+
+    // Không trả về token đầy đủ, chỉ trả về prefix để hiển thị
+    const tokensWithMaskedToken = tokens.map((token) => ({
+      ...token,
+      token: token.token.substring(0, 20) + "..." + token.token.substring(token.token.length - 4),
+      fullToken: token.token, // Chỉ trả về khi tạo mới
+    }));
+
+    res.json({ success: true, data: tokensWithMaskedToken });
+  }),
+);
+
+// POST /user/api-tokens - Tạo API token mới
+router.post(
+  "/api-tokens",
+  handleAsync(async (req, res) => {
+    const { name } = req.body;
+
+    // Tạo token mới
+    const token = generateApiToken();
+
+    const apiToken = await ApiToken.create({
+      userId: req.user.uid,
+      token,
+      name: name || "Default Token",
+      isActive: true,
+    });
+
+    res.json({
+      success: true,
+      data: {
+        ...apiToken.toObject(),
+        // Trả về full token chỉ khi tạo mới
+        fullToken: token,
+      },
+    });
+  }),
+);
+
+// PUT /user/api-tokens/:id - Cập nhật token (name, isActive)
+router.put(
+  "/api-tokens/:id",
+  handleAsync(async (req, res) => {
+    const { id } = req.params;
+    const { name, isActive } = req.body;
+
+    const update = {};
+    if (name !== undefined) update.name = name;
+    if (isActive !== undefined) update.isActive = isActive;
+
+    const token = await ApiToken.findOneAndUpdate(
+      { _id: id, userId: req.user.uid },
+      update,
+      { new: true }
+    ).lean();
+
+    if (!token) {
+      return res.status(404).json({
+        success: false,
+        error: { message: "Token không tồn tại" },
+      });
+    }
+
+    // Mask token
+    token.token = token.token.substring(0, 20) + "..." + token.token.substring(token.token.length - 4);
+
+    res.json({ success: true, data: token });
+  }),
+);
+
+// DELETE /user/api-tokens/:id - Xóa token
+router.delete(
+  "/api-tokens/:id",
+  handleAsync(async (req, res) => {
+    const { id } = req.params;
+
+    const token = await ApiToken.findOneAndDelete({
+      _id: id,
+      userId: req.user.uid,
+    }).lean();
+
+    if (!token) {
+      return res.status(404).json({
+        success: false,
+        error: { message: "Token không tồn tại" },
+      });
+    }
+
+    res.json({ success: true, message: "Token đã được xóa" });
+  }),
+);
+
+// GET /user/api-tokens/:id/usage - Lấy thống kê sử dụng token
+router.get(
+  "/api-tokens/:id/usage",
+  handleAsync(async (req, res) => {
+    const { id } = req.params;
+    const { month } = req.query; // Format: "YYYY-MM"
+
+    const token = await ApiToken.findOne({
+      _id: id,
+      userId: req.user.uid,
+    }).lean();
+
+    if (!token) {
+      return res.status(404).json({
+        success: false,
+        error: { message: "Token không tồn tại" },
+      });
+    }
+
+    let usageData = token.monthlyUsage || [];
+    if (month) {
+      usageData = usageData.filter((u) => u.month === month);
+    }
+
+    res.json({
+      success: true,
+      data: {
+        totalUsage: token.usageCount || 0,
+        lastUsedAt: token.lastUsedAt,
+        monthlyUsage: usageData,
+      },
+    });
+  }),
+);
+
+// ========== Usage History ==========
+
+// GET /user/usage-history - Lấy lịch sử sử dụng tiền trong 7 ngày gần nhất
+router.get(
+  "/usage-history",
+  handleAsync(async (req, res) => {
+    const { page = 1, limit = 50 } = req.query;
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
+    const skip = (pageNum - 1) * limitNum;
+
+    // Lấy 7 ngày gần nhất
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    sevenDaysAgo.setHours(0, 0, 0, 0);
+
+    const query = {
+      userId: req.user.uid,
+      createdAt: { $gte: sevenDaysAgo },
+    };
+
+    const [history, total] = await Promise.all([
+      UsageHistory.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNum)
+        .lean(),
+      UsageHistory.countDocuments(query),
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        history,
+        pagination: {
+          page: pageNum,
+          limit: limitNum,
+          total,
+          pages: Math.ceil(total / limitNum),
+        },
       },
     });
   }),
