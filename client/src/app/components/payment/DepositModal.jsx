@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Modal, Input, Spin, App } from "antd";
-import { LoadingOutlined } from "@ant-design/icons";
+import { Modal, Input, Spin, App, Alert } from "antd";
+import { LoadingOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { FaMoneyBill, FaMoneyCheck } from "react-icons/fa";
 import { RiQrScanLine } from "react-icons/ri";
 import { post, get } from "../../services/api.js";
@@ -313,6 +313,14 @@ const DepositModal = ({
         <div className="text-sm text-gray-500">
           Số tiền tối thiểu: 10,000 VND
         </div>
+        <Alert
+          title="Lưu ý quan trọng"
+          description="Tiền nạp vào sẽ không thể rút ra. Vui lòng cân nhắc kỹ trước khi nạp tiền."
+          type="warning"
+          icon={<ExclamationCircleOutlined />}
+          showIcon
+          className="mt-2"
+        />
       </div>
     </Modal>
   );

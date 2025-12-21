@@ -35,13 +35,12 @@ function WalletSettings() {
   const { message: messageApi } = App.useApp()
   const userProfile = useAppSelector((state) => state.user.userProfile)
 
-  // Reset form khi modal đóng
+  // Reset selectedBank khi modal đóng
   useEffect(() => {
     if (!bankModalOpen) {
-      form.resetFields()
       setSelectedBank(null)
     }
-  }, [bankModalOpen, form])
+  }, [bankModalOpen])
 
   // Lấy số dư hiện tại
   const currentBalance = userProfile?.walletBalance || 0
@@ -279,7 +278,7 @@ function WalletSettings() {
       )}
 
       {/* Tài khoản ngân hàng */}
-      <Card
+      {/* <Card
         title={
           <div className="flex items-center gap-2">
             <BankOutlined />
@@ -309,7 +308,7 @@ function WalletSettings() {
             pagination={false}
           />
         )}
-      </Card>
+      </Card> */}
 
       {/* Lịch sử giao dịch */}
       <Card
@@ -343,13 +342,12 @@ function WalletSettings() {
         centered
         destroyOnHidden
       >
-        {bankModalOpen && (
-          <Form
-            form={form}
-            layout="vertical"
-            onFinish={handleAddBank}
-            className="mt-4"
-          >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleAddBank}
+          className="mt-4"
+        >
           <Form.Item
             label="Chủ tài khoản (Tiếng Việt KHÔNG DẤU)"
             name="accountHolder"
@@ -459,7 +457,6 @@ function WalletSettings() {
             </Button>
           </Form.Item>
         </Form>
-        )}
       </Modal>
 
       {/* Modal nạp tiền */}
