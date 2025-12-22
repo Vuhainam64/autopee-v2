@@ -293,9 +293,9 @@ function CheckPhone() {
               <Text type="secondary" className="text-sm">
                 <strong>Lưu ý về giá:</strong>
                 <br />
-                • Số điện thoại <strong>chưa tồn tại</strong> trên Shopee: <strong className="text-orange-600">1,000 VND</strong>
+                • Số điện thoại <strong>chưa tồn tại</strong> trên Shopee: <strong className="text-orange-600">100 VND</strong>
                 <br />
-                • Số điện thoại <strong>đã tồn tại</strong> trên Shopee: <strong className="text-orange-600">100 VND</strong>
+                • Số điện thoại <strong>đã tồn tại</strong> trên Shopee: <strong className="text-orange-600">10 VND</strong>
                 <br />
                 • Các trường hợp <strong>lỗi khác</strong> trên Shopee: <strong className="text-orange-600">0 VND</strong>
               </Text>
@@ -487,11 +487,11 @@ print(result)`}
                 <div className="space-y-2">
                   <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
                     <Text>Số điện thoại <strong>chưa tồn tại</strong> trên Shopee</Text>
-                    <Tag color="green">1,000 VND</Tag>
+                    <Tag color="green">100 VND</Tag>
                   </div>
                   <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
                     <Text>Số điện thoại <strong>đã tồn tại</strong> trên Shopee</Text>
-                    <Tag color="orange">100 VND</Tag>
+                    <Tag color="orange">10 VND</Tag>
                   </div>
                   <div className="flex items-center justify-between p-2 bg-slate-50 rounded">
                     <Text>Các trường hợp <strong>lỗi khác</strong></Text>

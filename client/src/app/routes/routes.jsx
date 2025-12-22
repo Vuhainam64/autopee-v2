@@ -15,6 +15,8 @@ import CheckMVDCookie from '../pages/CheckMVDCookie.jsx'
 import CheckMVD from '../pages/CheckMVD.jsx'
 import CheckPhone from '../pages/shopee/CheckPhone.jsx'
 import AddressManagement from '../pages/shopee/AddressManagement.jsx'
+import GetVoucher from '../pages/shopee/GetVoucher.jsx'
+import AddVoucher from '../pages/dashboard/AddVoucher.jsx'
 
 // Settings routes
 import ProfileSettings from '../pages/settings/ProfileSettings.jsx'
@@ -68,6 +70,10 @@ export const dashboardRoutes = [
     path: '/dashboard/logs',
     element: <Logs />,
   },
+  {
+    path: '/dashboard/shopee/vouchers',
+    element: <AddVoucher />,
+  },
 ]
 
 // Product routes - ProductLayout
@@ -92,6 +98,10 @@ export const productRoutes = [
   {
     path: '/products/shopee/address',
     element: <AddressManagement />,
+  },
+  {
+    path: '/products/shopee/vouchers',
+    element: <GetVoucher />,
   },
 ]
 

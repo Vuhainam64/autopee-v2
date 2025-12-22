@@ -15,7 +15,8 @@ import {
   MdLocalShipping,
   MdStore,
   MdPhone,
-  MdLocationOn
+  MdLocationOn,
+  MdCardGiftcard
 } from 'react-icons/md'
 import { useAuth } from '../../contexts/AuthContext.jsx'
 import { useAppSelector } from '../../store/hooks.js'
@@ -56,6 +57,11 @@ const menuItems = [
         label: 'Quản lý địa chỉ', 
         to: '/products/shopee/address',
         icon: MdLocationOn,
+      },
+      { 
+        label: 'Lấy Voucher', 
+        to: '/products/shopee/vouchers',
+        icon: MdCardGiftcard,
       },
     ],
   },

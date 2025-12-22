@@ -9,6 +9,8 @@ import {
   SafetyOutlined,
   UserOutlined,
   FileTextOutlined,
+  ShopOutlined,
+  GiftOutlined,
 } from '@ant-design/icons'
 import logo from '../../assets/autopee-logo.png'
 import { usePermissions } from '../contexts/PermissionContext.jsx'
@@ -34,10 +36,22 @@ const dashboardMenuItems = [
     to: '/dashboard/logs',
     icon: FileTextOutlined,
   },
+  {
+    label: 'Dịch vụ Shopee',
+    icon: ShopOutlined,
+    children: [
+      {
+        label: 'Thêm voucher',
+        to: '/dashboard/shopee/vouchers',
+        icon: GiftOutlined,
+      },
+    ],
+  },
 ]
 
 function DashboardLayout() {
   const [collapsed, setCollapsed] = useState(false)
+  const [expandedItems, setExpandedItems] = useState(['Dịch vụ Shopee'])
   const { pathname } = useLocation()
   const { loading, routes } = usePermissions()
 
@@ -56,6 +70,13 @@ function DashboardLayout() {
     // Endpoint /user/routes đã filter sẵn routes mà user có quyền
     // CHỈ match exact, KHÔNG match prefix để tránh hiển thị menu items mà user không có quyền
     return dashboardMenuItems.filter((item) => {
+      // Nếu có children, check children
+      if (item.children) {
+        return item.children.some((child) => {
+          const routePermission = routes.find((route) => route.path === child.to)
+          return !!routePermission
+        })
+      }
       // CHỈ tìm exact match - route phải có trong danh sách routes mà user có quyền
       const routePermission = routes.find((route) => route.path === item.to)
       return !!routePermission
@@ -67,6 +88,17 @@ function DashboardLayout() {
       return pathname === '/dashboard'
     }
     return pathname.startsWith(to)
+  }
+
+  const hasActiveChild = (children) =>
+    children?.some((child) => isActive(child.to))
+
+  const toggleExpand = (label) => {
+    setExpandedItems((prev) =>
+      prev.includes(label)
+        ? prev.filter((item) => item !== label)
+        : [...prev, label],
+    )
   }
 
   return (
@@ -118,6 +150,70 @@ function DashboardLayout() {
         <nav className="h-[calc(100vh-4rem)] overflow-y-auto scrollbar-thin scrollbar-thumb-orange-300 scrollbar-track-slate-100 p-4">
           <div className="flex flex-col gap-1">
             {visibleMenuItems.map((item) => {
+              // Nếu có children, render sub-menu
+              if (item.children) {
+                const isExpanded = expandedItems.includes(item.label)
+                const hasActive = hasActiveChild(item.children)
+                const Icon = item.icon
+
+                if (collapsed) {
+                  return (
+                    <button
+                      key={item.label}
+                      onClick={() => toggleExpand(item.label)}
+                      className="w-full flex items-center justify-center rounded-xl px-3 py-2.5 text-sm font-medium transition text-slate-600 hover:bg-orange-50 hover:text-orange-600"
+                      title={item.label}
+                    >
+                      <Icon className="text-lg" />
+                    </button>
+                  )
+                }
+
+                return (
+                  <div key={item.label} className="flex flex-col">
+                    <button
+                      onClick={() => toggleExpand(item.label)}
+                      className={`flex items-center justify-between rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+                        hasActive
+                          ? 'bg-orange-50 text-orange-600 ring-1 ring-orange-100'
+                          : 'text-slate-600 hover:bg-orange-50 hover:text-orange-600'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon className="text-base" />
+                        <span>{item.label}</span>
+                      </div>
+                      <span className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
+                        ▼
+                      </span>
+                    </button>
+                    {isExpanded && (
+                      <div className="ml-4 mt-1 flex flex-col gap-1 border-l-2 border-orange-100 pl-3">
+                        {item.children.map((child) => {
+                          const childActive = isActive(child.to)
+                          const ChildIcon = child.icon
+                          return (
+                            <Link
+                              key={child.to}
+                              to={child.to}
+                              className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-medium transition ${
+                                childActive
+                                  ? 'bg-orange-50 text-orange-600'
+                                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700'
+                              }`}
+                            >
+                              {ChildIcon && <ChildIcon className="text-sm" />}
+                              <span>{child.label}</span>
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )
+              }
+
+              // Menu item không có children
               const active = isActive(item.to)
               const Icon = item.icon
               return (
