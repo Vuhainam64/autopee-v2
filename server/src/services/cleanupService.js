@@ -7,7 +7,7 @@ const cron = require('node-cron')
 const UsageHistory = require('../models/UsageHistory')
 const PaymentRequest = require('../models/PaymentRequest')
 const Transaction = require('../models/Transaction')
-const UserCookie = require('../models/UserCookie')
+const ShopeeCookie = require('../models/ShopeeCookie')
 
 /**
  * Hàm dọn dẹp dữ liệu cũ
@@ -40,17 +40,17 @@ async function cleanupOldData() {
     })
     console.log(`[CleanupService] Đã xóa ${transactionResult.deletedCount} Transaction records`)
 
-    // 4. Xóa UserCookie cũ hơn 7 ngày
-    const userCookieResult = await UserCookie.deleteMany({
+    // 4. Xóa ShopeeCookie cũ hơn 7 ngày
+    const shopeeCookieResult = await ShopeeCookie.deleteMany({
       createdAt: { $lt: sevenDaysAgo },
     })
-    console.log(`[CleanupService] Đã xóa ${userCookieResult.deletedCount} UserCookie records`)
+    console.log(`[CleanupService] Đã xóa ${shopeeCookieResult.deletedCount} ShopeeCookie records`)
 
     const totalDeleted =
       usageHistoryResult.deletedCount +
       paymentRequestResult.deletedCount +
       transactionResult.deletedCount +
-      userCookieResult.deletedCount
+      shopeeCookieResult.deletedCount
 
     console.log(`[CleanupService] Hoàn thành! Tổng cộng đã xóa ${totalDeleted} records`)
   } catch (error) {

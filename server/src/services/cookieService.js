@@ -1,4 +1,4 @@
-const UserCookie = require('../models/UserCookie')
+const ShopeeCookie = require('../models/ShopeeCookie')
 
 /**
  * Lấy cookie từ database, ưu tiên cookie có usageCount thấp nhất
@@ -8,7 +8,7 @@ const UserCookie = require('../models/UserCookie')
 async function getAvailableCookie(userId = 'guest') {
   try {
     // Tìm cookie active có usageCount thấp nhất
-    const cookie = await UserCookie.findOne({
+    const cookie = await ShopeeCookie.findOne({
       userId: userId,
       isActive: true,
     })
@@ -29,7 +29,7 @@ async function getAvailableCookie(userId = 'guest') {
  */
 async function incrementCookieUsage(cookieId) {
   try {
-    await UserCookie.findByIdAndUpdate(cookieId, {
+    await ShopeeCookie.findByIdAndUpdate(cookieId, {
       $inc: { usageCount: 1 },
       $set: { lastUsedAt: new Date() },
     })
@@ -47,7 +47,7 @@ async function incrementCookieUsage(cookieId) {
  */
 async function saveCookie(userId, cookieString, name = 'Default Cookie') {
   try {
-    const cookie = await UserCookie.findOneAndUpdate(
+    const cookie = await ShopeeCookie.findOneAndUpdate(
       {
         userId: userId,
         cookie: cookieString.trim(),
@@ -86,7 +86,7 @@ async function deleteCookie(cookieId, userId = null) {
       ? { _id: cookieId, userId: userId }
       : { _id: cookieId }
     
-    const result = await UserCookie.deleteOne(query)
+    const result = await ShopeeCookie.deleteOne(query)
     return result.deletedCount > 0
   } catch (error) {
     console.error('Error deleting cookie:', error)
@@ -106,7 +106,7 @@ async function deleteCookieByString(cookieString, userId = null) {
       ? { cookie: cookieString.trim(), userId: userId }
       : { cookie: cookieString.trim() }
     
-    const result = await UserCookie.deleteOne(query)
+    const result = await ShopeeCookie.deleteOne(query)
     return result.deletedCount > 0
   } catch (error) {
     console.error('Error deleting cookie by string:', error)

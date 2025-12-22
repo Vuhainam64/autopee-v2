@@ -16,7 +16,7 @@ const RoutePermission = require("../models/RoutePermission");
 const ApiToken = require("../models/ApiToken");
 const UsageHistory = require("../models/UsageHistory");
 const PaymentRequest = require("../models/PaymentRequest");
-const UserCookie = require("../models/UserCookie");
+const ShopeeCookie = require("../models/ShopeeCookie");
 const crypto = require("crypto");
 
 const router = express.Router();
