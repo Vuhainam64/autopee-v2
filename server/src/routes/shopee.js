@@ -438,9 +438,24 @@ router.post(
           if (firstResponse.error === 0 && shopeeResponse.data && shopeeResponse.data.voucher_basic_info) {
             const voucherInfo = shopeeResponse.data.voucher_basic_info;
             
-            // Xác định loại: freeship nếu iconText === 'FREESHIP' hoặc voucherMarketType === 2
-            const isFreeship = voucherInfo.icon_text === 'FREESHIP' || voucherInfo.voucher_market_type === 2;
+            // Xác định loại: freeship nếu:
+            // 1. icon_text === 'FREESHIP' hoặc 'Mã vận chuyển'
+            // 2. voucher_market_type === 2
+            // 3. reward_type === 2 (freeship thường có reward_type là 2)
+            // 4. Có fsv_voucher_card_ui_info (freeship có thông tin này)
+            const iconText = voucherInfo.icon_text || '';
+            const isFreeship = 
+              iconText === 'FREESHIP' || 
+              iconText === 'Mã vận chuyển' ||
+              voucherInfo.voucher_market_type === 2 ||
+              (voucherInfo.reward_type === 2 && shopeeResponse.data.voucher_basic_info.fsv_voucher_card_ui_info);
             const Model = isFreeship ? FreeshipShopee : ShopeeVoucher;
+            
+            // Xử lý discount value: nếu là freeship và có fsv_voucher_card_ui_info, lấy từ composed_discount_value
+            let discountValue = voucherInfo.discount_value || 0;
+            if (isFreeship && voucherInfo.fsv_voucher_card_ui_info?.composed_discount_value) {
+              discountValue = voucherInfo.fsv_voucher_card_ui_info.composed_discount_value;
+            }
             
             // Lưu hoặc cập nhật voucher/freeship vào database
             await Model.findOneAndUpdate(
@@ -454,7 +469,7 @@ router.post(
                 signature: signature,
                 voucherName: voucherInfo.title || voucher_code,
                 description: shopeeResponse.data.voucher_usage_term?.description || '',
-                discountValue: voucherInfo.discount_value || 0,
+                discountValue: discountValue,
                 discountPercentage: voucherInfo.discount_percentage || 0,
                 discountCap: voucherInfo.discount_cap || 0,
                 minSpend: voucherInfo.min_spend || 0,
@@ -596,10 +611,15 @@ router.post(
           claimEndTime: claimEndTime || 0,
           hasExpired: hasExpired || false,
           disabled: disabled || false,
+          fullyRedeemed: fullyRedeemed || false,
+          fullyClaimed: fullyClaimed || false,
+          fullyUsed: fullyUsed || false,
           newUserOnly: newUserOnly || false,
           shopeeWalletOnly: shopeeWalletOnly || false,
           productLimit: productLimit || false,
           usageLimit: usageLimit || null,
+          usedCount: usedCount || 0,
+          leftCount: leftCount || null,
           voucherMarketType: voucherMarketType || 1,
           useType: useType || 0,
           iconText: iconText || '',
@@ -677,6 +697,12 @@ router.get(
       if (disabled !== undefined) {
         query.disabled = disabled === 'true';
       }
+      
+      // Nếu không phải admin request, ẩn các voucher bị hidden
+      // Admin có thể thấy tất cả bằng cách truyền ?admin=true
+      if (req.query.admin !== 'true') {
+        query.hidden = { $ne: true };
+      }
 
       const vouchers = await ShopeeVoucher.find(query)
         .sort({ createdAt: -1 })
@@ -697,6 +723,50 @@ router.get(
   }),
 );
 
+// PUT /shopee/vouchers/:id/toggle - Toggle hidden hoặc hasExpired
+router.put(
+  "/vouchers/:id/toggle",
+  authenticate,
+  handleAsync(async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { field, value } = req.body; // field: 'hidden' hoặc 'hasExpired', value: boolean
+
+      if (!field || (field !== 'hidden' && field !== 'hasExpired')) {
+        return res.status(400).json({
+          success: false,
+          error: { message: "field phải là 'hidden' hoặc 'hasExpired'" },
+        });
+      }
+
+      const voucher = await ShopeeVoucher.findByIdAndUpdate(
+        id,
+        { [field]: value },
+        { new: true }
+      );
+
+      if (!voucher) {
+        return res.status(404).json({
+          success: false,
+          error: { message: "Không tìm thấy voucher" },
+        });
+      }
+
+      res.json({
+        success: true,
+        data: voucher,
+        message: `Đã ${value ? 'bật' : 'tắt'} ${field === 'hidden' ? 'ẩn voucher' : 'hết hạn'}`,
+      });
+    } catch (error) {
+      console.error("[API] PUT /shopee/vouchers/:id/toggle - Error:", error.message);
+      return res.status(500).json({
+        success: false,
+        error: { message: error.message || "Lỗi khi cập nhật voucher" },
+      });
+    }
+  }),
+);
+
 // GET /shopee/freeships - Lấy danh sách freeship từ database
 router.get(
   "/freeships",
@@ -710,6 +780,12 @@ router.get(
       }
       if (disabled !== undefined) {
         query.disabled = disabled === 'true';
+      }
+      
+      // Nếu không phải admin request, ẩn các freeship bị hidden
+      // Admin có thể thấy tất cả bằng cách truyền ?admin=true
+      if (req.query.admin !== 'true') {
+        query.hidden = { $ne: true };
       }
 
       const freeships = await FreeshipShopee.find(query)
@@ -756,10 +832,15 @@ router.post(
         claimEndTime,
         hasExpired,
         disabled,
+        fullyRedeemed,
+        fullyClaimed,
+        fullyUsed,
         newUserOnly,
         shopeeWalletOnly,
         productLimit,
         usageLimit,
+        usedCount,
+        leftCount,
         voucherMarketType,
         useType,
         iconText,
@@ -804,10 +885,15 @@ router.post(
           claimEndTime: claimEndTime || 0,
           hasExpired: hasExpired || false,
           disabled: disabled || false,
+          fullyRedeemed: fullyRedeemed || false,
+          fullyClaimed: fullyClaimed || false,
+          fullyUsed: fullyUsed || false,
           newUserOnly: newUserOnly || false,
           shopeeWalletOnly: shopeeWalletOnly || false,
           productLimit: productLimit || false,
           usageLimit: usageLimit || null,
+          usedCount: usedCount || 0,
+          leftCount: leftCount || null,
           voucherMarketType: voucherMarketType || 2,
           useType: useType || 0,
           iconText: iconText || 'FREESHIP',
@@ -835,6 +921,50 @@ router.post(
       return res.status(500).json({
         success: false,
         error: { message: error.message || "Lỗi khi lưu freeship" },
+      });
+    }
+  }),
+);
+
+// PUT /shopee/freeships/:id/toggle - Toggle hidden hoặc hasExpired
+router.put(
+  "/freeships/:id/toggle",
+  authenticate,
+  handleAsync(async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { field, value } = req.body; // field: 'hidden' hoặc 'hasExpired', value: boolean
+
+      if (!field || (field !== 'hidden' && field !== 'hasExpired')) {
+        return res.status(400).json({
+          success: false,
+          error: { message: "field phải là 'hidden' hoặc 'hasExpired'" },
+        });
+      }
+
+      const freeship = await FreeshipShopee.findByIdAndUpdate(
+        id,
+        { [field]: value },
+        { new: true }
+      );
+
+      if (!freeship) {
+        return res.status(404).json({
+          success: false,
+          error: { message: "Không tìm thấy freeship" },
+        });
+      }
+
+      res.json({
+        success: true,
+        data: freeship,
+        message: `Đã ${value ? 'bật' : 'tắt'} ${field === 'hidden' ? 'ẩn freeship' : 'hết hạn'}`,
+      });
+    } catch (error) {
+      console.error("[API] PUT /shopee/freeships/:id/toggle - Error:", error.message);
+      return res.status(500).json({
+        success: false,
+        error: { message: error.message || "Lỗi khi cập nhật freeship" },
       });
     }
   }),

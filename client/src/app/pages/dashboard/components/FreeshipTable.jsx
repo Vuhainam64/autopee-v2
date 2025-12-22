@@ -1,5 +1,5 @@
 import React from 'react'
-import { Table, Tag, Space, Button, Typography, Empty, Spin } from 'antd'
+import { Table, Tag, Space, Button, Typography, Empty, Spin, Switch, Tooltip } from 'antd'
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 import dayjs from 'dayjs'
 
@@ -9,7 +9,9 @@ const FreeshipTable = ({
   loading, 
   freeships, 
   onEdit, 
-  onDelete 
+  onDelete,
+  onToggleHidden,
+  onToggleExpired,
 }) => {
   const columns = [
     {
@@ -94,27 +96,47 @@ const FreeshipTable = ({
     {
       title: 'Thao tác',
       key: 'actions',
-      width: 150,
+      width: 250,
       fixed: 'right',
       render: (_, record) => (
-        <Space>
-          <Button
-            type="link"
-            icon={<EditOutlined />}
-            onClick={() => onEdit(record)}
-            size="small"
-          >
-            Sửa
-          </Button>
-          <Button
-            type="link"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => onDelete(record)}
-            size="small"
-          >
-            Xóa
-          </Button>
+        <Space orientation="vertical" size="small">
+          <Space>
+            <Button
+              type="link"
+              icon={<EditOutlined />}
+              onClick={() => onEdit(record)}
+              size="small"
+            >
+              Sửa
+            </Button>
+            <Button
+              type="link"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => onDelete(record)}
+              size="small"
+            >
+              Xóa
+            </Button>
+          </Space>
+          <Space>
+            <Tooltip title={record.hidden ? 'Hiện freeship' : 'Ẩn freeship'}>
+              <span>Ẩn: </span>
+              <Switch
+                checked={record.hidden || false}
+                onChange={(checked) => onToggleHidden(record, checked)}
+                size="small"
+              />
+            </Tooltip>
+            <Tooltip title={record.hasExpired ? 'Đánh dấu chưa hết hạn' : 'Đánh dấu hết hạn'}>
+              <span>Hết hạn: </span>
+              <Switch
+                checked={record.hasExpired || false}
+                onChange={(checked) => onToggleExpired(record, checked)}
+                size="small"
+              />
+            </Tooltip>
+          </Space>
         </Space>
       ),
     },

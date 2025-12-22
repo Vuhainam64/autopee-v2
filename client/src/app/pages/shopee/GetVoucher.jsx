@@ -7,7 +7,6 @@ import {
   Typography,
   Space,
   Card,
-  List,
   Tag,
   Spin,
   Empty,
@@ -15,7 +14,7 @@ import {
   Badge,
   Tooltip,
   Divider,
-  message,
+  App,
   Descriptions,
 } from 'antd'
 import { FaGift, FaShippingFast } from 'react-icons/fa'
@@ -26,6 +25,7 @@ import { post, get } from '../../services/api.js'
 const { Text } = Typography
 
 const GetVoucher = () => {
+  const { message } = App.useApp()
   const [cookieValue, setCookieValue] = useState('')
   const [isSavingId, setIsSavingId] = useState('')
   const [isSavingAll, setIsSavingAll] = useState(false)
@@ -228,70 +228,29 @@ const GetVoucher = () => {
 
     return (
       <div className='space-y-4'>
-        <List
-          itemLayout='horizontal'
-          dataSource={data}
-          renderItem={(item, index) => {
-            // Shopee trả về giá trị dư 5 số 0, chia cho 100000
-            const actualDiscountValue = item.discountValue > 0 ? Math.floor(item.discountValue / 100000) : 0
-            const actualDiscountCap = item.discountCap > 0 ? Math.floor(item.discountCap / 100000) : 0
-            const actualMinSpend = item.minSpend > 0 ? Math.floor(item.minSpend / 100000) : 0
+        {data.map((item, index) => {
+          // Shopee trả về giá trị dư 5 số 0, chia cho 100000
+          const actualDiscountValue = item.discountValue > 0 ? Math.floor(item.discountValue / 100000) : 0
+          const actualDiscountCap = item.discountCap > 0 ? Math.floor(item.discountCap / 100000) : 0
+          const actualMinSpend = item.minSpend > 0 ? Math.floor(item.minSpend / 100000) : 0
 
-            return (
-              <List.Item
-                className='bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow py-4'
-                style={{ paddingLeft: '4px', paddingRight: '16px', marginBottom: '16px' }}
-              actions={[
-                <Space direction="horizontal" size="small">
-                  <Tooltip title='Xem chi tiết'>
-                    <Button
-                      size='small'
-                      icon={<EyeOutlined />}
-                      onClick={() => showVoucherDetail(item)}
-                    >
-                      Xem chi tiết
-                    </Button>
-                  </Tooltip>
-                  <Tooltip title='Sao chép mã'>
-                    <Button
-                      size='small'
-                      className='hover:!border-gray-300'
-                      onClick={() => {
-                        navigator.clipboard
-                          .writeText(item.voucherCode)
-                          .then(() => message.success('Đã sao chép mã'))
-                      }}
-                    >
-                      Sao chép mã
-                    </Button>
-                  </Tooltip>
-                  <Tooltip title={!isCookieValid ? 'Dán cookie trước khi lưu' : 'Lưu voucher này'}>
-                    <Button
-                      type='primary'
-                      size='small'
-                      className='bg-gradient-to-r from-blue-600 to-indigo-600 shadow hover:from-blue-700 hover:to-indigo-700'
-                      loading={isSavingId === String(item.promotionId)}
-                      onClick={() => saveSingle(item)}
-                      disabled={!isCookieValid || isSavingAll}
-                    >
-                      Lưu
-                    </Button>
-                  </Tooltip>
-                </Space>
-              ]}
+          return (
+            <Card
+              key={`${item.promotionId}-${item.voucherCode}-${index}`}
+              className={`rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow ${
+                item.hasExpired ? 'bg-gray-100 opacity-60' : 'bg-white'
+              }`}
+              style={{ paddingLeft: '4px', paddingRight: '16px', marginBottom: '16px' }}
             >
-              <List.Item.Meta
-                className='pl-1'
-                title={
-                  <div className='flex items-center gap-2 flex-wrap'>
+              <div className='flex items-start justify-between gap-4'>
+                <div className='flex-1 pl-1'>
+                  <div className='flex items-center gap-2 flex-wrap mb-2'>
                     <Tag color={tagColor} className='font-mono'>
                       {item.voucherCode}
                     </Tag>
                     {item.hasExpired && <Tag color="red">Đã hết hạn</Tag>}
                     {item.disabled && <Tag color="default">Đã vô hiệu</Tag>}
                   </div>
-                }
-                description={
                   <div className='mt-2 space-y-1'>
                     {actualDiscountValue > 0 && (
                       <div className='text-sm text-gray-700'>
@@ -312,12 +271,49 @@ const GetVoucher = () => {
                       </div>
                     )}
                   </div>
-                }
-              />
-            </List.Item>
+                </div>
+                <div className='flex-shrink-0'>
+                  <Space size="small">
+                    <Tooltip title='Xem chi tiết'>
+                      <Button
+                        size='small'
+                        icon={<EyeOutlined />}
+                        onClick={() => showVoucherDetail(item)}
+                      >
+                        Xem chi tiết
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title='Sao chép mã'>
+                      <Button
+                        size='small'
+                        className='hover:!border-gray-300'
+                        onClick={() => {
+                          navigator.clipboard
+                            .writeText(item.voucherCode)
+                            .then(() => message.success('Đã sao chép mã'))
+                        }}
+                      >
+                        Sao chép mã
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title={!isCookieValid ? 'Dán cookie trước khi lưu' : 'Lưu voucher này'}>
+                      <Button
+                        type='primary'
+                        size='small'
+                        className='bg-gradient-to-r from-blue-600 to-indigo-600 shadow hover:from-blue-700 hover:to-indigo-700'
+                        loading={isSavingId === String(item.promotionId)}
+                        onClick={() => saveSingle(item)}
+                        disabled={!isCookieValid || isSavingAll}
+                      >
+                        Lưu
+                      </Button>
+                    </Tooltip>
+                  </Space>
+                </div>
+              </div>
+            </Card>
           )
-        }}
-        />
+        })}
       </div>
     )
   }
@@ -356,10 +352,10 @@ const GetVoucher = () => {
           Lấy Voucher Shopee
         </h1>
       </div>
-      <Space direction='vertical' size='large' className='w-full'>
+      <Space orientation='vertical' size='large' className='w-full'>
           <Card
             className='rounded-xl border-none shadow-sm bg-white/70 backdrop-blur'
-            bodyStyle={{ padding: 16 }}
+            styles={{ body: { padding: 16 } }}
           >
             <div className='flex flex-col md:flex-row md:items-end md:justify-between gap-3'>
               <div className='text-gray-700'>
@@ -412,7 +408,7 @@ const GetVoucher = () => {
 
           <Card
             className='rounded-xl border-none shadow-md bg-white/80 backdrop-blur'
-            bodyStyle={{ padding: 16 }}
+            styles={{ body: { padding: 16 } }}
           >
             <Tabs defaultActiveKey='voucher' items={[voucherTab, freeshipTab]} />
           </Card>

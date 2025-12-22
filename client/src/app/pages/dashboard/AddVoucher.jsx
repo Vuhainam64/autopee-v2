@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Button, Typography, Space, Card, Tabs, message, Modal } from 'antd'
 import { GiftOutlined, PlusOutlined } from '@ant-design/icons'
 import { FaShippingFast } from 'react-icons/fa'
-import { post, get, del } from '../../services/api.js'
+import { post, get, del, put } from '../../services/api.js'
 import dayjs from 'dayjs'
 import VoucherTable from './components/VoucherTable'
 import FreeshipTable from './components/FreeshipTable'
@@ -38,7 +38,8 @@ function AddVoucher() {
   const loadVouchers = async () => {
     try {
       setLoading(true)
-      const response = await get('/shopee/vouchers?limit=200')
+      // Thêm ?admin=true để admin có thể thấy tất cả voucher kể cả bị ẩn
+      const response = await get('/shopee/vouchers?limit=200&admin=true')
       
       if (response?.success && Array.isArray(response.data)) {
         setVouchers(response.data)
@@ -57,7 +58,7 @@ function AddVoucher() {
   const loadFreeships = async () => {
     try {
       setFreeshipLoading(true)
-      const response = await get('/shopee/freeships?limit=200')
+      const response = await get('/shopee/freeships?limit=200&admin=true')
       
       if (response?.success && Array.isArray(response.data)) {
         setFreeships(response.data)
@@ -283,6 +284,78 @@ function AddVoucher() {
     })
   }
 
+  const handleToggleHidden = async (record, value) => {
+    try {
+      const response = await put(`/shopee/vouchers/${record._id}/toggle`, {
+        field: 'hidden',
+        value: value,
+      })
+      if (response?.success) {
+        message.success(value ? 'Đã ẩn voucher' : 'Đã hiện voucher')
+        await loadVouchers()
+      } else {
+        message.error(response?.error?.message || 'Không thể cập nhật')
+      }
+    } catch (e) {
+      console.error('Error toggling hidden:', e)
+      message.error('Có lỗi xảy ra khi cập nhật')
+    }
+  }
+
+  const handleToggleExpired = async (record, value) => {
+    try {
+      const response = await put(`/shopee/vouchers/${record._id}/toggle`, {
+        field: 'hasExpired',
+        value: value,
+      })
+      if (response?.success) {
+        message.success(value ? 'Đã đánh dấu hết hạn' : 'Đã bỏ đánh dấu hết hạn')
+        await loadVouchers()
+      } else {
+        message.error(response?.error?.message || 'Không thể cập nhật')
+      }
+    } catch (e) {
+      console.error('Error toggling expired:', e)
+      message.error('Có lỗi xảy ra khi cập nhật')
+    }
+  }
+
+  const handleFreeshipToggleHidden = async (record, value) => {
+    try {
+      const response = await put(`/shopee/freeships/${record._id}/toggle`, {
+        field: 'hidden',
+        value: value,
+      })
+      if (response?.success) {
+        message.success(value ? 'Đã ẩn freeship' : 'Đã hiện freeship')
+        await loadFreeships()
+      } else {
+        message.error(response?.error?.message || 'Không thể cập nhật')
+      }
+    } catch (e) {
+      console.error('Error toggling hidden:', e)
+      message.error('Có lỗi xảy ra khi cập nhật')
+    }
+  }
+
+  const handleFreeshipToggleExpired = async (record, value) => {
+    try {
+      const response = await put(`/shopee/freeships/${record._id}/toggle`, {
+        field: 'hasExpired',
+        value: value,
+      })
+      if (response?.success) {
+        message.success(value ? 'Đã đánh dấu hết hạn' : 'Đã bỏ đánh dấu hết hạn')
+        await loadFreeships()
+      } else {
+        message.error(response?.error?.message || 'Không thể cập nhật')
+      }
+    } catch (e) {
+      console.error('Error toggling expired:', e)
+      message.error('Có lỗi xảy ra khi cập nhật')
+    }
+  }
+
   const handleImportFromJson = async () => {
     try {
       if (!jsonValue.trim()) {
@@ -308,13 +381,30 @@ function AddVoucher() {
       const voucherInfo = jsonData.data.voucher_basic_info
       const usageTerm = jsonData.data.voucher_usage_term || {}
 
+      // Xác định loại: freeship nếu:
+      // 1. icon_text === 'FREESHIP' hoặc 'Mã vận chuyển'
+      // 2. voucher_market_type === 2
+      // 3. reward_type === 2 và có fsv_voucher_card_ui_info
+      const iconText = voucherInfo.icon_text || '';
+      const isFreeship = 
+        iconText === 'FREESHIP' || 
+        iconText === 'Mã vận chuyển' ||
+        voucherInfo.voucher_market_type === 2 ||
+        (voucherInfo.reward_type === 2 && voucherInfo.fsv_voucher_card_ui_info);
+
+      // Xử lý discount value từ fsv_voucher_card_ui_info nếu là freeship
+      let discountValue = voucherInfo.discount_value ? Math.floor(voucherInfo.discount_value / 100000) : 0;
+      if (isFreeship && voucherInfo.fsv_voucher_card_ui_info?.composed_discount_value) {
+        discountValue = Math.floor(voucherInfo.fsv_voucher_card_ui_info.composed_discount_value / 100000);
+      }
+
       const voucherData = {
         promotionId: voucherInfo.promotionid,
         voucherCode: voucherInfo.voucher_code,
         signature: voucherInfo.signature,
         voucherName: voucherInfo.title || voucherInfo.voucher_code,
         description: usageTerm.description || voucherInfo.description || '',
-        discountValue: voucherInfo.discount_value ? Math.floor(voucherInfo.discount_value / 100000) : 0,
+        discountValue: discountValue,
         discountPercentage: voucherInfo.discount_percentage || 0,
         discountCap: voucherInfo.discount_cap ? Math.floor(voucherInfo.discount_cap / 100000) : 0,
         minSpend: voucherInfo.min_spend ? Math.floor(voucherInfo.min_spend / 100000) : 0,
@@ -327,13 +417,18 @@ function AddVoucher() {
         claimEndTime: voucherInfo.claim_end_time || 0,
         hasExpired: voucherInfo.has_expired || false,
         disabled: voucherInfo.disabled || false,
+        fullyRedeemed: voucherInfo.fully_redeemed || false,
+        fullyClaimed: voucherInfo.fully_claimed || false,
+        fullyUsed: voucherInfo.fully_used || false,
         newUserOnly: voucherInfo.new_user_only || false,
         shopeeWalletOnly: voucherInfo.shopee_wallet_only || false,
         productLimit: voucherInfo.product_limit || false,
         usageLimit: voucherInfo.usage_limit || null,
-        voucherMarketType: voucherInfo.voucher_market_type || 1,
+        usedCount: voucherInfo.used_count || 0,
+        leftCount: voucherInfo.left_count || null,
+        voucherMarketType: voucherInfo.voucher_market_type || (isFreeship ? 2 : 1),
         useType: voucherInfo.use_type || 0,
-        iconText: voucherInfo.icon_text || '',
+        iconText: voucherInfo.icon_text || (isFreeship ? 'FREESHIP' : ''),
         iconHash: voucherInfo.icon_hash || '',
         customisedLabels: (voucherInfo.customised_labels || []).map(label => label.content || label),
         brandingColor: voucherInfo.branding_color || '#EE4D2D',
@@ -343,15 +438,20 @@ function AddVoucher() {
         rawData: jsonData.data,
       }
 
-      const response = await post('/shopee/vouchers', voucherData)
+      const endpoint = isFreeship ? '/shopee/freeships' : '/shopee/vouchers';
+      const response = await post(endpoint, voucherData)
 
       if (response?.success) {
-        message.success('Đã import voucher thành công')
+        message.success(`Đã import ${isFreeship ? 'freeship' : 'voucher'} thành công`)
         setJsonModalVisible(false)
         setJsonValue('')
-        await loadVouchers()
+        if (isFreeship) {
+          await loadFreeships()
+        } else {
+          await loadVouchers()
+        }
       } else {
-        message.error(response?.error?.message || 'Không thể import voucher')
+        message.error(response?.error?.message || `Không thể import ${isFreeship ? 'freeship' : 'voucher'}`)
       }
     } catch (e) {
       console.error('Error importing voucher from JSON:', e)
@@ -386,13 +486,19 @@ function AddVoucher() {
       const voucherInfo = jsonData.data.voucher_basic_info
       const usageTerm = jsonData.data.voucher_usage_term || {}
 
+      // Xử lý discount value từ fsv_voucher_card_ui_info nếu có
+      let discountValue = voucherInfo.discount_value ? Math.floor(voucherInfo.discount_value / 100000) : 0;
+      if (voucherInfo.fsv_voucher_card_ui_info?.composed_discount_value) {
+        discountValue = Math.floor(voucherInfo.fsv_voucher_card_ui_info.composed_discount_value / 100000);
+      }
+
       const freeshipData = {
         promotionId: voucherInfo.promotionid,
         voucherCode: voucherInfo.voucher_code,
         signature: voucherInfo.signature,
         voucherName: voucherInfo.title || voucherInfo.voucher_code,
         description: usageTerm.description || voucherInfo.description || '',
-        discountValue: voucherInfo.discount_value ? Math.floor(voucherInfo.discount_value / 100000) : 0,
+        discountValue: discountValue,
         discountPercentage: voucherInfo.discount_percentage || 0,
         discountCap: voucherInfo.discount_cap ? Math.floor(voucherInfo.discount_cap / 100000) : 0,
         minSpend: voucherInfo.min_spend ? Math.floor(voucherInfo.min_spend / 100000) : 0,
@@ -405,10 +511,15 @@ function AddVoucher() {
         claimEndTime: voucherInfo.claim_end_time || 0,
         hasExpired: voucherInfo.has_expired || false,
         disabled: voucherInfo.disabled || false,
+        fullyRedeemed: voucherInfo.fully_redeemed || false,
+        fullyClaimed: voucherInfo.fully_claimed || false,
+        fullyUsed: voucherInfo.fully_used || false,
         newUserOnly: voucherInfo.new_user_only || false,
         shopeeWalletOnly: voucherInfo.shopee_wallet_only || false,
         productLimit: voucherInfo.product_limit || false,
         usageLimit: voucherInfo.usage_limit || null,
+        usedCount: voucherInfo.used_count || 0,
+        leftCount: voucherInfo.left_count || null,
         voucherMarketType: voucherInfo.voucher_market_type || 2,
         useType: voucherInfo.use_type || 0,
         iconText: voucherInfo.icon_text || 'FREESHIP',
@@ -469,6 +580,8 @@ function AddVoucher() {
         vouchers={vouchers}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onToggleHidden={handleToggleHidden}
+        onToggleExpired={handleToggleExpired}
       />
     </>
   )
@@ -503,6 +616,8 @@ function AddVoucher() {
         freeships={freeships}
         onEdit={handleFreeshipEdit}
         onDelete={handleFreeshipDelete}
+        onToggleHidden={handleFreeshipToggleHidden}
+        onToggleExpired={handleFreeshipToggleExpired}
       />
     </>
   )

@@ -88,6 +88,10 @@ const freeshipShopeeSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    hidden: {
+      type: Boolean,
+      default: false,
+    },
     fullyRedeemed: {
       type: Boolean,
       default: false,
