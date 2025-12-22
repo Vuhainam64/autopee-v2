@@ -370,22 +370,24 @@ const checkPhone = async (phone, cookie = null) => {
             };
           }
           
-          // Nếu status 403, cookie không hợp lệ - trả về kết quả từ bước 1
+          // Nếu status 403, cookie không hợp lệ - trả về kết quả từ bước 1 và đánh dấu cookie không hợp lệ
           if (status === 403) {
             // Nếu error === 2, số điện thoại đã tồn tại
             if (error === 2) {
               return {
                 phone: cleanPhone,
                 exists: true,
-                message: "Số điện thoại đã tồn tại trên Shopee (cookie không hợp lệ, không thể xác định chính xác)",
+                message: "Số điện thoại đã tồn tại trên Shopee (lỗi dữ liệu, không thể xác định chính xác)",
                 errorCode: error,
+                invalidCookie: true, // Đánh dấu cookie không hợp lệ
               };
             }
             return {
               phone: cleanPhone,
               exists: false,
-              message: "Lỗi rate limit, vui lòng thử lại sau",
+              message: "lỗi dữ liệu, không thể xác định chính xác",
               errorCode: error,
+              invalidCookie: true, // Đánh dấu cookie không hợp lệ
             };
           }
         }

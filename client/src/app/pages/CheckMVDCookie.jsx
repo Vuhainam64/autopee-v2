@@ -718,7 +718,7 @@ function CheckMVDCookie() {
                     <Text strong>Request Body:</Text>
                     <pre className="bg-slate-50 p-3 rounded mt-2 overflow-x-auto">
 {`{
-  "cookie": "SPC_ST=...",  // Optional: Nếu không có sẽ tự động lấy từ database
+  "cookie": "SPC_ST=...",  // Cookie Shopee
   "order_id": "123456789" // ID đơn hàng (bắt buộc)
 }`}
                     </pre>

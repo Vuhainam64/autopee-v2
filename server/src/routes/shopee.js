@@ -13,6 +13,8 @@ const {
   getAvailableCookie,
   incrementCookieUsage,
   saveCookie,
+  deleteCookie,
+  deleteCookieByString,
 } = require("../services/cookieService");
 const User = require("../models/User");
 const UsageHistory = require("../models/UsageHistory");
@@ -234,6 +236,22 @@ router.post(
     try {
       // Kiểm tra số điện thoại
       const result = await checkPhone(phone, cookieToUse);
+      
+      // Nếu cookie không hợp lệ (403), xóa cookie khỏi database
+      if (result.invalidCookie) {
+        if (cookieDoc && cookieDoc._id) {
+          const deleted = await deleteCookie(cookieDoc._id, userId);
+          if (deleted) {
+            console.log(`[API] POST /shopee/check-phone - Deleted invalid cookie: ${cookieDoc._id}`);
+          }
+        } else if (cookieToUse) {
+          // Nếu cookie từ body, tìm và xóa theo cookie string
+          const deleted = await deleteCookieByString(cookieToUse, userId);
+          if (deleted) {
+            console.log(`[API] POST /shopee/check-phone - Deleted invalid cookie by string`);
+          }
+        }
+      }
       
       // Tính giá dựa trên kết quả
       // 1000 VND nếu chưa tồn tại, 100 VND nếu đã tồn tại

@@ -8,6 +8,8 @@ const Role = require("../models/Role");
 const User = require("../models/User");
 const ServerLog = require("../models/ServerLog");
 const LogConfig = require("../models/LogConfig");
+const Transaction = require("../models/Transaction");
+const UsageHistory = require("../models/UsageHistory");
 const { getUserProfile } = require("../services/userService.mongo");
 
 const router = express.Router();
@@ -919,6 +921,127 @@ router.delete(
     }
 
     res.json({ success: true, message: "Log config đã được xóa" });
+  }),
+);
+
+// GET /admin/dashboard/stats - Lấy thống kê tổng quan hệ thống
+router.get(
+  "/dashboard/stats",
+  handleAsync(async (req, res) => {
+    // Tổng số người dùng (không tính disabled)
+    const totalUsers = await User.countDocuments({ disabled: { $ne: true } });
+
+    // Tổng số giao dịch (đơn hàng)
+    const totalTransactions = await Transaction.countDocuments({ status: 'processed' });
+
+    // Tổng doanh thu (tổng tiền nạp vào)
+    const totalRevenueResult = await Transaction.aggregate([
+      {
+        $match: {
+          transferType: 'in',
+          status: 'processed',
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$amountIn' },
+        },
+      },
+    ]);
+    const totalRevenue = totalRevenueResult.length > 0 ? totalRevenueResult[0].total : 0;
+
+    // Tổng số giao dịch thành công (đã xử lý)
+    const successfulTransactions = await Transaction.countDocuments({ 
+      status: 'processed',
+      transferType: 'in',
+    });
+
+    res.json({
+      success: true,
+      data: {
+        totalUsers,
+        totalTransactions,
+        totalRevenue,
+        successfulTransactions,
+      },
+    });
+  }),
+);
+
+// GET /admin/dashboard/activities - Lấy lịch sử hoạt động gần đây (giao dịch và sử dụng dịch vụ)
+router.get(
+  "/dashboard/activities",
+  handleAsync(async (req, res) => {
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = parseInt(req.query.skip) || 0;
+
+    // Lấy giao dịch gần đây (nạp tiền và rút tiền)
+    const transactions = await Transaction.find({
+      status: 'processed',
+    })
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip)
+      .lean();
+
+    // Lấy lịch sử sử dụng dịch vụ gần đây
+    const usageHistories = await UsageHistory.find()
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(skip)
+      .lean();
+
+    // Kết hợp và sắp xếp theo thời gian
+    const activities = [];
+
+    // Thêm giao dịch vào danh sách
+    for (const transaction of transactions) {
+      const user = await User.findOne({ uid: transaction.userId }).lean();
+      const userName = user?.displayName || user?.email || transaction.userId || 'Không xác định';
+
+      activities.push({
+        id: transaction._id.toString(),
+        type: 'transaction',
+        title: transaction.transferType === 'in' ? 'Nạp tiền' : 'Rút tiền',
+        description: `${userName} - ${transaction.description || transaction.content || 'Giao dịch'}`,
+        amount: transaction.transferType === 'in' ? transaction.amountIn : -transaction.amountOut,
+        date: transaction.createdAt,
+        userId: transaction.userId,
+        userName: userName,
+      });
+    }
+
+    // Thêm lịch sử sử dụng vào danh sách
+    for (const usage of usageHistories) {
+      const user = await User.findOne({ uid: usage.userId }).lean();
+      const userName = user?.displayName || user?.email || usage.userId || 'Không xác định';
+
+      activities.push({
+        id: usage._id.toString(),
+        type: 'usage',
+        title: usage.service,
+        description: `${userName} - ${usage.metadata?.phone || usage.metadata?.trackingID || ''}`,
+        amount: usage.amount, // Đã là số âm
+        date: usage.createdAt,
+        userId: usage.userId,
+        userName: userName,
+      });
+    }
+
+    // Sắp xếp theo thời gian (mới nhất trước)
+    activities.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // Giới hạn số lượng kết quả
+    const limitedActivities = activities.slice(0, limit);
+
+    res.json({
+      success: true,
+      data: {
+        activities: limitedActivities,
+        total: activities.length,
+      },
+    });
   }),
 );
 

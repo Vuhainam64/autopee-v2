@@ -39,15 +39,19 @@ function CheckPhone() {
       const response = await get('/shopee/check-phone/history?limit=100')
       if (response?.success && response?.data?.history) {
         // Format dữ liệu từ server để phù hợp với format hiện tại
-        const formattedResults = response.data.history.map((item) => ({
-          phone: item.phone,
-          exists: item.exists,
-          message: item.message || (item.exists ? 'Số điện thoại đã tồn tại trên Shopee' : 'Số điện thoại chưa tồn tại trên Shopee'),
-          amount: item.amount,
-          balanceAfter: item.balanceAfter,
-          errorCode: item.errorCode,
-          timestamp: new Date(item.createdAt).getTime(),
-        }))
+        const formattedResults = response.data.history.map((item, index) => {
+          const timestamp = new Date(item.createdAt).getTime()
+          return {
+            phone: item.phone,
+            exists: item.exists,
+            message: item.message || (item.exists ? 'Số điện thoại đã tồn tại trên Shopee' : 'Số điện thoại chưa tồn tại trên Shopee'),
+            amount: item.amount,
+            balanceAfter: item.balanceAfter,
+            errorCode: item.errorCode,
+            timestamp: timestamp,
+            uniqueId: `${item.phone}-${timestamp}-${index}`, // Unique ID cho rowKey
+          }
+        })
         
         setResults(formattedResults)
         
@@ -64,10 +68,15 @@ function CheckPhone() {
           const now = Date.now()
           const oneDayInMs = 24 * 60 * 60 * 1000
           
-          const validResults = parsedHistory.filter((result) => {
-            if (!result.timestamp) return false
-            return now - result.timestamp < oneDayInMs
-          })
+          const validResults = parsedHistory
+            .filter((result) => {
+              if (!result.timestamp) return false
+              return now - result.timestamp < oneDayInMs
+            })
+            .map((result, index) => ({
+              ...result,
+              uniqueId: result.uniqueId || `${result.phone}-${result.timestamp || Date.now()}-${index}`, // Đảm bảo có uniqueId
+            }))
           
           if (validResults.length !== parsedHistory.length) {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(validResults))
@@ -110,13 +119,15 @@ function CheckPhone() {
       const results = []
       for (let i = 0; i < phones.length; i++) {
         const phone = phones[i]
+        const timestamp = Date.now() + i // Thêm index để đảm bảo unique timestamp
         try {
           const response = await post('/shopee/check-phone', { phone })
           if (response?.success) {
             results.push({
               ...response.data,
               phone: response.data.phone || phone,
-              timestamp: Date.now(), // Thêm timestamp khi check thành công
+              timestamp: timestamp, // Thêm timestamp khi check thành công
+              uniqueId: `${phone}-${timestamp}`, // Unique ID cho rowKey
             })
           } else {
             // Kiểm tra lỗi Missing bearer token
@@ -136,7 +147,8 @@ function CheckPhone() {
               message: errorMessage || 'Lỗi không xác định',
               error: errorMessage,
               errorCode: response?.error?.code,
-              timestamp: Date.now(), // Thêm timestamp khi có lỗi
+              timestamp: timestamp, // Thêm timestamp khi có lỗi
+              uniqueId: `${phone}-${timestamp}`, // Unique ID cho rowKey
             })
             // Nếu lỗi do số dư không đủ, dừng lại
             if (response?.error?.code === 'INSUFFICIENT_BALANCE') {
@@ -163,7 +175,8 @@ function CheckPhone() {
             exists: false,
             message: errorMessage || 'Lỗi khi kiểm tra',
             error: errorMessage,
-            timestamp: Date.now(), // Thêm timestamp khi có exception
+            timestamp: timestamp, // Thêm timestamp khi có exception
+            uniqueId: `${phone}-${timestamp}`, // Unique ID cho rowKey
           })
           // Nếu lỗi do số dư không đủ, dừng lại
           if (error.response?.data?.error?.code === 'INSUFFICIENT_BALANCE') {
@@ -243,7 +256,7 @@ function CheckPhone() {
   ]
 
   return (
-    <div className="!space-y-4">
+    <div className="space-y-4">
       <div>
         <Title level={2}>Check Số Điện Thoại Shopee</Title>
         <Text type="secondary">
@@ -312,7 +325,7 @@ function CheckPhone() {
         <Table
           columns={columns}
           dataSource={results}
-          rowKey={(record) => record.phone || `result-${record.errorCode || Date.now()}-${Math.random()}`}
+          rowKey={(record) => record.uniqueId || `${record.phone}-${record.timestamp || Date.now()}-${Math.random()}`}
           pagination={{ pageSize: 10 }}
           scroll={{ x: 'max-content' }}
           locale={{

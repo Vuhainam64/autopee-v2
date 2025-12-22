@@ -74,9 +74,51 @@ async function saveCookie(userId, cookieString, name = 'Default Cookie') {
   }
 }
 
+/**
+ * Xóa cookie khỏi database
+ * @param {string} cookieId - Cookie ID hoặc cookie string
+ * @param {string} userId - User ID (optional, để đảm bảo chỉ xóa cookie của user đó)
+ * @returns {Promise<boolean>} True nếu xóa thành công
+ */
+async function deleteCookie(cookieId, userId = null) {
+  try {
+    const query = userId 
+      ? { _id: cookieId, userId: userId }
+      : { _id: cookieId }
+    
+    const result = await UserCookie.deleteOne(query)
+    return result.deletedCount > 0
+  } catch (error) {
+    console.error('Error deleting cookie:', error)
+    return false
+  }
+}
+
+/**
+ * Xóa cookie theo cookie string
+ * @param {string} cookieString - Cookie string
+ * @param {string} userId - User ID (optional)
+ * @returns {Promise<boolean>} True nếu xóa thành công
+ */
+async function deleteCookieByString(cookieString, userId = null) {
+  try {
+    const query = userId
+      ? { cookie: cookieString.trim(), userId: userId }
+      : { cookie: cookieString.trim() }
+    
+    const result = await UserCookie.deleteOne(query)
+    return result.deletedCount > 0
+  } catch (error) {
+    console.error('Error deleting cookie by string:', error)
+    return false
+  }
+}
+
 module.exports = {
   getAvailableCookie,
   incrementCookieUsage,
   saveCookie,
+  deleteCookie,
+  deleteCookieByString,
 }
 

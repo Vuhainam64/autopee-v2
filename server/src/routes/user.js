@@ -388,6 +388,130 @@ router.get(
   }),
 );
 
+// GET /user/dashboard/stats - Lấy thống kê tổng quan cho Dashboard
+router.get(
+  "/dashboard/stats",
+  handleAsync(async (req, res) => {
+    const userId = req.user.uid;
+    const userProfile = await getUserProfile(userId);
+    
+    if (!userProfile) {
+      return res.status(404).json({
+        success: false,
+        error: { message: "Không tìm thấy thông tin người dùng" },
+      });
+    }
+
+    // Tổng số dư hiện tại
+    const currentBalance = userProfile.walletBalance || 0;
+
+    // Tổng đã nạp
+    const totalDeposit = await getUserTotalDeposit(userId);
+
+    // Tổng đã rút (từ transactions với transferType = 'out')
+    const totalWithdrawResult = await Transaction.aggregate([
+      {
+        $match: {
+          userId,
+          transferType: 'out',
+          status: 'processed',
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$amountOut' },
+        },
+      },
+    ]);
+    const totalWithdraw = totalWithdrawResult.length > 0 ? totalWithdrawResult[0].total : 0;
+
+    // Tổng đã sử dụng (từ UsageHistory, amount luôn là số âm)
+    const totalUsageResult = await UsageHistory.aggregate([
+      {
+        $match: {
+          userId,
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: { $abs: '$amount' } }, // Lấy giá trị tuyệt đối vì amount là số âm
+        },
+      },
+    ]);
+    const totalUsage = totalUsageResult.length > 0 ? totalUsageResult[0].total : 0;
+
+    res.json({
+      success: true,
+      data: {
+        currentBalance,
+        totalDeposit,
+        totalWithdraw,
+        totalUsage,
+      },
+    });
+  }),
+);
+
+// GET /user/dashboard/activities - Lấy hoạt động gần đây
+router.get(
+  "/dashboard/activities",
+  handleAsync(async (req, res) => {
+    const userId = req.user.uid;
+    const limit = parseInt(req.query.limit) || 10;
+
+    // Lấy giao dịch gần nhất (nạp/rút)
+    const recentTransactions = await Transaction.find({
+      userId,
+      status: 'processed',
+    })
+      .select('-content')
+      .sort({ transactionDate: -1 })
+      .limit(limit)
+      .lean();
+
+    // Lấy lịch sử sử dụng gần nhất
+    const recentUsage = await UsageHistory.find({
+      userId,
+    })
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean();
+
+    // Gộp và sắp xếp theo thời gian
+    const activities = [
+      ...recentTransactions.map((t) => ({
+        type: 'transaction',
+        id: t._id.toString(),
+        title: t.transferType === 'in' ? 'Nạp tiền' : 'Rút tiền',
+        amount: t.transferType === 'in' ? t.amountIn : -t.amountOut,
+        description: t.description || t.referenceCode || '',
+        date: t.transactionDate,
+        timestamp: new Date(t.transactionDate).getTime(),
+      })),
+      ...recentUsage.map((u) => ({
+        type: 'usage',
+        id: u._id.toString(),
+        title: u.service,
+        amount: u.amount, // Đã là số âm
+        description: u.metadata?.message || u.metadata?.phone || '',
+        date: u.createdAt,
+        timestamp: new Date(u.createdAt).getTime(),
+      })),
+    ]
+      .sort((a, b) => b.timestamp - a.timestamp)
+      .slice(0, limit);
+
+    res.json({
+      success: true,
+      data: {
+        activities,
+      },
+    });
+  }),
+);
+
 // ========== API Token Management ==========
 
 /**
