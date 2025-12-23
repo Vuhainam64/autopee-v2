@@ -522,6 +522,7 @@ const ProxyManagement = () => {
               <Option value="/shopee/orders">/shopee/orders</Option>
               <Option value="/shopee/order-detail">/shopee/order-detail</Option>
               <Option value="/shopee/save-voucher">/shopee/save-voucher</Option>
+              <Option value="/account/getAccountInfo">/account/getAccountInfo (Lấy cookie/account Shopee)</Option>
             </Select>
           </Form.Item>
 

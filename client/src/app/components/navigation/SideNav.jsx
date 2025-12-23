@@ -73,6 +73,24 @@ const menuItems = [
     ],
   },
   {
+    label: 'Săn Deal Shopee',
+    icon: MdCardGiftcard,
+    children: [
+      {
+        label: 'Check Stock Real-time',
+        href: 'https://asolution.dev/monitor.html',
+        external: true,
+        icon: MdCardGiftcard,
+      },
+      {
+        label: 'Deal 1K',
+        href: 'https://asolution.dev/deal.html',
+        external: true,
+        icon: MdCardGiftcard,
+      },
+    ],
+  },
+  {
     label: 'Dịch vụ khác',
     icon: MdMoreHoriz,
     children: [
@@ -207,15 +225,31 @@ function SideNav({ collapsed = false, onToggle }) {
                     {item.children.map((child) => {
                       const active = isActive(child.to)
                       const ChildIcon = child.icon
+                      const isExternal = child.external
+                      const linkClass = `flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm transition ${
+                        active
+                          ? 'bg-orange-50 text-orange-600 font-medium'
+                          : 'text-slate-600 hover:bg-orange-50 hover:text-orange-600'
+                      }`
+                      if (isExternal) {
+                        return (
+                          <a
+                            key={child.href}
+                            href={child.href}
+                            target="_blank"
+                            rel="noreferrer"
+                            className={linkClass}
+                          >
+                            {ChildIcon && <ChildIcon className="text-sm" />}
+                            <span>{child.label}</span>
+                          </a>
+                        )
+                      }
                       return (
                         <Link
                           key={child.to}
                           to={child.to}
-                          className={`flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm transition ${
-                            active
-                              ? 'bg-orange-50 text-orange-600 font-medium'
-                              : 'text-slate-600 hover:bg-orange-50 hover:text-orange-600'
-                          }`}
+                          className={linkClass}
                         >
                           {ChildIcon && <ChildIcon className="text-sm" />}
                           <span>{child.label}</span>
