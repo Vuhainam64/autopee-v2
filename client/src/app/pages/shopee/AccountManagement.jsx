@@ -26,6 +26,7 @@ import {
   CopyOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  FolderOutlined,
 } from '@ant-design/icons'
 import { get, post, put, del } from '../../services/api.js'
 import dayjs from 'dayjs'
@@ -400,7 +401,7 @@ const AccountManagement = () => {
         }}
       >
         {siderCollapsed ? (
-          <div className="flex flex-col items-center gap-2 mb-4">
+          <div className="flex flex-col gap-3 mb-4">
             <Button
               type="text"
               size="small"
@@ -415,6 +416,22 @@ const AccountManagement = () => {
               onClick={handleCreateCollection}
               style={{ width: '100%' }}
             />
+            <div className="flex flex-col gap-2 items-center">
+              {filteredCollections.map((collection) => {
+                const isActive = selectedCollection === collection._id
+                return (
+                  <Tooltip key={collection._id} title={collection.name}>
+                    <Button
+                      type={isActive ? 'primary' : 'text'}
+                      icon={<FolderOutlined />}
+                      size="large"
+                      shape="circle"
+                      onClick={() => setSelectedCollection(collection._id)}
+                    />
+                  </Tooltip>
+                )
+              })}
+            </div>
           </div>
         ) : (
           <div className="mb-4">
@@ -448,63 +465,65 @@ const AccountManagement = () => {
           </div>
         )}
 
-        <div className="space-y-2">
-          {filteredCollections.length === 0 ? (
-            <Empty
-              description="Chưa có collection"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              style={{ padding: '20px 0' }}
-            />
-          ) : (
-            filteredCollections.map((collection) => (
-              <Card
-                key={collection._id}
-                size="small"
-                hoverable
-                onClick={() => setSelectedCollection(collection._id)}
-                style={{
-                  cursor: 'pointer',
-                  border:
-                    selectedCollection === collection._id
-                      ? '2px solid #ff6b35'
-                      : '1px solid #f0f0f0',
-                  backgroundColor:
-                    selectedCollection === collection._id ? '#fff7ed' : '#fff',
-                }}
-                actions={[
-                  <EditOutlined
-                    key="edit"
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      handleEditCollection(collection)
-                    }}
-                  />,
-                  <Popconfirm
-                    key="delete"
-                    title="Xóa collection này?"
-                    onConfirm={(e) => {
-                      e?.stopPropagation()
-                      handleDeleteCollection(collection._id)
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <DeleteOutlined
+        {!siderCollapsed && (
+          <div className="space-y-2">
+            {filteredCollections.length === 0 ? (
+              <Empty
+                description="Chưa có collection"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{ padding: '20px 0' }}
+              />
+            ) : (
+              filteredCollections.map((collection) => (
+                <Card
+                  key={collection._id}
+                  size="small"
+                  hoverable
+                  onClick={() => setSelectedCollection(collection._id)}
+                  style={{
+                    cursor: 'pointer',
+                    border:
+                      selectedCollection === collection._id
+                        ? '2px solid #ff6b35'
+                        : '1px solid #f0f0f0',
+                    backgroundColor:
+                      selectedCollection === collection._id ? '#fff7ed' : '#fff',
+                  }}
+                  actions={[
+                    <EditOutlined
+                      key="edit"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleEditCollection(collection)
+                      }}
+                    />,
+                    <Popconfirm
+                      key="delete"
+                      title="Xóa collection này?"
+                      onConfirm={(e) => {
+                        e?.stopPropagation()
+                        handleDeleteCollection(collection._id)
+                      }}
                       onClick={(e) => e.stopPropagation()}
-                    />
-                  </Popconfirm>,
-                ]}
-              >
-                <div>
-                  <Text strong>{collection.name}</Text>
-                  <br />
-                  <Text type="secondary" style={{ fontSize: '12px' }}>
-                    {collection.accountCount || 0} tài khoản
-                  </Text>
-                </div>
-              </Card>
-            ))
-          )}
-        </div>
+                    >
+                      <DeleteOutlined
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </Popconfirm>,
+                  ]}
+                >
+                  <div>
+                    <Text strong>{collection.name}</Text>
+                    <br />
+                    <Text type="secondary" style={{ fontSize: '12px' }}>
+                      {collection.accountCount || 0} tài khoản
+                    </Text>
+                  </div>
+                </Card>
+              ))
+            )}
+          </div>
+        )}
       </Sider>
 
       <Content style={{ padding: '24px', background: '#f5f5f5' }}>
