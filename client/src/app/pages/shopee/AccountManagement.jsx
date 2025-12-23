@@ -466,7 +466,7 @@ const AccountManagement = () => {
         )}
 
         {!siderCollapsed && (
-          <div className="space-y-2">
+          <div className="!space-y-2">
             {filteredCollections.length === 0 ? (
               <Empty
                 description="Chưa có collection"
