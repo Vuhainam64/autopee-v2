@@ -157,9 +157,10 @@ function SideNav({ collapsed = false, onToggle }) {
     )
   }
 
-  const isActive = (to) => pathname === to
+  // Chỉ coi là active khi có đường dẫn rõ ràng và trùng route hiện tại
+  const isActive = (to) => !!to && pathname === to
   const hasActiveChild = (children) =>
-    children?.some((child) => isActive(child.to))
+    children?.some((child) => !!child.to && pathname === child.to)
 
   return (
     <aside
@@ -232,10 +233,11 @@ function SideNav({ collapsed = false, onToggle }) {
                       const active = isActive(child.to)
                       const ChildIcon = child.icon
                       const isExternal = child.external
+                      const color = active ? '#ea580c' : '#475569'
                       const linkClass = `flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm transition ${
                         active
-                          ? 'bg-orange-50 text-orange-600 font-medium'
-                          : 'text-slate-600 hover:bg-orange-50 hover:text-orange-600'
+                          ? 'bg-orange-50 ring-1 ring-orange-100 font-medium'
+                          : 'hover:bg-orange-50'
                       }`
                       if (isExternal) {
                         return (
@@ -245,6 +247,7 @@ function SideNav({ collapsed = false, onToggle }) {
                             target="_blank"
                             rel="noreferrer"
                             className={linkClass}
+                            style={{ color }}
                           >
                             {ChildIcon && <ChildIcon className="text-sm" />}
                             <span>{child.label}</span>
@@ -256,6 +259,7 @@ function SideNav({ collapsed = false, onToggle }) {
                           key={child.to}
                           to={child.to}
                           className={linkClass}
+                          style={{ color }}
                         >
                           {ChildIcon && <ChildIcon className="text-sm" />}
                           <span>{child.label}</span>
