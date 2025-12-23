@@ -88,6 +88,12 @@ const menuItems = [
         external: true,
         icon: MdCardGiftcard,
       },
+      {
+        label: 'Tool săn sale',
+        href: 'https://asolution.dev/',
+        external: true,
+        icon: MdCardGiftcard,
+      },
     ],
   },
   {
