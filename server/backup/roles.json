@@ -1,0 +1,57 @@
+[
+  {
+    "_id": "69466a0d8f3f7c981c5f0262",
+    "name": "guest",
+    "displayName": "Guest",
+    "score": 0,
+    "description": "Khách vãng lai",
+    "color": "default",
+    "createdAt": "2025-12-20T09:19:09.301Z",
+    "updatedAt": "2025-12-21T11:17:46.985Z",
+    "__v": 0
+  },
+  {
+    "_id": "69466a4e8f3f7c981c5f0267",
+    "name": "user",
+    "displayName": "User",
+    "score": 1,
+    "description": "Người dùng cơ bản",
+    "color": "cyan",
+    "createdAt": "2025-12-20T09:20:14.619Z",
+    "updatedAt": "2025-12-21T11:17:50.491Z",
+    "__v": 0
+  },
+  {
+    "_id": "69466a758f3f7c981c5f0286",
+    "name": "super_admin",
+    "displayName": "Super Admin",
+    "score": 99,
+    "description": "Quản trị tối cao",
+    "color": "orange",
+    "createdAt": "2025-12-20T09:20:53.930Z",
+    "updatedAt": "2025-12-20T09:20:53.930Z",
+    "__v": 0
+  },
+  {
+    "_id": "69466aa18f3f7c981c5f02a5",
+    "name": "admin",
+    "displayName": "Admin",
+    "score": 90,
+    "description": "Quản trị viên",
+    "color": "purple",
+    "createdAt": "2025-12-20T09:21:37.639Z",
+    "updatedAt": "2025-12-20T09:21:37.639Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946b660848634c03e0e920a",
+    "name": "manager",
+    "displayName": "Manager",
+    "score": 80,
+    "description": "Quản lý",
+    "color": "green",
+    "createdAt": "2025-12-20T14:44:48.353Z",
+    "updatedAt": "2025-12-20T14:44:48.353Z",
+    "__v": 0
+  }
+]

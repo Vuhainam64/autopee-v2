@@ -11,6 +11,9 @@
     "seed": "npm run seed:roles && npm run seed:permissions",
     "fix:api-index": "node src/scripts/fixApiPermissionIndex.js",
     "migrate:cookies": "node src/scripts/migrateUserCookieToShopeeCookie.js",
+    "migrate:database": "node src/scripts/migrateDatabase.js",
+    "export:database": "node src/scripts/exportDatabase.js",
+    "import:database": "node src/scripts/importDatabase.js",
     "cleanup:old-data": "node src/scripts/cleanupOldData.js"
   },
   "keywords": [],

@@ -1,0 +1,1480 @@
+[
+  {
+    "_id": "694664e14c4fa0d9f560e0b7",
+    "type": "route",
+    "permissionId": "6946630546d4d948e581a0ab",
+    "action": "update",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "oldData": {
+      "_id": "6946630546d4d948e581a0ab",
+      "path": "/",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Trang chủ - Orders Landing",
+      "createdAt": "2025-12-20T08:49:09.187Z",
+      "updatedAt": "2025-12-20T08:49:09.187Z",
+      "__v": 0
+    },
+    "newData": {
+      "_id": "6946630546d4d948e581a0ab",
+      "path": "/",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Trang chủ - Orders Landing",
+      "createdAt": "2025-12-20T08:49:09.187Z",
+      "updatedAt": "2025-12-20T08:57:05.629Z",
+      "__v": 0
+    },
+    "description": "Cập nhật route: /",
+    "createdAt": "2025-12-20T08:57:05.638Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946684b58f117e7794ad54c",
+    "type": "route",
+    "permissionId": "6946630546d4d948e581a0b7",
+    "action": "update",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "oldData": {
+      "_id": "6946630546d4d948e581a0b7",
+      "path": "/products",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Trang sản phẩm",
+      "createdAt": "2025-12-20T08:49:09.203Z",
+      "updatedAt": "2025-12-20T08:49:09.203Z",
+      "__v": 0
+    },
+    "newData": {
+      "_id": "6946630546d4d948e581a0b7",
+      "path": "/products",
+      "method": "GET",
+      "allowedRoles": [
+        "guest",
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Trang sản phẩm",
+      "createdAt": "2025-12-20T08:49:09.203Z",
+      "updatedAt": "2025-12-20T09:11:39.632Z",
+      "__v": 0
+    },
+    "description": "Bulk update route: /products",
+    "createdAt": "2025-12-20T09:11:39.640Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946684b58f117e7794ad550",
+    "type": "route",
+    "permissionId": "6946630546d4d948e581a0bd",
+    "action": "update",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "oldData": {
+      "_id": "6946630546d4d948e581a0bd",
+      "path": "/products/checkMVD",
+      "method": "GET",
+      "allowedRoles": [
+        "admin",
+        "super_admin"
+      ],
+      "description": "Check Mã vận đơn",
+      "createdAt": "2025-12-20T08:49:09.207Z",
+      "updatedAt": "2025-12-20T08:49:09.207Z",
+      "__v": 0
+    },
+    "newData": {
+      "_id": "6946630546d4d948e581a0bd",
+      "path": "/products/checkMVD",
+      "method": "GET",
+      "allowedRoles": [
+        "guest",
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Check Mã vận đơn",
+      "createdAt": "2025-12-20T08:49:09.207Z",
+      "updatedAt": "2025-12-20T09:11:39.645Z",
+      "__v": 0
+    },
+    "description": "Bulk update route: /products/checkMVD",
+    "createdAt": "2025-12-20T09:11:39.646Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946684b58f117e7794ad554",
+    "type": "route",
+    "permissionId": "6946630546d4d948e581a0ba",
+    "action": "update",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "oldData": {
+      "_id": "6946630546d4d948e581a0ba",
+      "path": "/products/checkMVDCookie",
+      "method": "GET",
+      "allowedRoles": [
+        "admin",
+        "super_admin"
+      ],
+      "description": "Check MVD Cookie",
+      "createdAt": "2025-12-20T08:49:09.205Z",
+      "updatedAt": "2025-12-20T08:49:09.205Z",
+      "__v": 0
+    },
+    "newData": {
+      "_id": "6946630546d4d948e581a0ba",
+      "path": "/products/checkMVDCookie",
+      "method": "GET",
+      "allowedRoles": [
+        "guest",
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Check MVD Cookie",
+      "createdAt": "2025-12-20T08:49:09.205Z",
+      "updatedAt": "2025-12-20T09:11:39.648Z",
+      "__v": 0
+    },
+    "description": "Bulk update route: /products/checkMVDCookie",
+    "createdAt": "2025-12-20T09:11:39.650Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946685958f117e7794ad560",
+    "type": "route",
+    "permissionId": "6946630546d4d948e581a0ab",
+    "action": "update",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "oldData": {
+      "_id": "6946630546d4d948e581a0ab",
+      "path": "/",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Trang chủ - Orders Landing",
+      "createdAt": "2025-12-20T08:49:09.187Z",
+      "updatedAt": "2025-12-20T08:57:05.629Z",
+      "__v": 0
+    },
+    "newData": {
+      "_id": "6946630546d4d948e581a0ab",
+      "path": "/",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin",
+        "guest"
+      ],
+      "description": "Trang chủ - Orders Landing",
+      "createdAt": "2025-12-20T08:49:09.187Z",
+      "updatedAt": "2025-12-20T09:11:53.835Z",
+      "__v": 0
+    },
+    "description": "Cập nhật route: /",
+    "createdAt": "2025-12-20T09:11:53.838Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670788f3f7c981c5f0367",
+    "type": "api",
+    "permissionId": "694670788f3f7c981c5f0364",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/auth/login",
+      "method": "POST",
+      "allowedRoles": [
+        "guest",
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Đăng nhập - tất cả người dùng đều có thể đăng nhập",
+      "_id": "694670788f3f7c981c5f0364",
+      "createdAt": "2025-12-20T09:46:32.872Z",
+      "updatedAt": "2025-12-20T09:46:32.872Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/auth/login",
+    "createdAt": "2025-12-20T09:46:32.875Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670788f3f7c981c5f036d",
+    "type": "api",
+    "permissionId": "694670788f3f7c981c5f036a",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/auth/logout",
+      "method": "POST",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Đăng xuất - chỉ người dùng đã đăng nhập",
+      "_id": "694670788f3f7c981c5f036a",
+      "createdAt": "2025-12-20T09:46:32.974Z",
+      "updatedAt": "2025-12-20T09:46:32.974Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/auth/logout",
+    "createdAt": "2025-12-20T09:46:32.976Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670798f3f7c981c5f0373",
+    "type": "api",
+    "permissionId": "694670798f3f7c981c5f0370",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/auth/register",
+      "method": "POST",
+      "allowedRoles": [
+        "guest"
+      ],
+      "description": "Đăng ký tài khoản mới - chỉ guest",
+      "_id": "694670798f3f7c981c5f0370",
+      "createdAt": "2025-12-20T09:46:33.075Z",
+      "updatedAt": "2025-12-20T09:46:33.075Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/auth/register",
+    "createdAt": "2025-12-20T09:46:33.078Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670798f3f7c981c5f0379",
+    "type": "api",
+    "permissionId": "694670798f3f7c981c5f0376",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/user/me",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lấy thông tin user hiện tại",
+      "_id": "694670798f3f7c981c5f0376",
+      "createdAt": "2025-12-20T09:46:33.178Z",
+      "updatedAt": "2025-12-20T09:46:33.178Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/user/me",
+    "createdAt": "2025-12-20T09:46:33.179Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670798f3f7c981c5f0382",
+    "type": "api",
+    "permissionId": "694670798f3f7c981c5f037f",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/user/profile",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lấy profile user",
+      "_id": "694670798f3f7c981c5f037f",
+      "createdAt": "2025-12-20T09:46:33.383Z",
+      "updatedAt": "2025-12-20T09:46:33.383Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/user/profile",
+    "createdAt": "2025-12-20T09:46:33.386Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670798f3f7c981c5f038b",
+    "type": "api",
+    "permissionId": "694670798f3f7c981c5f0388",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/user/sessions",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lấy danh sách sessions của user",
+      "_id": "694670798f3f7c981c5f0388",
+      "createdAt": "2025-12-20T09:46:33.585Z",
+      "updatedAt": "2025-12-20T09:46:33.585Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/user/sessions",
+    "createdAt": "2025-12-20T09:46:33.587Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670798f3f7c981c5f0391",
+    "type": "api",
+    "permissionId": "694670798f3f7c981c5f038e",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/user/sessions/:sessionId",
+      "method": "DELETE",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Xóa một session cụ thể",
+      "_id": "694670798f3f7c981c5f038e",
+      "createdAt": "2025-12-20T09:46:33.691Z",
+      "updatedAt": "2025-12-20T09:46:33.691Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/user/sessions/:sessionId",
+    "createdAt": "2025-12-20T09:46:33.692Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670798f3f7c981c5f0397",
+    "type": "api",
+    "permissionId": "694670798f3f7c981c5f0394",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/trackSession",
+      "method": "POST",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Track session activity",
+      "_id": "694670798f3f7c981c5f0394",
+      "createdAt": "2025-12-20T09:46:33.803Z",
+      "updatedAt": "2025-12-20T09:46:33.803Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/trackSession",
+    "createdAt": "2025-12-20T09:46:33.808Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670798f3f7c981c5f039d",
+    "type": "api",
+    "permissionId": "694670798f3f7c981c5f039a",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/products",
+      "method": "GET",
+      "allowedRoles": [
+        "guest",
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lấy danh sách sản phẩm - tất cả đều xem được",
+      "_id": "694670798f3f7c981c5f039a",
+      "createdAt": "2025-12-20T09:46:33.912Z",
+      "updatedAt": "2025-12-20T09:46:33.912Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/products",
+    "createdAt": "2025-12-20T09:46:33.915Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707a8f3f7c981c5f03a3",
+    "type": "api",
+    "permissionId": "6946707a8f3f7c981c5f03a0",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/products/:id",
+      "method": "GET",
+      "allowedRoles": [
+        "guest",
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lấy chi tiết sản phẩm",
+      "_id": "6946707a8f3f7c981c5f03a0",
+      "createdAt": "2025-12-20T09:46:34.013Z",
+      "updatedAt": "2025-12-20T09:46:34.013Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/products/:id",
+    "createdAt": "2025-12-20T09:46:34.016Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707a8f3f7c981c5f03b2",
+    "type": "api",
+    "permissionId": "6946707a8f3f7c981c5f03af",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/shopee/products",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lấy sản phẩm từ Shopee API",
+      "_id": "6946707a8f3f7c981c5f03af",
+      "createdAt": "2025-12-20T09:46:34.410Z",
+      "updatedAt": "2025-12-20T09:46:34.410Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/shopee/products",
+    "createdAt": "2025-12-20T09:46:34.412Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707a8f3f7c981c5f03b8",
+    "type": "api",
+    "permissionId": "6946707a8f3f7c981c5f03b5",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/shopee/orders",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lấy danh sách đơn hàng Shopee",
+      "_id": "6946707a8f3f7c981c5f03b5",
+      "createdAt": "2025-12-20T09:46:34.515Z",
+      "updatedAt": "2025-12-20T09:46:34.515Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/shopee/orders",
+    "createdAt": "2025-12-20T09:46:34.517Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707a8f3f7c981c5f03be",
+    "type": "api",
+    "permissionId": "6946707a8f3f7c981c5f03bb",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/shopee/orders/:id",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lấy chi tiết đơn hàng Shopee",
+      "_id": "6946707a8f3f7c981c5f03bb",
+      "createdAt": "2025-12-20T09:46:34.616Z",
+      "updatedAt": "2025-12-20T09:46:34.616Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/shopee/orders/:id",
+    "createdAt": "2025-12-20T09:46:34.618Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707a8f3f7c981c5f03c4",
+    "type": "api",
+    "permissionId": "6946707a8f3f7c981c5f03c1",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/admin/users",
+      "method": "GET",
+      "allowedRoles": [
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lấy danh sách users - chỉ admin",
+      "_id": "6946707a8f3f7c981c5f03c1",
+      "createdAt": "2025-12-20T09:46:34.714Z",
+      "updatedAt": "2025-12-20T09:46:34.714Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/admin/users",
+    "createdAt": "2025-12-20T09:46:34.715Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707a8f3f7c981c5f03ca",
+    "type": "api",
+    "permissionId": "6946707a8f3f7c981c5f03c7",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/admin/users/:uid",
+      "method": "GET",
+      "allowedRoles": [
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lấy thông tin user cụ thể",
+      "_id": "6946707a8f3f7c981c5f03c7",
+      "createdAt": "2025-12-20T09:46:34.814Z",
+      "updatedAt": "2025-12-20T09:46:34.814Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/admin/users/:uid",
+    "createdAt": "2025-12-20T09:46:34.817Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707a8f3f7c981c5f03d0",
+    "type": "api",
+    "permissionId": "6946707a8f3f7c981c5f03cd",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/admin/users/:uid/role",
+      "method": "PUT",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Thay đổi role của user - chỉ super_admin",
+      "_id": "6946707a8f3f7c981c5f03cd",
+      "createdAt": "2025-12-20T09:46:34.920Z",
+      "updatedAt": "2025-12-20T09:46:34.920Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/admin/users/:uid/role",
+    "createdAt": "2025-12-20T09:46:34.922Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707b8f3f7c981c5f03d6",
+    "type": "api",
+    "permissionId": "6946707b8f3f7c981c5f03d3",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/admin/routes",
+      "method": "GET",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Lấy danh sách route permissions",
+      "_id": "6946707b8f3f7c981c5f03d3",
+      "createdAt": "2025-12-20T09:46:35.029Z",
+      "updatedAt": "2025-12-20T09:46:35.029Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/admin/routes",
+    "createdAt": "2025-12-20T09:46:35.033Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707b8f3f7c981c5f03df",
+    "type": "api",
+    "permissionId": "6946707b8f3f7c981c5f03dc",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/admin/routes/:id",
+      "method": "PUT",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Cập nhật route permission",
+      "_id": "6946707b8f3f7c981c5f03dc",
+      "createdAt": "2025-12-20T09:46:35.257Z",
+      "updatedAt": "2025-12-20T09:46:35.257Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/admin/routes/:id",
+    "createdAt": "2025-12-20T09:46:35.259Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707b8f3f7c981c5f03e8",
+    "type": "api",
+    "permissionId": "6946707b8f3f7c981c5f03e5",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/admin/routes/bulk",
+      "method": "PUT",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Bulk update route permissions",
+      "_id": "6946707b8f3f7c981c5f03e5",
+      "createdAt": "2025-12-20T09:46:35.459Z",
+      "updatedAt": "2025-12-20T09:46:35.459Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/admin/routes/bulk",
+    "createdAt": "2025-12-20T09:46:35.461Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707b8f3f7c981c5f03ee",
+    "type": "api",
+    "permissionId": "6946707b8f3f7c981c5f03eb",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/admin/apis",
+      "method": "GET",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Lấy danh sách API permissions",
+      "_id": "6946707b8f3f7c981c5f03eb",
+      "createdAt": "2025-12-20T09:46:35.558Z",
+      "updatedAt": "2025-12-20T09:46:35.558Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/admin/apis",
+    "createdAt": "2025-12-20T09:46:35.560Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707b8f3f7c981c5f03f7",
+    "type": "api",
+    "permissionId": "6946707b8f3f7c981c5f03f4",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/admin/apis/:id",
+      "method": "PUT",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Cập nhật API permission",
+      "_id": "6946707b8f3f7c981c5f03f4",
+      "createdAt": "2025-12-20T09:46:35.755Z",
+      "updatedAt": "2025-12-20T09:46:35.755Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/admin/apis/:id",
+    "createdAt": "2025-12-20T09:46:35.757Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707b8f3f7c981c5f0400",
+    "type": "api",
+    "permissionId": "6946707b8f3f7c981c5f03fd",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/admin/apis/bulk",
+      "method": "PUT",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Bulk update API permissions",
+      "_id": "6946707b8f3f7c981c5f03fd",
+      "createdAt": "2025-12-20T09:46:35.956Z",
+      "updatedAt": "2025-12-20T09:46:35.956Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/admin/apis/bulk",
+    "createdAt": "2025-12-20T09:46:35.959Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707c8f3f7c981c5f0406",
+    "type": "api",
+    "permissionId": "6946707c8f3f7c981c5f0403",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/admin/roles",
+      "method": "GET",
+      "allowedRoles": [
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lấy danh sách roles",
+      "_id": "6946707c8f3f7c981c5f0403",
+      "createdAt": "2025-12-20T09:46:36.059Z",
+      "updatedAt": "2025-12-20T09:46:36.059Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/admin/roles",
+    "createdAt": "2025-12-20T09:46:36.061Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707c8f3f7c981c5f040f",
+    "type": "api",
+    "permissionId": "6946707c8f3f7c981c5f040c",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/admin/roles/:id",
+      "method": "PUT",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Cập nhật role",
+      "_id": "6946707c8f3f7c981c5f040c",
+      "createdAt": "2025-12-20T09:46:36.257Z",
+      "updatedAt": "2025-12-20T09:46:36.257Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/admin/roles/:id",
+    "createdAt": "2025-12-20T09:46:36.258Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707c8f3f7c981c5f0418",
+    "type": "api",
+    "permissionId": "6946707c8f3f7c981c5f0415",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/admin/history",
+      "method": "GET",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Lấy lịch sử chỉnh sửa permissions",
+      "_id": "6946707c8f3f7c981c5f0415",
+      "createdAt": "2025-12-20T09:46:36.467Z",
+      "updatedAt": "2025-12-20T09:46:36.467Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/admin/history",
+    "createdAt": "2025-12-20T09:46:36.469Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707c8f3f7c981c5f041e",
+    "type": "api",
+    "permissionId": "6946707c8f3f7c981c5f041b",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/settings/profile",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lấy cài đặt profile",
+      "_id": "6946707c8f3f7c981c5f041b",
+      "createdAt": "2025-12-20T09:46:36.569Z",
+      "updatedAt": "2025-12-20T09:46:36.569Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/settings/profile",
+    "createdAt": "2025-12-20T09:46:36.571Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707c8f3f7c981c5f0427",
+    "type": "api",
+    "permissionId": "6946707c8f3f7c981c5f0424",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/settings/security",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lấy cài đặt bảo mật",
+      "_id": "6946707c8f3f7c981c5f0424",
+      "createdAt": "2025-12-20T09:46:36.766Z",
+      "updatedAt": "2025-12-20T09:46:36.766Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/settings/security",
+    "createdAt": "2025-12-20T09:46:36.768Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707c8f3f7c981c5f0430",
+    "type": "api",
+    "permissionId": "6946707c8f3f7c981c5f042d",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/api/settings/wallet",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lấy thông tin wallet",
+      "_id": "6946707c8f3f7c981c5f042d",
+      "createdAt": "2025-12-20T09:46:36.960Z",
+      "updatedAt": "2025-12-20T09:46:36.960Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /api/settings/wallet",
+    "createdAt": "2025-12-20T09:46:36.962Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946aa78dda45e94502d4c99",
+    "type": "api",
+    "permissionId": "6946707a8f3f7c981c5f03cd",
+    "action": "update",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "oldData": {
+      "_id": "6946707a8f3f7c981c5f03cd",
+      "endpoint": "/api/admin/users/:uid/role",
+      "method": "PUT",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Thay đổi role của user - chỉ super_admin",
+      "createdAt": "2025-12-20T09:46:34.920Z",
+      "updatedAt": "2025-12-20T09:46:34.920Z",
+      "__v": 0
+    },
+    "newData": {
+      "_id": "6946707a8f3f7c981c5f03cd",
+      "endpoint": "/api/admin/users/:uid/role",
+      "method": "PUT",
+      "allowedRoles": [
+        "super_admin",
+        "admin"
+      ],
+      "description": "Thay đổi role của user - chỉ super_admin",
+      "createdAt": "2025-12-20T09:46:34.920Z",
+      "updatedAt": "2025-12-20T13:54:00.489Z",
+      "__v": 0
+    },
+    "description": "Cập nhật API: /api/admin/users/:uid/role",
+    "createdAt": "2025-12-20T13:54:00.495Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946aa84dda45e94502d4cab",
+    "type": "api",
+    "permissionId": "6946707a8f3f7c981c5f03cd",
+    "action": "update",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "oldData": {
+      "_id": "6946707a8f3f7c981c5f03cd",
+      "endpoint": "/api/admin/users/:uid/role",
+      "method": "PUT",
+      "allowedRoles": [
+        "super_admin",
+        "admin"
+      ],
+      "description": "Thay đổi role của user - chỉ super_admin",
+      "createdAt": "2025-12-20T09:46:34.920Z",
+      "updatedAt": "2025-12-20T13:54:00.489Z",
+      "__v": 0
+    },
+    "newData": {
+      "_id": "6946707a8f3f7c981c5f03cd",
+      "endpoint": "/api/admin/users/:uid/role",
+      "method": "PUT",
+      "allowedRoles": [
+        "super_admin",
+        "admin"
+      ],
+      "description": "Thay đổi role của user - chỉ admin trở lên",
+      "createdAt": "2025-12-20T09:46:34.920Z",
+      "updatedAt": "2025-12-20T13:54:12.948Z",
+      "__v": 0
+    },
+    "description": "Cập nhật API: /api/admin/users/:uid/role",
+    "createdAt": "2025-12-20T13:54:12.950Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946b5d3848634c03e0e9173",
+    "type": "api",
+    "permissionId": "6946707b8f3f7c981c5f03eb",
+    "action": "update",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "oldData": {
+      "_id": "6946707b8f3f7c981c5f03eb",
+      "endpoint": "/api/admin/apis",
+      "method": "GET",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Lấy danh sách API permissions",
+      "createdAt": "2025-12-20T09:46:35.558Z",
+      "updatedAt": "2025-12-20T09:46:35.558Z",
+      "__v": 0
+    },
+    "newData": {
+      "_id": "6946707b8f3f7c981c5f03eb",
+      "endpoint": "/api/admin/apis",
+      "method": "GET",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Lấy danh sách API permissions",
+      "createdAt": "2025-12-20T09:46:35.558Z",
+      "updatedAt": "2025-12-20T14:42:27.551Z",
+      "__v": 0
+    },
+    "description": "Cập nhật API: /api/admin/apis",
+    "createdAt": "2025-12-20T14:42:27.560Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946b5de848634c03e0e9185",
+    "type": "api",
+    "permissionId": "6946b568adbf1c9b98b34ff5",
+    "action": "update",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "oldData": {
+      "_id": "6946b568adbf1c9b98b34ff5",
+      "endpoint": "/admin/apis",
+      "method": "POST",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Thêm quyền cho api",
+      "createdAt": "2025-12-20T08:49:09.220Z",
+      "updatedAt": "2025-12-20T08:49:09.220Z",
+      "__v": 0
+    },
+    "newData": {
+      "_id": "6946b568adbf1c9b98b34ff5",
+      "endpoint": "/admin/apis",
+      "method": "POST",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Thêm quyền cho api",
+      "createdAt": "2025-12-20T08:49:09.220Z",
+      "updatedAt": "2025-12-20T14:42:38.382Z",
+      "__v": 0
+    },
+    "description": "Cập nhật API: /admin/apis",
+    "createdAt": "2025-12-20T14:42:38.386Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946b64c848634c03e0e91e5",
+    "type": "api",
+    "permissionId": "6946b64c848634c03e0e91e2",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "admin/roles",
+      "method": "POST",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Thêm Role mới",
+      "_id": "6946b64c848634c03e0e91e2",
+      "createdAt": "2025-12-20T14:44:28.603Z",
+      "updatedAt": "2025-12-20T14:44:28.603Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: admin/roles",
+    "createdAt": "2025-12-20T14:44:28.606Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946b65d848634c03e0e91fc",
+    "type": "api",
+    "permissionId": "6946b64c848634c03e0e91e2",
+    "action": "update",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "oldData": {
+      "_id": "6946b64c848634c03e0e91e2",
+      "endpoint": "admin/roles",
+      "method": "POST",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Thêm Role mới",
+      "createdAt": "2025-12-20T14:44:28.603Z",
+      "updatedAt": "2025-12-20T14:44:28.603Z",
+      "__v": 0
+    },
+    "newData": {
+      "_id": "6946b64c848634c03e0e91e2",
+      "endpoint": "/admin/roles",
+      "method": "POST",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Thêm Role mới",
+      "createdAt": "2025-12-20T14:44:28.603Z",
+      "updatedAt": "2025-12-20T14:44:45.640Z",
+      "__v": 0
+    },
+    "description": "Cập nhật API: /admin/roles",
+    "createdAt": "2025-12-20T14:44:45.646Z",
+    "__v": 0
+  },
+  {
+    "_id": "69475d4a02b6b70061f271af",
+    "type": "api",
+    "permissionId": "69475d4a02b6b70061f271ac",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "admin/routes",
+      "method": "POST",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Tạo permission routes mới",
+      "_id": "69475d4a02b6b70061f271ac",
+      "createdAt": "2025-12-21T02:36:58.237Z",
+      "updatedAt": "2025-12-21T02:36:58.237Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: admin/routes",
+    "createdAt": "2025-12-21T02:36:58.239Z",
+    "__v": 0
+  },
+  {
+    "_id": "69475d7902b6b70061f271ce",
+    "type": "api",
+    "permissionId": "69475d4a02b6b70061f271ac",
+    "action": "update",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "oldData": {
+      "_id": "69475d4a02b6b70061f271ac",
+      "endpoint": "admin/routes",
+      "method": "POST",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Tạo permission routes mới",
+      "createdAt": "2025-12-21T02:36:58.237Z",
+      "updatedAt": "2025-12-21T02:36:58.237Z",
+      "__v": 0
+    },
+    "newData": {
+      "_id": "69475d4a02b6b70061f271ac",
+      "endpoint": "/admin/routes",
+      "method": "POST",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Tạo permission routes mới",
+      "createdAt": "2025-12-21T02:36:58.237Z",
+      "updatedAt": "2025-12-21T02:37:45.336Z",
+      "__v": 0
+    },
+    "description": "Cập nhật API: /admin/routes",
+    "createdAt": "2025-12-21T02:37:45.340Z",
+    "__v": 0
+  },
+  {
+    "_id": "69475d8b02b6b70061f271e5",
+    "type": "route",
+    "permissionId": "69475d8b02b6b70061f271e2",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "path": "/dashboard/logs",
+      "method": "GET",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Trang check logs server",
+      "_id": "69475d8b02b6b70061f271e2",
+      "createdAt": "2025-12-21T02:38:03.996Z",
+      "updatedAt": "2025-12-21T02:38:03.996Z",
+      "__v": 0
+    },
+    "description": "Tạo route mới: /dashboard/logs",
+    "createdAt": "2025-12-21T02:38:03.998Z",
+    "__v": 0
+  },
+  {
+    "_id": "69475da002b6b70061f27237",
+    "type": "route",
+    "permissionId": "69475d8b02b6b70061f271e2",
+    "action": "update",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "oldData": {
+      "_id": "69475d8b02b6b70061f271e2",
+      "path": "/dashboard/logs",
+      "method": "GET",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Trang check logs server",
+      "createdAt": "2025-12-21T02:38:03.996Z",
+      "updatedAt": "2025-12-21T02:38:03.996Z",
+      "__v": 0
+    },
+    "newData": {
+      "_id": "69475d8b02b6b70061f271e2",
+      "path": "/dashboard/logs",
+      "method": "GET",
+      "allowedRoles": [
+        "super_admin",
+        "admin"
+      ],
+      "description": "Trang check logs server",
+      "createdAt": "2025-12-21T02:38:03.996Z",
+      "updatedAt": "2025-12-21T02:38:24.152Z",
+      "__v": 0
+    },
+    "description": "Cập nhật route: /dashboard/logs",
+    "createdAt": "2025-12-21T02:38:24.155Z",
+    "__v": 0
+  },
+  {
+    "_id": "69475dcc02b6b70061f2728c",
+    "type": "api",
+    "permissionId": "69475dcc02b6b70061f27289",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/admin/logs",
+      "method": "GET",
+      "allowedRoles": [
+        "super_admin",
+        "admin"
+      ],
+      "description": "Check logs server",
+      "_id": "69475dcc02b6b70061f27289",
+      "createdAt": "2025-12-21T02:39:08.363Z",
+      "updatedAt": "2025-12-21T02:39:08.363Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /admin/logs",
+    "createdAt": "2025-12-21T02:39:08.367Z",
+    "__v": 0
+  },
+  {
+    "_id": "6947c5cdaa3e2d5441c077ab",
+    "type": "api",
+    "permissionId": "6947c5cdaa3e2d5441c077a8",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/admin/log-configs",
+      "method": "GET",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Config bỏ qua logs",
+      "_id": "6947c5cdaa3e2d5441c077a8",
+      "createdAt": "2025-12-21T10:02:53.297Z",
+      "updatedAt": "2025-12-21T10:02:53.297Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /admin/log-configs",
+    "createdAt": "2025-12-21T10:02:53.301Z",
+    "__v": 0
+  },
+  {
+    "_id": "6947c63eaa3e2d5441c07868",
+    "type": "api",
+    "permissionId": "6947c5cdaa3e2d5441c077a8",
+    "action": "update",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "oldData": {
+      "_id": "6947c5cdaa3e2d5441c077a8",
+      "endpoint": "/admin/log-configs",
+      "method": "GET",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Config bỏ qua logs",
+      "createdAt": "2025-12-21T10:02:53.297Z",
+      "updatedAt": "2025-12-21T10:02:53.297Z",
+      "__v": 0
+    },
+    "newData": {
+      "_id": "6947c5cdaa3e2d5441c077a8",
+      "endpoint": "/admin/log-configs",
+      "method": "GET",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Xem logs bỏ qua",
+      "createdAt": "2025-12-21T10:02:53.297Z",
+      "updatedAt": "2025-12-21T10:04:46.936Z",
+      "__v": 0
+    },
+    "description": "Cập nhật API: /admin/log-configs",
+    "createdAt": "2025-12-21T10:04:46.939Z",
+    "__v": 0
+  },
+  {
+    "_id": "6947c6d16ff09fd6711e07d2",
+    "type": "api",
+    "permissionId": "6947c6d16ff09fd6711e07cf",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/admin/log-configs",
+      "method": "POST",
+      "allowedRoles": [
+        "super_admin"
+      ],
+      "description": "Config bỏ qua logs",
+      "_id": "6947c6d16ff09fd6711e07cf",
+      "createdAt": "2025-12-21T10:07:13.417Z",
+      "updatedAt": "2025-12-21T10:07:13.417Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /admin/log-configs",
+    "createdAt": "2025-12-21T10:07:13.423Z",
+    "__v": 0
+  },
+  {
+    "_id": "6947cfa1edb2abab0b7ecc95",
+    "type": "route",
+    "permissionId": "6947cfa1edb2abab0b7ecc92",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "path": "/settings/api",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "manager",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Tài liệu API",
+      "_id": "6947cfa1edb2abab0b7ecc92",
+      "createdAt": "2025-12-21T10:44:49.904Z",
+      "updatedAt": "2025-12-21T10:44:49.904Z",
+      "__v": 0
+    },
+    "description": "Tạo route mới: /settings/api",
+    "createdAt": "2025-12-21T10:44:49.909Z",
+    "__v": 0
+  },
+  {
+    "_id": "6947d36afe8cfbecc7e45937",
+    "type": "route",
+    "permissionId": "6947d36afe8cfbecc7e45934",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "path": "/settings/history",
+      "method": "GET",
+      "allowedRoles": [
+        "user",
+        "manager",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Lịch sử chung",
+      "_id": "6947d36afe8cfbecc7e45934",
+      "createdAt": "2025-12-21T11:00:58.336Z",
+      "updatedAt": "2025-12-21T11:00:58.336Z",
+      "__v": 0
+    },
+    "description": "Tạo route mới: /settings/history",
+    "createdAt": "2025-12-21T11:00:58.341Z",
+    "__v": 0
+  },
+  {
+    "_id": "6947e3a54dbe14607f103885",
+    "type": "api",
+    "permissionId": "6947e3a54dbe14607f103882",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/shopee/check-phone",
+      "method": "POST",
+      "allowedRoles": [
+        "user",
+        "manager",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Check số shopee",
+      "_id": "6947e3a54dbe14607f103882",
+      "createdAt": "2025-12-21T12:10:13.870Z",
+      "updatedAt": "2025-12-21T12:10:13.870Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /shopee/check-phone",
+    "createdAt": "2025-12-21T12:10:13.874Z",
+    "__v": 0
+  },
+  {
+    "_id": "6948db60067295bb8dbccf65",
+    "type": "api",
+    "permissionId": "6948db60067295bb8dbccf62",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/admin/dashboard/stats",
+      "method": "GET",
+      "allowedRoles": [
+        "admin",
+        "super_admin",
+        "manager"
+      ],
+      "description": "Xem dữ liệu tổng quát",
+      "_id": "6948db60067295bb8dbccf62",
+      "createdAt": "2025-12-22T05:47:12.731Z",
+      "updatedAt": "2025-12-22T05:47:12.731Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /admin/dashboard/stats",
+    "createdAt": "2025-12-22T05:47:12.733Z",
+    "__v": 0
+  },
+  {
+    "_id": "6948dc4e0a16de293dfeae69",
+    "type": "api",
+    "permissionId": "6948dc4e0a16de293dfeae66",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "endpoint": "/admin/dashboard/activities",
+      "method": "GET",
+      "allowedRoles": [
+        "manager",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Xerm hoạt động của người dùng",
+      "_id": "6948dc4e0a16de293dfeae66",
+      "createdAt": "2025-12-22T05:51:10.590Z",
+      "updatedAt": "2025-12-22T05:51:10.590Z",
+      "__v": 0
+    },
+    "description": "Tạo API mới: /admin/dashboard/activities",
+    "createdAt": "2025-12-22T05:51:10.595Z",
+    "__v": 0
+  },
+  {
+    "_id": "69496f1e349d3448bb140e66",
+    "type": "route",
+    "permissionId": "69496f1e349d3448bb140e63",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "path": "/dashboard/shopee/vouchers",
+      "method": "GET",
+      "allowedRoles": [
+        "manager",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Quản lý voucher shopee",
+      "_id": "69496f1e349d3448bb140e63",
+      "createdAt": "2025-12-22T16:17:34.130Z",
+      "updatedAt": "2025-12-22T16:17:34.130Z",
+      "__v": 0
+    },
+    "description": "Tạo route mới: /dashboard/shopee/vouchers",
+    "createdAt": "2025-12-22T16:17:34.132Z",
+    "__v": 0
+  },
+  {
+    "_id": "694a0c684f48876a89bc32cb",
+    "type": "route",
+    "permissionId": "694a0c684f48876a89bc32c8",
+    "action": "create",
+    "changedBy": "2nuzKcAsdGVjkA9W3tMVfRtkT3M2",
+    "changedByName": "NAM VŨ",
+    "newData": {
+      "path": "/dashboard/proxy",
+      "method": "GET",
+      "allowedRoles": [
+        "manager",
+        "admin",
+        "super_admin"
+      ],
+      "description": "Quản lý proxy",
+      "_id": "694a0c684f48876a89bc32c8",
+      "createdAt": "2025-12-23T03:28:40.845Z",
+      "updatedAt": "2025-12-23T03:28:40.845Z",
+      "__v": 0
+    },
+    "description": "Tạo route mới: /dashboard/proxy",
+    "createdAt": "2025-12-23T03:28:40.850Z",
+    "__v": 0
+  }
+]

@@ -1,0 +1,32 @@
+[
+  {
+    "_id": "694a0c7f4f48876a89bc3335",
+    "key": "Kf1f3740ed14847e6b63b4c6dc4393190",
+    "name": "Key 1",
+    "region": "random",
+    "isActive": true,
+    "currentProxy": {
+      "realIpAddress": "118.69.4.165",
+      "http": "118.69.4.165:13573",
+      "socks5": "118.69.4.165:50072",
+      "httpPort": 13573,
+      "socks5Port": 50072,
+      "host": "118.69.4.165",
+      "location": "Miền Bắc 6",
+      "expirationAt": 1766468580475,
+      "ttl": 1800,
+      "ttc": 119,
+      "nextRequestAt": 1766466900475
+    },
+    "lastCheckedAt": "2025-12-23T05:13:00.671Z",
+    "usedByApis": [
+      "/shopee/check-phone",
+      "/shopee/orders",
+      "/shopee/order-detail",
+      "/shopee/save-voucher"
+    ],
+    "createdAt": "2025-12-23T03:29:03.418Z",
+    "updatedAt": "2025-12-23T05:13:00.677Z",
+    "__v": 4
+  }
+]

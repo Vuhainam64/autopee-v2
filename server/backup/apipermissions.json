@@ -1,0 +1,547 @@
+[
+  {
+    "_id": "6946630546d4d948e581a0c9",
+    "endpoint": "/auth/health",
+    "method": "GET",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Health check cho auth service",
+    "createdAt": "2025-12-20T08:49:09.218Z",
+    "updatedAt": "2025-12-20T08:49:09.218Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946630546d4d948e581a0cc",
+    "endpoint": "/auth/me",
+    "method": "GET",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy thông tin user hiện tại",
+    "createdAt": "2025-12-20T08:49:09.220Z",
+    "updatedAt": "2025-12-20T08:49:09.220Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946630546d4d948e581a0cf",
+    "endpoint": "/auth/logout",
+    "method": "POST",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Đăng xuất",
+    "createdAt": "2025-12-20T08:49:09.221Z",
+    "updatedAt": "2025-12-20T08:49:09.221Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946630546d4d948e581a0d2",
+    "endpoint": "/user/me",
+    "method": "GET",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy profile user",
+    "createdAt": "2025-12-20T08:49:09.223Z",
+    "updatedAt": "2025-12-20T08:49:09.223Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670788f3f7c981c5f0364",
+    "endpoint": "/api/auth/login",
+    "method": "POST",
+    "allowedRoles": [
+      "guest",
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Đăng nhập - tất cả người dùng đều có thể đăng nhập",
+    "createdAt": "2025-12-20T09:46:32.872Z",
+    "updatedAt": "2025-12-20T09:46:32.872Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670788f3f7c981c5f036a",
+    "endpoint": "/api/auth/logout",
+    "method": "POST",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Đăng xuất - chỉ người dùng đã đăng nhập",
+    "createdAt": "2025-12-20T09:46:32.974Z",
+    "updatedAt": "2025-12-20T09:46:32.974Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670798f3f7c981c5f0370",
+    "endpoint": "/api/auth/register",
+    "method": "POST",
+    "allowedRoles": [
+      "guest"
+    ],
+    "description": "Đăng ký tài khoản mới - chỉ guest",
+    "createdAt": "2025-12-20T09:46:33.075Z",
+    "updatedAt": "2025-12-20T09:46:33.075Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670798f3f7c981c5f0376",
+    "endpoint": "/api/user/me",
+    "method": "GET",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy thông tin user hiện tại",
+    "createdAt": "2025-12-20T09:46:33.178Z",
+    "updatedAt": "2025-12-20T09:46:33.178Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670798f3f7c981c5f037f",
+    "endpoint": "/api/user/profile",
+    "method": "GET",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy profile user",
+    "createdAt": "2025-12-20T09:46:33.383Z",
+    "updatedAt": "2025-12-20T09:46:33.383Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670798f3f7c981c5f0388",
+    "endpoint": "/api/user/sessions",
+    "method": "GET",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy danh sách sessions của user",
+    "createdAt": "2025-12-20T09:46:33.585Z",
+    "updatedAt": "2025-12-20T09:46:33.585Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670798f3f7c981c5f038e",
+    "endpoint": "/api/user/sessions/:sessionId",
+    "method": "DELETE",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Xóa một session cụ thể",
+    "createdAt": "2025-12-20T09:46:33.691Z",
+    "updatedAt": "2025-12-20T09:46:33.691Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670798f3f7c981c5f0394",
+    "endpoint": "/api/trackSession",
+    "method": "POST",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Track session activity",
+    "createdAt": "2025-12-20T09:46:33.803Z",
+    "updatedAt": "2025-12-20T09:46:33.803Z",
+    "__v": 0
+  },
+  {
+    "_id": "694670798f3f7c981c5f039a",
+    "endpoint": "/api/products",
+    "method": "GET",
+    "allowedRoles": [
+      "guest",
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy danh sách sản phẩm - tất cả đều xem được",
+    "createdAt": "2025-12-20T09:46:33.912Z",
+    "updatedAt": "2025-12-20T09:46:33.912Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707a8f3f7c981c5f03a0",
+    "endpoint": "/api/products/:id",
+    "method": "GET",
+    "allowedRoles": [
+      "guest",
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy chi tiết sản phẩm",
+    "createdAt": "2025-12-20T09:46:34.013Z",
+    "updatedAt": "2025-12-20T09:46:34.013Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707a8f3f7c981c5f03af",
+    "endpoint": "/api/shopee/products",
+    "method": "GET",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy sản phẩm từ Shopee API",
+    "createdAt": "2025-12-20T09:46:34.410Z",
+    "updatedAt": "2025-12-20T09:46:34.410Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707a8f3f7c981c5f03b5",
+    "endpoint": "/api/shopee/orders",
+    "method": "GET",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy danh sách đơn hàng Shopee",
+    "createdAt": "2025-12-20T09:46:34.515Z",
+    "updatedAt": "2025-12-20T09:46:34.515Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707a8f3f7c981c5f03bb",
+    "endpoint": "/api/shopee/orders/:id",
+    "method": "GET",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy chi tiết đơn hàng Shopee",
+    "createdAt": "2025-12-20T09:46:34.616Z",
+    "updatedAt": "2025-12-20T09:46:34.616Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707a8f3f7c981c5f03c1",
+    "endpoint": "/api/admin/users",
+    "method": "GET",
+    "allowedRoles": [
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy danh sách users - chỉ admin",
+    "createdAt": "2025-12-20T09:46:34.714Z",
+    "updatedAt": "2025-12-20T09:46:34.714Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707a8f3f7c981c5f03c7",
+    "endpoint": "/api/admin/users/:uid",
+    "method": "GET",
+    "allowedRoles": [
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy thông tin user cụ thể",
+    "createdAt": "2025-12-20T09:46:34.814Z",
+    "updatedAt": "2025-12-20T09:46:34.814Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707a8f3f7c981c5f03cd",
+    "endpoint": "/api/admin/users/:uid/role",
+    "method": "PUT",
+    "allowedRoles": [
+      "super_admin",
+      "admin"
+    ],
+    "description": "Thay đổi role của user - chỉ admin trở lên",
+    "createdAt": "2025-12-20T09:46:34.920Z",
+    "updatedAt": "2025-12-20T13:54:12.948Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707b8f3f7c981c5f03d3",
+    "endpoint": "/api/admin/routes",
+    "method": "GET",
+    "allowedRoles": [
+      "super_admin"
+    ],
+    "description": "Lấy danh sách route permissions",
+    "createdAt": "2025-12-20T09:46:35.029Z",
+    "updatedAt": "2025-12-20T09:46:35.029Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707b8f3f7c981c5f03dc",
+    "endpoint": "/api/admin/routes/:id",
+    "method": "PUT",
+    "allowedRoles": [
+      "super_admin"
+    ],
+    "description": "Cập nhật route permission",
+    "createdAt": "2025-12-20T09:46:35.257Z",
+    "updatedAt": "2025-12-20T09:46:35.257Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707b8f3f7c981c5f03e5",
+    "endpoint": "/api/admin/routes/bulk",
+    "method": "PUT",
+    "allowedRoles": [
+      "super_admin"
+    ],
+    "description": "Bulk update route permissions",
+    "createdAt": "2025-12-20T09:46:35.459Z",
+    "updatedAt": "2025-12-20T09:46:35.459Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707b8f3f7c981c5f03eb",
+    "endpoint": "/api/admin/apis",
+    "method": "GET",
+    "allowedRoles": [
+      "super_admin"
+    ],
+    "description": "Lấy danh sách API permissions",
+    "createdAt": "2025-12-20T09:46:35.558Z",
+    "updatedAt": "2025-12-20T14:42:27.551Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707b8f3f7c981c5f03f4",
+    "endpoint": "/api/admin/apis/:id",
+    "method": "PUT",
+    "allowedRoles": [
+      "super_admin"
+    ],
+    "description": "Cập nhật API permission",
+    "createdAt": "2025-12-20T09:46:35.755Z",
+    "updatedAt": "2025-12-20T09:46:35.755Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707b8f3f7c981c5f03fd",
+    "endpoint": "/api/admin/apis/bulk",
+    "method": "PUT",
+    "allowedRoles": [
+      "super_admin"
+    ],
+    "description": "Bulk update API permissions",
+    "createdAt": "2025-12-20T09:46:35.956Z",
+    "updatedAt": "2025-12-20T09:46:35.956Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707c8f3f7c981c5f0403",
+    "endpoint": "/api/admin/roles",
+    "method": "GET",
+    "allowedRoles": [
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy danh sách roles",
+    "createdAt": "2025-12-20T09:46:36.059Z",
+    "updatedAt": "2025-12-20T09:46:36.059Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707c8f3f7c981c5f040c",
+    "endpoint": "/api/admin/roles/:id",
+    "method": "PUT",
+    "allowedRoles": [
+      "super_admin"
+    ],
+    "description": "Cập nhật role",
+    "createdAt": "2025-12-20T09:46:36.257Z",
+    "updatedAt": "2025-12-20T09:46:36.257Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707c8f3f7c981c5f0415",
+    "endpoint": "/api/admin/history",
+    "method": "GET",
+    "allowedRoles": [
+      "super_admin"
+    ],
+    "description": "Lấy lịch sử chỉnh sửa permissions",
+    "createdAt": "2025-12-20T09:46:36.467Z",
+    "updatedAt": "2025-12-20T09:46:36.467Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707c8f3f7c981c5f041b",
+    "endpoint": "/api/settings/profile",
+    "method": "GET",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy cài đặt profile",
+    "createdAt": "2025-12-20T09:46:36.569Z",
+    "updatedAt": "2025-12-20T09:46:36.569Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707c8f3f7c981c5f0424",
+    "endpoint": "/api/settings/security",
+    "method": "GET",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy cài đặt bảo mật",
+    "createdAt": "2025-12-20T09:46:36.766Z",
+    "updatedAt": "2025-12-20T09:46:36.766Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946707c8f3f7c981c5f042d",
+    "endpoint": "/api/settings/wallet",
+    "method": "GET",
+    "allowedRoles": [
+      "user",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Lấy thông tin wallet",
+    "createdAt": "2025-12-20T09:46:36.960Z",
+    "updatedAt": "2025-12-20T09:46:36.960Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946b568adbf1c9b98b34ff5",
+    "endpoint": "/admin/apis",
+    "method": "POST",
+    "allowedRoles": [
+      "super_admin"
+    ],
+    "description": "Thêm quyền cho api",
+    "createdAt": "2025-12-20T08:49:09.220Z",
+    "updatedAt": "2025-12-20T14:42:38.382Z",
+    "__v": 0
+  },
+  {
+    "_id": "6946b64c848634c03e0e91e2",
+    "endpoint": "/admin/roles",
+    "method": "POST",
+    "allowedRoles": [
+      "super_admin"
+    ],
+    "description": "Thêm Role mới",
+    "createdAt": "2025-12-20T14:44:28.603Z",
+    "updatedAt": "2025-12-20T14:44:45.640Z",
+    "__v": 0
+  },
+  {
+    "_id": "69475d4a02b6b70061f271ac",
+    "endpoint": "/admin/routes",
+    "method": "POST",
+    "allowedRoles": [
+      "super_admin"
+    ],
+    "description": "Tạo permission routes mới",
+    "createdAt": "2025-12-21T02:36:58.237Z",
+    "updatedAt": "2025-12-21T02:37:45.336Z",
+    "__v": 0
+  },
+  {
+    "_id": "69475dcc02b6b70061f27289",
+    "endpoint": "/admin/logs",
+    "method": "GET",
+    "allowedRoles": [
+      "super_admin",
+      "admin"
+    ],
+    "description": "Check logs server",
+    "createdAt": "2025-12-21T02:39:08.363Z",
+    "updatedAt": "2025-12-21T02:39:08.363Z",
+    "__v": 0
+  },
+  {
+    "_id": "6947c5cdaa3e2d5441c077a8",
+    "endpoint": "/admin/log-configs",
+    "method": "GET",
+    "allowedRoles": [
+      "super_admin"
+    ],
+    "description": "Xem logs bỏ qua",
+    "createdAt": "2025-12-21T10:02:53.297Z",
+    "updatedAt": "2025-12-21T10:04:46.936Z",
+    "__v": 0
+  },
+  {
+    "_id": "6947c6d16ff09fd6711e07cf",
+    "endpoint": "/admin/log-configs",
+    "method": "POST",
+    "allowedRoles": [
+      "super_admin"
+    ],
+    "description": "Config bỏ qua logs",
+    "createdAt": "2025-12-21T10:07:13.417Z",
+    "updatedAt": "2025-12-21T10:07:13.417Z",
+    "__v": 0
+  },
+  {
+    "_id": "6947e3a54dbe14607f103882",
+    "endpoint": "/shopee/check-phone",
+    "method": "POST",
+    "allowedRoles": [
+      "user",
+      "manager",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Check số shopee",
+    "createdAt": "2025-12-21T12:10:13.870Z",
+    "updatedAt": "2025-12-21T12:10:13.870Z",
+    "__v": 0
+  },
+  {
+    "_id": "6948db60067295bb8dbccf62",
+    "endpoint": "/admin/dashboard/stats",
+    "method": "GET",
+    "allowedRoles": [
+      "admin",
+      "super_admin",
+      "manager"
+    ],
+    "description": "Xem dữ liệu tổng quát",
+    "createdAt": "2025-12-22T05:47:12.731Z",
+    "updatedAt": "2025-12-22T05:47:12.731Z",
+    "__v": 0
+  },
+  {
+    "_id": "6948dc4e0a16de293dfeae66",
+    "endpoint": "/admin/dashboard/activities",
+    "method": "GET",
+    "allowedRoles": [
+      "manager",
+      "admin",
+      "super_admin"
+    ],
+    "description": "Xerm hoạt động của người dùng",
+    "createdAt": "2025-12-22T05:51:10.590Z",
+    "updatedAt": "2025-12-22T05:51:10.590Z",
+    "__v": 0
+  }
+]

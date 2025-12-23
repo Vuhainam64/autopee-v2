@@ -15,9 +15,7 @@ function getAxiosConfigWithProxy(proxyInfo) {
   if (proxyInfo.http) {
     const [host, port] = proxyInfo.http.split(':')
     const proxyUrl = `http://${host}:${port}`
-    
-    console.log(`[Proxy] Using HTTP proxy: ${proxyUrl}`)
-    
+        
     try {
       return {
         // Không dùng proxy config của axios vì nó có vấn đề với HTTPS

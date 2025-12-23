@@ -1,0 +1,108 @@
+{
+  "exportedAt": "2025-12-23T05:13:40.568Z",
+  "sourceUri": "mongodb://localhost:27017/autopee",
+  "exportDir": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup",
+  "collections": [
+    {
+      "name": "users",
+      "count": 54,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\users.json"
+    },
+    {
+      "name": "transactions",
+      "count": 6,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\transactions.json"
+    },
+    {
+      "name": "paymentrequests",
+      "count": 11,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\paymentrequests.json"
+    },
+    {
+      "name": "usagehistories",
+      "count": 14,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\usagehistories.json"
+    },
+    {
+      "name": "shopeecookies",
+      "count": 186,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\shopeecookies.json"
+    },
+    {
+      "name": "apitokens",
+      "count": 2,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\apitokens.json"
+    },
+    {
+      "name": "apipermissions",
+      "count": 41,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\apipermissions.json"
+    },
+    {
+      "name": "routepermissions",
+      "count": 15,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\routepermissions.json"
+    },
+    {
+      "name": "roles",
+      "count": 5,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\roles.json"
+    },
+    {
+      "name": "logconfigs",
+      "count": 1,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\logconfigs.json"
+    },
+    {
+      "name": "serverlogs",
+      "count": 6121,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\serverlogs.json"
+    },
+    {
+      "name": "permissionhistories",
+      "count": 54,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\permissionhistories.json"
+    },
+    {
+      "name": "usersessions",
+      "count": 103,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\usersessions.json"
+    },
+    {
+      "name": "vouchershopee",
+      "count": 3,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\vouchershopee.json"
+    },
+    {
+      "name": "freeshipshopee",
+      "count": 8,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\freeshipshopee.json"
+    },
+    {
+      "name": "proxykeys",
+      "count": 1,
+      "skipped": false,
+      "filePath": "C:\\Users\\vuhainam272\\OneDrive\\Hinh\\Documents\\GitHub\\autopee-v2\\server\\backup\\proxykeys.json"
+    }
+  ],
+  "summary": {
+    "totalCollections": 16,
+    "totalDocuments": 6625,
+    "skippedCollections": 0
+  }
+}
