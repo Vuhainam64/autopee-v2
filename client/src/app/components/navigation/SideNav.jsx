@@ -185,7 +185,7 @@ function SideNav({ collapsed = false, onToggle }) {
       </div>
 
       {/* Navigation - Scrollable */}
-      <nav className={`mt-3 flex-1 overflow-y-auto flex flex-col gap-1 scrollbar-thin scrollbar-thumb-orange-300 scrollbar-track-slate-100 ${collapsed ? 'items-center' : ''}`}>
+      <nav className={`mt-3 flex-1 overflow-y-auto flex flex-col gap-1 scrollbar-thin scrollbar-thumb-orange-300 scrollbar-track-transparent ${collapsed ? 'items-center' : ''}`}>
         {menuItems.map((item) => {
           if (item.children) {
             const isExpanded = expandedItems.includes(item.label)
