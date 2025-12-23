@@ -498,6 +498,51 @@ const checkPhone = async (phone, cookie = null, proxyInfo = null) => {
   }
 };
 
+/**
+ * Lấy thông tin tài khoản Shopee từ cookie
+ * @param {string} cookie - Cookie string
+ * @param {Object} proxyInfo - Proxy info (optional)
+ * @returns {Promise<Object>} Thông tin tài khoản
+ */
+const getAccountInfo = async (cookie, proxyInfo = null) => {
+  const url = "https://mall.shopee.vn/api/v4/account/basic/get_account_info";
+
+  const headers = {
+    Cookie: cookie,
+    Accept: "application/json",
+    "Af-Ac-Enc-Dat": "",
+    "Af-Ac-Enc-Id": "",
+    "Af-Ac-Enc-Sz-Token": "",
+    "If-None-Match-": "55b03-97d86fe6888b54a9c5bfa268cf3d922f",
+    Shopee_http_dns_mode: "1",
+    "User-Agent": "Android app Shopee appver=28320 app_type=1",
+    "X-Api-Source": "rn",
+    "X-Sap-Access-F": "",
+    "X-Sap-Access-T": "",
+    "X-Shopee-Client-Timezone": "Asia/Ho_Chi_Minh",
+    "X-Csrftoken": "",
+    "Content-Type": "application/json; charset=utf-8",
+    "Accept-Encoding": "gzip, deflate, br",
+  };
+
+  try {
+    const proxyConfig = getAxiosConfigWithProxy(proxyInfo)
+    const response = await axios.get(url, {
+      headers,
+      ...proxyConfig,
+    });
+    
+    if (response.status >= 200 && response.status < 300) {
+      return response.data;
+    } else {
+      throw new Error(`API Shopee trả về mã lỗi: ${response.status}`);
+    }
+  } catch (error) {
+    console.error("Lỗi khi lấy thông tin tài khoản:", error.message);
+    throw error;
+  }
+};
+
 module.exports = {
   fetchAllOrdersAndCheckouts,
   fetchOrderDetailV2,
@@ -505,6 +550,7 @@ module.exports = {
   checkQrStatus,
   loginQr,
   checkPhone,
+  getAccountInfo,
   HEADERS_GET,
   HEADERS_POST_JSON,
 };
