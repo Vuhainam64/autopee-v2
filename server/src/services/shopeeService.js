@@ -1,5 +1,7 @@
 const axios = require("axios");
 const crypto = require("crypto");
+const { getAxiosConfigWithProxy } = require("../utils/axiosProxy");
+const proxyService = require("./proxyService");
 
 // Hàm parse cookie từ Set-Cookie header
 function parseCookieFromHeaders(setCookieHeaders) {
@@ -24,7 +26,7 @@ function parseCookieFromHeaders(setCookieHeaders) {
 }
 
 // Hàm lấy SPC_SC_SESSION từ cookie SPC_ST
-async function getSPCSCSession(spcStCookie) {
+async function getSPCSCSession(spcStCookie, proxyInfo = null) {
   const headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
@@ -41,9 +43,13 @@ async function getSPCSCSession(spcStCookie) {
   };
 
   try {
+    const proxyConfig = getAxiosConfigWithProxy(proxyInfo)
     const response = await axios.get(
       'https://banhang.shopee.vn/portal/vn-onboarding/form/291000/291100',
-      { headers }
+      { 
+        headers,
+        ...proxyConfig,
+      }
     );
 
     // Lấy cookie từ response headers
@@ -125,6 +131,7 @@ const HEADERS_POST_JSON = {
 const fetchAllOrdersAndCheckouts = async (
   cookie,
   { limit = 10, listType = 7, offset = 0 } = {},
+  proxyInfo = null,
 ) => {
   const url =
     "https://mall.shopee.vn/api/v4/order/get_all_order_and_checkout_list" +
@@ -135,14 +142,18 @@ const fetchAllOrdersAndCheckouts = async (
     Cookie: cookie,
   };
 
-  const resp = await axios.get(url, { headers });
+  const proxyConfig = getAxiosConfigWithProxy(proxyInfo)
+  const resp = await axios.get(url, { 
+    headers,
+    ...proxyConfig,
+  });
   if (!resp.data || resp.data.error !== 0) {
     throw new Error(resp.data?.error_msg || "Shopee API error");
   }
   return resp.data.data;
 };
 
-const fetchOrderDetailV2 = async (cookie, orderId) => {
+const fetchOrderDetailV2 = async (cookie, orderId, proxyInfo = null) => {
   const url =
     "https://mall.shopee.vn/api/v4/order/get_order_detail_v2?_oft=3&order_id=" +
     orderId;
@@ -152,7 +163,11 @@ const fetchOrderDetailV2 = async (cookie, orderId) => {
     Cookie: cookie,
   };
 
-  const resp = await axios.get(url, { headers });
+  const proxyConfig = getAxiosConfigWithProxy(proxyInfo)
+  const resp = await axios.get(url, { 
+    headers,
+    ...proxyConfig,
+  });
   if (!resp.data || resp.data.error !== 0) {
     throw new Error(resp.data?.error_msg || "Shopee order detail error");
   }
@@ -219,7 +234,8 @@ const generateRandomHash = () => {
 
 // Hàm check số điện thoại có tồn tại trên Shopee hay không
 // cookie: optional, nếu có sẽ dùng để check chính xác hơn khi error === 2 hoặc 89
-const checkPhone = async (phone, cookie = null) => {
+// proxyInfo: optional, thông tin proxy để sử dụng
+const checkPhone = async (phone, cookie = null, proxyInfo = null) => {
   // Loại bỏ các ký tự không phải số
   let cleanPhone = phone.replace(/[^0-9]/g, "");
   
@@ -261,10 +277,14 @@ const checkPhone = async (phone, cookie = null) => {
   };
 
   try {
+    const proxyConfig = getAxiosConfigWithProxy(proxyInfo)
     const response = await axios.post(
       "https://shopee.vn/api/v4/account/login_by_password",
       jsonData,
-      { headers }
+      { 
+        headers,
+        ...proxyConfig,
+      }
     );
 
     const responseData = response.data;
@@ -296,7 +316,7 @@ const checkPhone = async (phone, cookie = null) => {
           const spcStMatch = cookie.match(/SPC_ST=[^;]+/);
           if (spcStMatch) {
             const spcStCookie = spcStMatch[0];
-            const sessionResult = await getSPCSCSession(spcStCookie);
+            const sessionResult = await getSPCSCSession(spcStCookie, proxyInfo);
             if (sessionResult && sessionResult.success) {
               fullCookie = buildFullCookieString(spcStCookie, sessionResult);
             }
@@ -332,10 +352,14 @@ const checkPhone = async (phone, cookie = null) => {
           lang: "vi",
         };
 
+        const proxyConfig = getAxiosConfigWithProxy(proxyInfo)
         const phoneExistResponse = await axios.post(
           "https://banhang.shopee.vn/api/onboarding/local_onboard/v1/vn_onboard/phone/check/",
           json_data,
-          { headers: cookieHeaders }
+          { 
+            headers: cookieHeaders,
+            ...proxyConfig,
+          }
         );
 
         // Nếu response là "OK", số điện thoại chưa tồn tại

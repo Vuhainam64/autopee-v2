@@ -8,6 +8,7 @@ import Dashboard from '../pages/Dashboard.jsx'
 import Permissions from '../pages/dashboard/Permissions.jsx'
 import Users from '../pages/dashboard/Users.jsx'
 import Logs from '../pages/dashboard/Logs.jsx'
+import ProxyManagement from '../pages/dashboard/ProxyManagement.jsx'
 
 // Product routes
 import Products from '../pages/Products.jsx'
@@ -17,6 +18,9 @@ import CheckPhone from '../pages/shopee/CheckPhone.jsx'
 import AddressManagement from '../pages/shopee/AddressManagement.jsx'
 import GetVoucher from '../pages/shopee/GetVoucher.jsx'
 import AddVoucher from '../pages/dashboard/AddVoucher.jsx'
+import Lotteria from '../pages/other/Lotteria.jsx'
+import CGV from '../pages/other/CGV.jsx'
+import CocaCola from '../pages/other/CocaCola.jsx'
 
 // Settings routes
 import ProfileSettings from '../pages/settings/ProfileSettings.jsx'
@@ -74,6 +78,10 @@ export const dashboardRoutes = [
     path: '/dashboard/shopee/vouchers',
     element: <AddVoucher />,
   },
+  {
+    path: '/dashboard/proxy',
+    element: <ProxyManagement />,
+  },
 ]
 
 // Product routes - ProductLayout
@@ -102,6 +110,18 @@ export const productRoutes = [
   {
     path: '/products/shopee/vouchers',
     element: <GetVoucher />,
+  },
+  {
+    path: '/products/other/lotteria',
+    element: <Lotteria />,
+  },
+  {
+    path: '/products/other/cgv',
+    element: <CGV />,
+  },
+  {
+    path: '/products/other/coca-cola',
+    element: <CocaCola />,
   },
 ]
 

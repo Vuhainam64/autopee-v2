@@ -16,7 +16,8 @@ import {
   MdStore,
   MdPhone,
   MdLocationOn,
-  MdCardGiftcard
+  MdCardGiftcard,
+  MdMoreHoriz
 } from 'react-icons/md'
 import { useAuth } from '../../contexts/AuthContext.jsx'
 import { useAppSelector } from '../../store/hooks.js'
@@ -65,11 +66,32 @@ const menuItems = [
       },
     ],
   },
+  {
+    label: 'Dịch vụ khác',
+    icon: MdMoreHoriz,
+    children: [
+      { 
+        label: 'Lotteria', 
+        to: '/products/other/lotteria',
+        icon: MdStore,
+      },
+      { 
+        label: 'CGV', 
+        to: '/products/other/cgv',
+        icon: MdStore,
+      },
+      { 
+        label: 'Coca Cola', 
+        to: '/products/other/coca-cola',
+        icon: MdStore,
+      },
+    ],
+  },
 ]
 
 function SideNav({ collapsed = false, onToggle }) {
   const { pathname } = useLocation()
-  const [expandedItems, setExpandedItems] = useState(['Check Mã vận đơn', 'Dịch vụ Shopee'])
+  const [expandedItems, setExpandedItems] = useState(['Check Mã vận đơn', 'Dịch vụ Shopee', 'Dịch vụ khác'])
   const { currentUser } = useAuth()
   const userProfile = useAppSelector((state) => state.user.userProfile)
 

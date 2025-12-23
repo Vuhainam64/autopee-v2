@@ -16,6 +16,7 @@ const {
   deleteCookie,
   deleteCookieByString,
 } = require("../services/cookieService");
+const proxyService = require("../services/proxyService");
 const User = require("../models/User");
 const UsageHistory = require("../models/UsageHistory");
 const ShopeeVoucher = require("../models/ShopeeVoucher");
@@ -73,11 +74,14 @@ router.post(
       });
     }
 
+    // Lấy proxy cho API này nếu có cấu hình
+    const proxyInfo = await proxyService.getProxyForApi('/shopee/orders')
+
     const data = await fetchAllOrdersAndCheckouts(cookie, {
       limit,
       listType: list_type,
       offset,
-    });
+    }, proxyInfo);
     res.json({ success: true, data });
   }),
 );
@@ -137,8 +141,11 @@ router.post(
       });
     }
 
+    // Lấy proxy cho API này nếu có cấu hình
+    const proxyInfo = await proxyService.getProxyForApi('/shopee/order-detail')
+
     try {
-    const data = await fetchOrderDetailV2(cookie, order_id);
+    const data = await fetchOrderDetailV2(cookie, order_id, proxyInfo);
     res.json({ success: true, data });
     } catch (error) {
       console.error("Error fetching order detail:", error.message);
@@ -236,9 +243,12 @@ router.post(
       });
     }
 
+    // Lấy proxy cho API này nếu có cấu hình
+    const proxyInfo = await proxyService.getProxyForApi('/shopee/check-phone')
+
     try {
       // Kiểm tra số điện thoại
-      const result = await checkPhone(phone, cookieToUse);
+      const result = await checkPhone(phone, cookieToUse, proxyInfo);
       
       // Nếu cookie không hợp lệ (403), xóa cookie khỏi database
       if (result.invalidCookie) {
@@ -407,11 +417,19 @@ router.post(
     }
 
     try {
+      // Lấy proxy cho API này nếu có cấu hình
+      const proxyInfo = await proxyService.getProxyForApi('/shopee/save-voucher')
+      const { getAxiosConfigWithProxy } = require("../utils/axiosProxy");
+      const proxyConfig = getAxiosConfigWithProxy(proxyInfo)
+
       // Gọi API Shopee để lưu voucher
       const url = "https://mall.shopee.vn/api/v2/voucher_wallet/save_vouchers";
       const headers = {
         'Cookie': cookie,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+        'Origin': 'https://shopee.vn',
+        'Referer': 'https://shopee.vn/',
       };
       const payload = {
         "voucher_identifiers": [
@@ -425,7 +443,57 @@ router.post(
         "need_user_voucher_status": true
       };
 
-      const response = await axios.post(url, payload, { headers });
+      let response;
+      try {
+        response = await axios.post(url, payload, { 
+          headers,
+          ...proxyConfig,
+          timeout: 30000,
+        });
+      } catch (axiosError) {
+        // Xử lý lỗi từ axios (có thể là lỗi network, proxy, hoặc response từ Shopee)
+        if (axiosError.response) {
+          // Shopee API trả về lỗi
+          const status = axiosError.response.status;
+          const errorData = axiosError.response.data;
+          
+          console.error(`[API] POST /shopee/save-voucher - Shopee API error:`, {
+            status,
+            data: errorData,
+            headers: axiosError.response.headers,
+          });
+
+          return res.status(status).json({
+            success: false,
+            error: {
+              message: errorData?.error_msg || errorData?.message || `Shopee API trả về lỗi ${status}`,
+              code: errorData?.error,
+              shopeeResponse: errorData,
+            },
+          });
+        } else if (axiosError.request) {
+          // Request đã được gửi nhưng không nhận được response (network error, proxy error)
+          console.error(`[API] POST /shopee/save-voucher - Network/Proxy error:`, axiosError.message);
+          
+          return res.status(500).json({
+            success: false,
+            error: {
+              message: `Lỗi kết nối: ${axiosError.message}`,
+              type: 'network_error',
+            },
+          });
+        } else {
+          // Lỗi khi setup request
+          console.error(`[API] POST /shopee/save-voucher - Request setup error:`, axiosError.message);
+          
+          return res.status(500).json({
+            success: false,
+            error: {
+              message: `Lỗi khi gửi request: ${axiosError.message}`,
+            },
+          });
+        }
+      }
 
       if (response.status >= 200 && response.status < 300) {
         const shopeeResponse = response.data;
@@ -563,10 +631,15 @@ router.post(
         claimEndTime,
         hasExpired,
         disabled,
+        fullyRedeemed,
+        fullyClaimed,
+        fullyUsed,
         newUserOnly,
         shopeeWalletOnly,
         productLimit,
         usageLimit,
+        usedCount,
+        leftCount,
         voucherMarketType,
         useType,
         iconText,

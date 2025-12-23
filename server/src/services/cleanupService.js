@@ -8,6 +8,7 @@ const UsageHistory = require('../models/UsageHistory')
 const PaymentRequest = require('../models/PaymentRequest')
 const Transaction = require('../models/Transaction')
 const ShopeeCookie = require('../models/ShopeeCookie')
+const proxyService = require('./proxyService')
 
 /**
  * Hàm dọn dẹp dữ liệu cũ
@@ -59,6 +60,23 @@ async function cleanupOldData() {
 }
 
 /**
+ * Tự động đổi proxy cho các keys đã đến thời gian cho phép đổi
+ */
+async function autoRefreshProxies() {
+  try {
+    const result = await proxyService.autoRefreshExpiredProxies()
+    if (result.total > 0) {
+      console.log(`[ProxyService] Đã tự động đổi ${result.success}/${result.total} proxy keys`)
+      if (result.failed > 0) {
+        console.warn(`[ProxyService] ${result.failed} proxy keys không thể đổi:`, result.errors)
+      }
+    }
+  } catch (error) {
+    console.error('[ProxyService] Lỗi khi tự động đổi proxy:', error)
+  }
+}
+
+/**
  * Khởi động scheduled task
  * Chạy mỗi ngày lúc 2:00 AM
  */
@@ -69,7 +87,13 @@ function startCleanupScheduler() {
     await cleanupOldData()
   })
 
+  // Tự động đổi proxy mỗi phút
+  cron.schedule('* * * * *', async () => {
+    await autoRefreshProxies()
+  })
+
   console.log('[CleanupService] Cleanup scheduler started (runs daily at 2:00 AM)')
+  console.log('[ProxyService] Auto refresh proxy scheduler started (runs every minute)')
 }
 
 module.exports = {

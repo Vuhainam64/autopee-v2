@@ -11,6 +11,7 @@ import {
   FileTextOutlined,
   ShopOutlined,
   GiftOutlined,
+  CloudServerOutlined,
 } from '@ant-design/icons'
 import logo from '../../assets/autopee-logo.png'
 import { usePermissions } from '../contexts/PermissionContext.jsx'
@@ -35,6 +36,11 @@ const dashboardMenuItems = [
     label: 'Theo dõi Log',
     to: '/dashboard/logs',
     icon: FileTextOutlined,
+  },
+  {
+    label: 'Quản lý Proxy',
+    to: '/dashboard/proxy',
+    icon: CloudServerOutlined,
   },
   {
     label: 'Dịch vụ Shopee',
