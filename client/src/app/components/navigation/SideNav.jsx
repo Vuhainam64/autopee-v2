@@ -17,7 +17,8 @@ import {
   MdPhone,
   MdLocationOn,
   MdCardGiftcard,
-  MdMoreHoriz
+  MdMoreHoriz,
+  MdAccountCircle
 } from 'react-icons/md'
 import { useAuth } from '../../contexts/AuthContext.jsx'
 import { useAppSelector } from '../../store/hooks.js'
@@ -63,6 +64,11 @@ const menuItems = [
         label: 'Lấy Voucher', 
         to: '/products/shopee/vouchers',
         icon: MdCardGiftcard,
+      },
+      { 
+        label: 'Quản lý tài khoản', 
+        to: '/products/shopee/accounts',
+        icon: MdAccountCircle,
       },
     ],
   },

@@ -17,6 +17,7 @@ import CheckMVD from '../pages/CheckMVD.jsx'
 import CheckPhone from '../pages/shopee/CheckPhone.jsx'
 import AddressManagement from '../pages/shopee/AddressManagement.jsx'
 import GetVoucher from '../pages/shopee/GetVoucher.jsx'
+import AccountManagement from '../pages/shopee/AccountManagement.jsx'
 import AddVoucher from '../pages/dashboard/AddVoucher.jsx'
 import Lotteria from '../pages/other/Lotteria.jsx'
 import CGV from '../pages/other/CGV.jsx'
@@ -110,6 +111,10 @@ export const productRoutes = [
   {
     path: '/products/shopee/vouchers',
     element: <GetVoucher />,
+  },
+  {
+    path: '/products/shopee/accounts',
+    element: <AccountManagement />,
   },
   {
     path: '/products/other/lotteria',
