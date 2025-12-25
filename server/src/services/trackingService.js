@@ -60,9 +60,7 @@ async function SPXTracking(waybill) {
       message: firstTrackingItem.message,
     };
   } catch (error) {
-    return {
-      error: error.message,
-    };
+    throw new Error(error.message || "Error tracking SPX order");
   }
 }
 
@@ -72,7 +70,7 @@ async function SPXTracking(waybill) {
 async function JNTTracking(trackingID, cellphone) {
   try {
     if (!trackingID || !cellphone) {
-      throw new Error("Missing parameters: 'trackingID', or 'cellphone'.");
+      throw new Error("Missing parameters: 'trackingID' or 'cellphone'.");
     }
 
     const response = await axios.get(
@@ -96,10 +94,13 @@ async function JNTTracking(trackingID, cellphone) {
       });
     });
 
+    if (result.length === 0) {
+      throw new Error("No tracking information found");
+    }
+
     return result[0];
   } catch (error) {
-    console.error("Error fetching JNTTracking data:", error);
-    throw new Error("Internal server error");
+    throw new Error(error.message || "Error tracking JNT order");
   }
 }
 
@@ -119,6 +120,10 @@ async function GHNTracking(orderCode) {
       }
     );
 
+    if (!response.data.data || !response.data.data.tracking_logs || response.data.data.tracking_logs.length === 0) {
+      throw new Error("No tracking information found");
+    }
+
     const trackingLog =
       response.data.data.tracking_logs[
       response.data.data.tracking_logs.length - 1
@@ -133,8 +138,7 @@ async function GHNTracking(orderCode) {
       message,
     };
   } catch (error) {
-    console.error("Error tracking order:", error.message);
-    throw new Error("Internal server error");
+    throw new Error(error.message || "Error tracking GHN order");
   }
 }
 
@@ -151,9 +155,7 @@ async function NJVTracking(tracking_id) {
     );
 
     if (!response.data.events || response.data.events.length === 0) {
-      return {
-        error: "No tracking events available for the provided tracking ID.",
-      };
+      throw new Error("No tracking events available for the provided tracking ID.");
     }
 
     const eventData = response.data.events[0];
@@ -168,8 +170,7 @@ async function NJVTracking(tracking_id) {
       date,
     };
   } catch (error) {
-    console.error("Error tracking order:", error.message);
-    throw new Error("Internal server error");
+    throw new Error(error.message || "Error tracking Ninja Van order");
   }
 }
 
