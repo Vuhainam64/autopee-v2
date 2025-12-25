@@ -4,7 +4,7 @@ import { MailOutlined, LockOutlined } from '@ant-design/icons'
 import { FcGoogle } from 'react-icons/fc'
 import { useAuth } from '../../contexts/AuthContext.jsx'
 
-function LoginModal({ open, onClose, onSwitchToRegister, onSwitchToForgot }) {
+function LoginModal({ open, onClose, onSwitchToRegister, onSwitchToForgot, onLoginSuccess }) {
   const [form] = Form.useForm()
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
@@ -18,6 +18,7 @@ function LoginModal({ open, onClose, onSwitchToRegister, onSwitchToForgot }) {
       message.success('Đăng nhập thành công!')
       form.resetFields()
       onClose()
+      onLoginSuccess?.()
     } catch (error) {
       console.error('Login error:', error)
       let errorMessage = 'Đăng nhập thất bại. Vui lòng thử lại.'
@@ -53,6 +54,7 @@ function LoginModal({ open, onClose, onSwitchToRegister, onSwitchToForgot }) {
       message.success('Đăng nhập Google thành công!')
       form.resetFields()
       onClose()
+      onLoginSuccess?.()
     } catch (error) {
       console.error('Google login error:', error)
       let errorMessage = 'Đăng nhập Google thất bại. Vui lòng thử lại.'

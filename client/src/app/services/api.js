@@ -45,8 +45,16 @@ const apiRequest = async (endpoint, options = {}) => {
     const data = await response.json()
 
     if (!response.ok) {
+      // Auto trigger login popup when missing/invalid token
+      const rawMsg = data?.error?.message || data?.error || ''
+      const msg = rawMsg === 'Missing bearer token' ? 'Vui lòng đăng nhập' : rawMsg
+      if (response.status === 401 || rawMsg === 'Missing bearer token') {
+        const { emitRequireLogin } = await import('../utils/authEvents.js')
+        emitRequireLogin({ reason: 'login_required' })
+      }
+
       // Tạo error object với thông tin đầy đủ để xử lý ở component
-      const error = new Error(data.error?.message || data.error || `HTTP error! status: ${response.status}`)
+      const error = new Error(msg || `HTTP error! status: ${response.status}`)
       error.response = { data, status: response.status }
       throw error
     }

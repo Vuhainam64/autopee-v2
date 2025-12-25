@@ -12,6 +12,8 @@ const paymentRoutes = require("./routes/payment");
 const trackingRoutes = require("./routes/tracking");
 const proxyRoutes = require("./routes/proxy");
 const accountRoutes = require("./routes/account");
+const feedbackRoutes = require("./routes/feedback");
+const adminFeedbackRoutes = require("./routes/adminFeedback");
 const { authenticate } = require("./middleware/auth");
 const { handleAsync, errorHandler } = require("./middleware/error");
 const { requestLogger } = require("./middleware/logger");
@@ -49,6 +51,9 @@ app.use("/payment", paymentRoutes);
 app.use("/", trackingRoutes);
 app.use("/proxy", proxyRoutes);
 app.use("/account", accountRoutes);
+app.use("/feedback", feedbackRoutes);
+// admin feedback endpoints (permission middleware runs inside /admin router if configured in DB)
+app.use("/admin/feedback", adminFeedbackRoutes);
 
 // Backward-compatible endpoint for frontend: POST /trackSession
 // Equivalent behaviour to POST /user/sessions/track

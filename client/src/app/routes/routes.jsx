@@ -1,7 +1,8 @@
 // Main routes
 import OrdersLanding from '../features/orders/pages/OrdersLanding.jsx'
-import NotFound from '../pages/NotFound.jsx'
 import Unauthorized from '../pages/Unauthorized.jsx'
+import Contact from '../pages/Contact.jsx'
+import PrivacyPolicy from '../pages/PrivacyPolicy.jsx'
 
 // Dashboard routes
 import Dashboard from '../pages/Dashboard.jsx'
@@ -9,6 +10,7 @@ import Permissions from '../pages/dashboard/Permissions.jsx'
 import Users from '../pages/dashboard/Users.jsx'
 import Logs from '../pages/dashboard/Logs.jsx'
 import ProxyManagement from '../pages/dashboard/ProxyManagement.jsx'
+import Feedbacks from '../pages/dashboard/Feedbacks.jsx'
 
 // Product routes
 import Products from '../pages/Products.jsx'
@@ -51,6 +53,14 @@ export const appRoutes = [
     element: <OrdersLanding />,
   },
   {
+    path: '/contact',
+    element: <Contact />,
+  },
+  {
+    path: '/privacy-policy',
+    element: <PrivacyPolicy />,
+  },
+  {
     path: '/unauthorized',
     element: <Unauthorized />,
   },
@@ -82,6 +92,10 @@ export const dashboardRoutes = [
   {
     path: '/dashboard/proxy',
     element: <ProxyManagement />,
+  },
+  {
+    path: '/dashboard/feedback',
+    element: <Feedbacks />,
   },
 ]
 

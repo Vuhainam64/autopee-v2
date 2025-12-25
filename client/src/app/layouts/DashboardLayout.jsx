@@ -5,55 +5,10 @@ import { Button } from 'antd'
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  DashboardOutlined,
-  SafetyOutlined,
-  UserOutlined,
-  FileTextOutlined,
-  ShopOutlined,
-  GiftOutlined,
-  CloudServerOutlined,
 } from '@ant-design/icons'
 import logo from '../../assets/autopee-logo.png'
 import { usePermissions } from '../contexts/PermissionContext.jsx'
-
-const dashboardMenuItems = [
-  {
-    label: 'Tổng quan',
-    to: '/dashboard',
-    icon: DashboardOutlined,
-  },
-  {
-    label: 'Phân quyền',
-    to: '/dashboard/permissions',
-    icon: SafetyOutlined,
-  },
-  {
-    label: 'Quản lý người dùng',
-    to: '/dashboard/users',
-    icon: UserOutlined,
-  },
-  {
-    label: 'Theo dõi Log',
-    to: '/dashboard/logs',
-    icon: FileTextOutlined,
-  },
-  {
-    label: 'Quản lý Proxy',
-    to: '/dashboard/proxy',
-    icon: CloudServerOutlined,
-  },
-  {
-    label: 'Dịch vụ Shopee',
-    icon: ShopOutlined,
-    children: [
-      {
-        label: 'Thêm voucher',
-        to: '/dashboard/shopee/vouchers',
-        icon: GiftOutlined,
-      },
-    ],
-  },
-]
+import { buildDashboardMenuFromRoutes } from '../utils/dashboardMenu.js'
 
 function DashboardLayout() {
   const [collapsed, setCollapsed] = useState(false)
@@ -61,32 +16,10 @@ function DashboardLayout() {
   const { pathname } = useLocation()
   const { loading, routes } = usePermissions()
 
-  // Filter menu items dựa trên permissions
+  // Dashboard menu items are built dynamically from permission routes
   const visibleMenuItems = useMemo(() => {
-    if (loading) {
-      // Khi đang load, hiển thị tất cả để tránh flicker
-      return dashboardMenuItems
-    }
-    
-    if (!routes.length) {
-      return []
-    }
-    
-    // Check permissions trực tiếp từ routes array
-    // Endpoint /user/routes đã filter sẵn routes mà user có quyền
-    // CHỈ match exact, KHÔNG match prefix để tránh hiển thị menu items mà user không có quyền
-    return dashboardMenuItems.filter((item) => {
-      // Nếu có children, check children
-      if (item.children) {
-        return item.children.some((child) => {
-          const routePermission = routes.find((route) => route.path === child.to)
-          return !!routePermission
-        })
-      }
-      // CHỈ tìm exact match - route phải có trong danh sách routes mà user có quyền
-      const routePermission = routes.find((route) => route.path === item.to)
-      return !!routePermission
-    })
+    if (loading) return []
+    return buildDashboardMenuFromRoutes(routes)
   }, [loading, routes])
 
   const isActive = (to) => {

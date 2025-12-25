@@ -2,8 +2,8 @@ import LogoMark from '../branding/LogoMark.jsx'
 
 const links = [
   { label: 'Tài liệu', href: '/settings/api' },
-  { label: 'Hỗ trợ', href: '#contact' },
-  { label: 'Chính sách bảo mật', href: '#' },
+  { label: 'Liên hệ', href: '/contact' },
+  { label: 'Chính sách bảo mật', href: '/privacy-policy' },
 ]
 
 function Footer() {

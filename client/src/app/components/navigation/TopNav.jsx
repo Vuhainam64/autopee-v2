@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import useRequireLoginListener from '../../hooks/useRequireLoginListener.js'
 import { Link } from 'react-router-dom'
 import { Button, Dropdown } from 'antd'
 import { LogoutOutlined, SettingOutlined, DashboardOutlined, WalletOutlined } from '@ant-design/icons'
@@ -15,13 +16,19 @@ const navItems = [
   { label: 'Trang chủ', to: '/' },
   { label: 'Sản phẩm', to: '/products' },
   { label: 'Tài liệu', to: '/settings/api' },
-  { label: 'Liên hệ', to: '#contact' },
+  { label: 'Liên hệ', to: '/contact' },
 ]
 
 function TopNav() {
   const [loginOpen, setLoginOpen] = useState(false)
   const [registerOpen, setRegisterOpen] = useState(false)
   const [forgotOpen, setForgotOpen] = useState(false)
+
+  // Auto open login modal when API returns Missing bearer token / 401
+  // After login success: refresh current page
+  useRequireLoginListener(setLoginOpen, () => {
+    window.location.reload()
+  })
   const { currentUser, logout } = useAuth()
   const userProfileFromStore = useAppSelector((state) => state.user.userProfile)
   const currentUserFromStore = useAppSelector((state) => state.user.currentUser)
@@ -181,6 +188,11 @@ function TopNav() {
       <LoginModal
         open={loginOpen}
         onClose={() => setLoginOpen(false)}
+        onLoginSuccess={() => {
+          const cb = window.__AUTOPEE_AFTER_LOGIN__
+          window.__AUTOPEE_AFTER_LOGIN__ = null
+          if (typeof cb === 'function') cb()
+        }}
         onSwitchToRegister={() => {
           setLoginOpen(false)
           setRegisterOpen(true)
