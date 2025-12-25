@@ -24,15 +24,16 @@ async function SPXTracking(waybill) {
   
   // Try multiple approaches to get tracking data
   const attempts = [
-    // Attempt 1: Standard headers
+    // Attempt 1: Standard headers with delay
     {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36",
         "Accept": "application/json, text/plain, */*",
         "Referer": `https://spx.vn/detail/${waybillUpperCase}`,
-      }
+      },
+      delay: 1000
     },
-    // Attempt 2: Original headers
+    // Attempt 2: Original headers with delay
     {
       headers: {
         Authority: "spx.vn",
@@ -46,18 +47,36 @@ async function SPXTracking(waybill) {
         Referer: `https://spx.vn/detail/${waybillUpperCase}`,
         "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
         Cookie: "_ga=GA1.3.1846728554.1660367856; _gid=GA1.3.864556559.1660367856; fms_language=id; _gat_UA-61904553-17=1",
-      }
+      },
+      delay: 2000
+    },
+    // Attempt 3: Minimal headers with longer delay
+    {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; AutopeeBot/1.0)",
+        "Accept": "application/json",
+      },
+      delay: 3000
     }
   ];
 
   for (let i = 0; i < attempts.length; i++) {
     try {
+      // Add delay between attempts to avoid rate limiting
+      if (i > 0 && attempts[i].delay) {
+        console.log(`[SPX Debug] Waiting ${attempts[i].delay}ms before attempt ${i + 1}`);
+        await new Promise(resolve => setTimeout(resolve, attempts[i].delay));
+      }
+
       const encoded = encodedKey(waybillUpperCase);
       console.log(`[SPX Debug] Attempt ${i + 1} - Tracking: ${waybillUpperCase}, Encoded: ${encoded}`);
       
       const response = await axios.get(
         `https://spx.vn/api/v2/fleet_order/tracking/search?sls_tracking_number=${encoded}`,
-        attempts[i]
+        {
+          headers: attempts[i].headers,
+          timeout: 10000 // 10 second timeout
+        }
       );
 
       console.log(`[SPX Debug] Attempt ${i + 1} Response:`, JSON.stringify(response.data));
@@ -91,7 +110,7 @@ async function SPXTracking(waybill) {
       }
       
       // If we get here, the response was not valid, try next attempt
-      console.log(`[SPX Debug] Attempt ${i + 1} failed - invalid response structure`);
+      console.log(`[SPX Debug] Attempt ${i + 1} failed - invalid response structure or empty data`);
       
     } catch (error) {
       console.error(`[SPX Debug] Attempt ${i + 1} error:`, error.message);
@@ -99,8 +118,8 @@ async function SPXTracking(waybill) {
     }
   }
   
-  // If all attempts failed
-  throw new Error("Unable to retrieve tracking information from SPX API after multiple attempts. The tracking number may be invalid or the service may be temporarily unavailable.");
+  // If all attempts failed, provide a more helpful error message
+  throw new Error(`Unable to retrieve tracking information for ${waybillUpperCase}. This could be due to: 1) Invalid tracking number, 2) Tracking number too old, 3) SPX API temporarily unavailable, or 4) Network restrictions. Please verify the tracking number and try again later.`);
 }
 
 /**
