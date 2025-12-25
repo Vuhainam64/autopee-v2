@@ -110,7 +110,6 @@ export default function ViotpKeyManagerModal({ open, onClose, onChanged }) {
         onCancel={onClose}
         footer={null}
         width={900}
-        destroyOnClose
       >
         <div className="flex items-center justify-between mb-3">
           <Text type="secondary">

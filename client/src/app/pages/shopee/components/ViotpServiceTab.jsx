@@ -389,7 +389,7 @@ export default function ViotpServiceTab() {
   ]
 
   return (
-    <Space direction="vertical" size={16} style={{ width: '100%' }}>
+    <Space orientation="vertical" size={16} style={{ width: '100%' }}>
       <Card>
      
 <div className="flex flex-col gap-2">
@@ -446,13 +446,31 @@ export default function ViotpServiceTab() {
             ]}
           />
 
-          <InputNumber
-            min={1}
-            max={999}
-            value={serviceId}
-            onChange={(v) => setServiceId(v || DEFAULT_SERVICE_ID)}
-            addonBefore="Service ID"
-          />
+          <Space.Compact>
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0 11px',
+                border: '1px solid #d9d9d9',
+                borderRight: 'none',
+                background: '#fafafa',
+                borderRadius: 6,
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Service ID
+            </div>
+            <InputNumber
+              min={1}
+              max={999}
+              value={serviceId}
+              onChange={(v) => setServiceId(v || DEFAULT_SERVICE_ID)}
+              style={{ width: 120 }}
+            />
+          </Space.Compact>
 
           <Select
             mode="multiple"
@@ -465,13 +483,31 @@ export default function ViotpServiceTab() {
             maxTagCount="responsive"
           />
 
-          <InputNumber
-            min={1}
-            max={100}
-            value={quantity}
-            onChange={(v) => setQuantity(v || DEFAULT_QUANTITY)}
-            addonBefore="Số lượng"
-          />
+          <Space.Compact>
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '0 11px',
+                border: '1px solid #d9d9d9',
+                borderRight: 'none',
+                background: '#fafafa',
+                borderRadius: 6,
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Số lượng
+            </div>
+            <InputNumber
+              min={1}
+              max={100}
+              value={quantity}
+              onChange={(v) => setQuantity(v || DEFAULT_QUANTITY)}
+              style={{ width: 120 }}
+            />
+          </Space.Compact>
 
           <Button
             type="primary"
@@ -495,7 +531,7 @@ export default function ViotpServiceTab() {
 
       <Card title="Lịch sử check">
         <Table
-          rowKey={(r, idx) => `${r.phone}-${r.requestId || 'no'}-${idx}`}
+          rowKey={(r) => `${r.phone}-${r.requestId || Date.now()}`}
           dataSource={history}
           columns={historyColumns}
           pagination={{ pageSize: 10 }}

@@ -39,7 +39,6 @@ export default function ViotpKeyUpsertModal({ open, onClose, onSaved }) {
       onCancel={onClose}
       onOk={handleOk}
       confirmLoading={loading}
-      destroyOnClose
     >
       <Form form={form} layout="vertical">
         <Form.Item

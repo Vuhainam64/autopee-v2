@@ -304,7 +304,6 @@ function ApiSettings() {
         }}
         footer={null}
         width={600}
-        destroyOnClose
       >
         {newToken ? (
           <div className="space-y-4">

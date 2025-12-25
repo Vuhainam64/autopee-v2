@@ -650,7 +650,6 @@ const AccountManagement = () => {
           setCurrentAccount(null)
         }}
         confirmLoading={loading}
-        destroyOnClose
         width={700}
       >
         <Form form={accountForm} layout="vertical">
