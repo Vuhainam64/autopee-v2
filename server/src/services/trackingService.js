@@ -20,84 +20,87 @@ function encodedKey(resi) {
  * Track SPX order
  */
 async function SPXTracking(waybill) {
-  try {
-    const waybillUpperCase = waybill.toUpperCase();
-    const encoded = encodedKey(waybillUpperCase);
-    
-    console.log(`[SPX Debug] Tracking: ${waybillUpperCase}, Encoded: ${encoded}`);
-    
-    const response = await axios.get(
-      `https://spx.vn/api/v2/fleet_order/tracking/search?sls_tracking_number=${encoded}`,
-      {
-        headers: {
-          Authority: "spx.vn",
-          "Sec-Ch-Ua":
-            '" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"',
-          Accept: "application/json, text/plain, */*",
-          "Sec-Ch-Ua-Mobile": "?0",
-          "User-Agent":
-            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36",
-          "Sec-Fetch-Site": "same-origin",
-          "Sec-Fetch-Mode": "cors",
-          "Sec-Fetch-Dest": "empty",
-          Referer: `https://spx.vn/detail/${waybillUpperCase}`,
-          "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
-          Cookie:
-            "_ga=GA1.3.1846728554.1660367856; _gid=GA1.3.864556559.1660367856; fms_language=id; _gat_UA-61904553-17=1",
-        },
+  const waybillUpperCase = waybill.toUpperCase();
+  
+  // Try multiple approaches to get tracking data
+  const attempts = [
+    // Attempt 1: Standard headers
+    {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
+        "Referer": `https://spx.vn/detail/${waybillUpperCase}`,
       }
-    );
-
-    console.log(`[SPX Debug] Response:`, JSON.stringify(response.data, null, 2));
-
-    // Comprehensive error handling for the response structure
-    if (!response.data) {
-      throw new Error("No response data from SPX API");
+    },
+    // Attempt 2: Original headers
+    {
+      headers: {
+        Authority: "spx.vn",
+        "Sec-Ch-Ua": '" Not;A Brand";v="99", "Google Chrome";v="91", "Chromium";v="91"',
+        Accept: "application/json, text/plain, */*",
+        "Sec-Ch-Ua-Mobile": "?0",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36",
+        "Sec-Fetch-Site": "same-origin",
+        "Sec-Fetch-Mode": "cors",
+        "Sec-Fetch-Dest": "empty",
+        Referer: `https://spx.vn/detail/${waybillUpperCase}`,
+        "Accept-Language": "id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7",
+        Cookie: "_ga=GA1.3.1846728554.1660367856; _gid=GA1.3.864556559.1660367856; fms_language=id; _gat_UA-61904553-17=1",
+      }
     }
+  ];
 
-    if (response.data.retcode !== 0) {
-      throw new Error(`SPX API error: ${response.data.message || 'Unknown error'}`);
+  for (let i = 0; i < attempts.length; i++) {
+    try {
+      const encoded = encodedKey(waybillUpperCase);
+      console.log(`[SPX Debug] Attempt ${i + 1} - Tracking: ${waybillUpperCase}, Encoded: ${encoded}`);
+      
+      const response = await axios.get(
+        `https://spx.vn/api/v2/fleet_order/tracking/search?sls_tracking_number=${encoded}`,
+        attempts[i]
+      );
+
+      console.log(`[SPX Debug] Attempt ${i + 1} Response:`, JSON.stringify(response.data));
+
+      // Check if we got a valid response
+      if (response.data && 
+          response.data.retcode === 0 && 
+          response.data.data && 
+          response.data.data.tracking_list && 
+          Array.isArray(response.data.data.tracking_list) && 
+          response.data.data.tracking_list.length > 0) {
+        
+        const firstTrackingItem = response.data.data.tracking_list[0];
+        
+        if (firstTrackingItem.timestamp && firstTrackingItem.message) {
+          const timestamp = firstTrackingItem.timestamp * 1000;
+          const timeString = new Date(timestamp).toLocaleString("en-US", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true,
+          });
+          const dateString = new Date(timestamp).toLocaleDateString("en-US");
+
+          console.log(`[SPX Debug] Success on attempt ${i + 1}`);
+          return {
+            time: timeString,
+            date: dateString,
+            message: firstTrackingItem.message,
+          };
+        }
+      }
+      
+      // If we get here, the response was not valid, try next attempt
+      console.log(`[SPX Debug] Attempt ${i + 1} failed - invalid response structure`);
+      
+    } catch (error) {
+      console.error(`[SPX Debug] Attempt ${i + 1} error:`, error.message);
+      // Continue to next attempt
     }
-
-    if (!response.data.data) {
-      throw new Error("No data field in SPX API response");
-    }
-
-    if (!response.data.data.tracking_list) {
-      throw new Error("No tracking_list field in SPX API response");
-    }
-
-    if (!Array.isArray(response.data.data.tracking_list)) {
-      throw new Error("tracking_list is not an array in SPX API response");
-    }
-
-    if (response.data.data.tracking_list.length === 0) {
-      throw new Error("No tracking information found for this SPX tracking number");
-    }
-
-    const firstTrackingItem = response.data.data.tracking_list[0];
-
-    if (!firstTrackingItem.timestamp || !firstTrackingItem.message) {
-      throw new Error("Invalid tracking item structure from SPX API");
-    }
-
-    const timestamp = firstTrackingItem.timestamp * 1000;
-    const timeString = new Date(timestamp).toLocaleString("en-US", {
-      hour: "numeric",
-      minute: "numeric",
-      hour12: true,
-    });
-    const dateString = new Date(timestamp).toLocaleDateString("en-US");
-
-    return {
-      time: timeString,
-      date: dateString,
-      message: firstTrackingItem.message,
-    };
-  } catch (error) {
-    console.error(`[SPX Error] ${error.message}`);
-    throw new Error(error.message || "Error tracking SPX order");
   }
+  
+  // If all attempts failed
+  throw new Error("Unable to retrieve tracking information from SPX API after multiple attempts. The tracking number may be invalid or the service may be temporarily unavailable.");
 }
 
 /**
