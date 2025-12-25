@@ -44,7 +44,29 @@ async function SPXTracking(waybill) {
         },
       }
     );
+
+    // Validate response structure
+    if (!response.data) {
+      throw new Error("Invalid API response: missing data");
+    }
+
+    if (!response.data.data) {
+      throw new Error("Invalid API response: missing data.data");
+    }
+
+    if (!response.data.data.tracking_list || !Array.isArray(response.data.data.tracking_list)) {
+      throw new Error("Invalid API response: tracking_list is missing or not an array");
+    }
+
+    if (response.data.data.tracking_list.length === 0) {
+      throw new Error("No tracking information found for this tracking number");
+    }
+
     const firstTrackingItem = response.data.data.tracking_list[0];
+
+    if (!firstTrackingItem.timestamp || !firstTrackingItem.message) {
+      throw new Error("Invalid tracking data: missing timestamp or message");
+    }
 
     const timestamp = firstTrackingItem.timestamp * 1000;
     const timeString = new Date(timestamp).toLocaleString("en-US", {
