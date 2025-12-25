@@ -23,6 +23,9 @@ async function SPXTracking(waybill) {
   try {
     const waybillUpperCase = waybill.toUpperCase();
     const encoded = encodedKey(waybillUpperCase);
+    
+    console.log(`[SPX Debug] Tracking: ${waybillUpperCase}, Encoded: ${encoded}`);
+    
     const response = await axios.get(
       `https://spx.vn/api/v2/fleet_order/tracking/search?sls_tracking_number=${encoded}`,
       {
@@ -44,7 +47,39 @@ async function SPXTracking(waybill) {
         },
       }
     );
+
+    console.log(`[SPX Debug] Response:`, JSON.stringify(response.data, null, 2));
+
+    // Comprehensive error handling for the response structure
+    if (!response.data) {
+      throw new Error("No response data from SPX API");
+    }
+
+    if (response.data.retcode !== 0) {
+      throw new Error(`SPX API error: ${response.data.message || 'Unknown error'}`);
+    }
+
+    if (!response.data.data) {
+      throw new Error("No data field in SPX API response");
+    }
+
+    if (!response.data.data.tracking_list) {
+      throw new Error("No tracking_list field in SPX API response");
+    }
+
+    if (!Array.isArray(response.data.data.tracking_list)) {
+      throw new Error("tracking_list is not an array in SPX API response");
+    }
+
+    if (response.data.data.tracking_list.length === 0) {
+      throw new Error("No tracking information found for this SPX tracking number");
+    }
+
     const firstTrackingItem = response.data.data.tracking_list[0];
+
+    if (!firstTrackingItem.timestamp || !firstTrackingItem.message) {
+      throw new Error("Invalid tracking item structure from SPX API");
+    }
 
     const timestamp = firstTrackingItem.timestamp * 1000;
     const timeString = new Date(timestamp).toLocaleString("en-US", {
@@ -60,6 +95,7 @@ async function SPXTracking(waybill) {
       message: firstTrackingItem.message,
     };
   } catch (error) {
+    console.error(`[SPX Error] ${error.message}`);
     throw new Error(error.message || "Error tracking SPX order");
   }
 }
