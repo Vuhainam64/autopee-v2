@@ -8,6 +8,7 @@ const UsageHistory = require('../models/UsageHistory')
 const PaymentRequest = require('../models/PaymentRequest')
 const Transaction = require('../models/Transaction')
 const ShopeeCookie = require('../models/ShopeeCookie')
+const ServerLog = require('../models/ServerLog')
 const proxyService = require('./proxyService')
 
 /**
@@ -15,11 +16,17 @@ const proxyService = require('./proxyService')
  */
 async function cleanupOldData() {
   try {
+    const retentionDays = parseInt(process.env.LOG_RETENTION_DAYS || '30', 10)
+
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
     sevenDaysAgo.setHours(0, 0, 0, 0)
 
-    console.log(`[CleanupService] Bắt đầu dọn dẹp dữ liệu cũ hơn ${sevenDaysAgo.toISOString()}`)
+    const logsCutoff = new Date()
+    logsCutoff.setDate(logsCutoff.getDate() - retentionDays)
+    logsCutoff.setHours(0, 0, 0, 0)
+
+    console.log(`[CleanupService] Bắt đầu dọn dẹp dữ liệu cũ hơn ${sevenDaysAgo.toISOString()} (logs retention: ${retentionDays} ngày, cutoff: ${logsCutoff.toISOString()})`)
 
     // 1. Xóa UsageHistory cũ hơn 7 ngày
     const usageHistoryResult = await UsageHistory.deleteMany({
@@ -47,11 +54,18 @@ async function cleanupOldData() {
     })
     console.log(`[CleanupService] Đã xóa ${shopeeCookieResult.deletedCount} ShopeeCookie records`)
 
+    // 5. Xóa ServerLog cũ hơn retentionDays (mặc định 30 ngày)
+    const serverLogResult = await ServerLog.deleteMany({
+      createdAt: { $lt: logsCutoff },
+    })
+    console.log(`[CleanupService] Đã xóa ${serverLogResult.deletedCount} ServerLog records (cũ hơn ${retentionDays} ngày)`)
+
     const totalDeleted =
       usageHistoryResult.deletedCount +
       paymentRequestResult.deletedCount +
       transactionResult.deletedCount +
-      shopeeCookieResult.deletedCount
+      shopeeCookieResult.deletedCount +
+      serverLogResult.deletedCount
 
     console.log(`[CleanupService] Hoàn thành! Tổng cộng đã xóa ${totalDeleted} records`)
   } catch (error) {

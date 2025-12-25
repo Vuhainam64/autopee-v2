@@ -494,7 +494,13 @@ const checkPhone = async (phone, cookie = null, proxyInfo = null) => {
       };
     }
 
-    throw new Error(error.message || "Lỗi khi kiểm tra số điện thoại");
+    // Trong trường hợp lỗi không xác định (ví dụ lỗi mạng), trả về kết quả không tồn tại để API phía trên vẫn xử lý và trừ phí
+    return {
+      phone: cleanPhone,
+      exists: false,
+      message: error.message || "Lỗi khi kiểm tra số điện thoại",
+      errorCode: -1,
+    };
   }
 };
 

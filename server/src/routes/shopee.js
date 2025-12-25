@@ -268,7 +268,17 @@ router.post(
       
       // Tính giá dựa trên kết quả
       // 10 VND nếu đã tồn tại (thành công), 100 VND nếu chưa tồn tại (thất bại)
-      const amount = result.exists ? 10 : 100;
+      // Tính giá dựa trên kết quả
+      // Chỉ tính phí khi check thành công (errorCode === 0 hoặc exists=true)
+      let amount = 0;
+      if (result.exists) {
+        // Đã tồn tại (kể cả tài khoản bị khóa)
+        amount = 10;
+      } else if (result.errorCode === 0) {
+        // Chưa tồn tại và không có lỗi từ Shopee
+        amount = 100;
+      }
+      // Các trường hợp lỗi khác (errorCode != 0 và exists=false) sẽ có amount = 0
       
       console.log(`[API] POST /shopee/check-phone - Phone: ${phone}, Exists: ${result.exists}, Amount: ${amount} VND`);
       
