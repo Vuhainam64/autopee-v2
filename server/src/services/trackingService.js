@@ -45,6 +45,9 @@ async function SPXTracking(waybill) {
       }
     );
 
+    // Debug: Log the actual response to understand the structure
+    console.log('SPX API Response:', JSON.stringify(response.data, null, 2));
+
     // Validate response structure
     if (!response.data) {
       throw new Error("Invalid API response: missing data");
@@ -205,22 +208,22 @@ async function autoTrack(trackingID, cellphone = null) {
     if (trackingID.startsWith("SPX") || trackingID.startsWith("VN")) {
       return await SPXTracking(trackingID);
     }
-    
+
     // JNT: requires cellphone
     if (cellphone && cellphone.length > 1) {
       return await JNTTracking(trackingID, cellphone);
     }
-    
+
     // GHN: starts with G
     if (trackingID.startsWith("G")) {
       return await GHNTracking(trackingID);
     }
-    
+
     // Ninja Van: starts with NJV or SPE
     if (trackingID.startsWith("NJV") || trackingID.startsWith("SPE")) {
       return await NJVTracking(trackingID);
     }
-    
+
     throw new Error("Unsupported tracking type. Please specify carrier manually.");
   } catch (error) {
     throw error;
