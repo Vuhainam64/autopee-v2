@@ -44,32 +44,7 @@ async function SPXTracking(waybill) {
         },
       }
     );
-
-    // Debug: Log the actual response to understand the structure
-    console.log('SPX API Response:', JSON.stringify(response.data, null, 2));
-
-    // Validate response structure
-    if (!response.data) {
-      throw new Error("Invalid API response: missing data");
-    }
-
-    if (!response.data.data) {
-      throw new Error("Invalid API response: missing data.data");
-    }
-
-    if (!response.data.data.tracking_list || !Array.isArray(response.data.data.tracking_list)) {
-      throw new Error("Invalid API response: tracking_list is missing or not an array");
-    }
-
-    if (response.data.data.tracking_list.length === 0) {
-      throw new Error("No tracking information found for this tracking number");
-    }
-
     const firstTrackingItem = response.data.data.tracking_list[0];
-
-    if (!firstTrackingItem.timestamp || !firstTrackingItem.message) {
-      throw new Error("Invalid tracking data: missing timestamp or message");
-    }
 
     const timestamp = firstTrackingItem.timestamp * 1000;
     const timeString = new Date(timestamp).toLocaleString("en-US", {
@@ -85,7 +60,9 @@ async function SPXTracking(waybill) {
       message: firstTrackingItem.message,
     };
   } catch (error) {
-    throw new Error(error.message || "Error tracking SPX order");
+    return {
+      error: error.message,
+    };
   }
 }
 
@@ -95,7 +72,7 @@ async function SPXTracking(waybill) {
 async function JNTTracking(trackingID, cellphone) {
   try {
     if (!trackingID || !cellphone) {
-      throw new Error("Missing parameters: 'trackingID' or 'cellphone'.");
+      throw new Error("Missing parameters: 'trackingID', or 'cellphone'.");
     }
 
     const response = await axios.get(
@@ -119,13 +96,10 @@ async function JNTTracking(trackingID, cellphone) {
       });
     });
 
-    if (result.length === 0) {
-      throw new Error("No tracking information found");
-    }
-
     return result[0];
   } catch (error) {
-    throw new Error(error.message || "Error tracking JNT order");
+    console.error("Error fetching JNTTracking data:", error);
+    throw new Error("Internal server error");
   }
 }
 
@@ -145,10 +119,6 @@ async function GHNTracking(orderCode) {
       }
     );
 
-    if (!response.data.data || !response.data.data.tracking_logs || response.data.data.tracking_logs.length === 0) {
-      throw new Error("No tracking information found");
-    }
-
     const trackingLog =
       response.data.data.tracking_logs[
       response.data.data.tracking_logs.length - 1
@@ -163,7 +133,8 @@ async function GHNTracking(orderCode) {
       message,
     };
   } catch (error) {
-    throw new Error(error.message || "Error tracking GHN order");
+    console.error("Error tracking order:", error.message);
+    throw new Error("Internal server error");
   }
 }
 
@@ -180,7 +151,9 @@ async function NJVTracking(tracking_id) {
     );
 
     if (!response.data.events || response.data.events.length === 0) {
-      throw new Error("No tracking events available for the provided tracking ID.");
+      return {
+        error: "No tracking events available for the provided tracking ID.",
+      };
     }
 
     const eventData = response.data.events[0];
@@ -195,7 +168,8 @@ async function NJVTracking(tracking_id) {
       date,
     };
   } catch (error) {
-    throw new Error(error.message || "Error tracking Ninja Van order");
+    console.error("Error tracking order:", error.message);
+    throw new Error("Internal server error");
   }
 }
 
